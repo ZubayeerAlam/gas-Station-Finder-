@@ -7,8 +7,8 @@
 - **Phase:** 0 — Foundation, Security & Architecture — **in progress**
 - **Mode (2026‑11‑25):** user authorized **autonomous development** — commit + push each verified batch to `origin/main`, no approval stops. No Firebase deploy / billing / paid APIs. Never force-push or commit secrets.
 - **Phase 0:** done except items awaiting the new Google key or a Firebase project (see "Awaiting" below).
-- **Phase 1:** in progress — Batch 1.A (true trip-cost engine) done.
-- **Next immediate task:** Batch 1.B — My Garage (vehicle CRUD, local persistence, range/trip-cost UI).
+- **Phase 1:** in progress — Batch 1.A (true trip-cost engine), 1.B (My Garage) done.
+- **Next immediate task:** Batch 1.C — fill-up / charging history with summaries and charts.
 
 ## Awaiting the new Google Maps API key (user will supply later)
 - Live Places (New) nearby search / details / fuelOptions / evChargeOptions verification on iOS + Android.
@@ -122,3 +122,18 @@
 - `test/features/ranking/trip_cost_engine_test.dart` → **22/22 passed**, incl. hand-computed case where the lowest pump price (1.65 €/L, 30 km detour = 69.22 €) loses to 1.70 €/L with 6 km detour (68.66 €); savings 3.3838 € vs nearest.
 - Full suite: **68/68 passed**; `flutter analyze`: no issues.
 
+
+---
+
+## Phase 1 — Batch 1.B: My Garage (2026‑11‑25)
+*(implemented, locally tested; widget-tested; not yet checked on a device)*
+- **Local DB decision:** Isar is unmaintained upstream (community fork), Hive v2 is untyped key/value. Chose **drift 2.35 + drift_flutter** (SQLite): typed tables, migrations, streams, in-memory DB for tests. `lib/core/database/app_database.dart` — `Vehicles` table + `Settings` key/value table, `schemaVersion 1`, `appDatabaseProvider`.
+- `garage/domain`: `GarageRepository` (watch/save/delete/active vehicle → `Result`), `ConsumptionUnit` (L/100 km, km/L, mpg US, mpg UK, kWh/100 km, Wh/km, mi/kWh) — always stored as per‑100 km.
+- `garage/data/drift_garage_repository.dart`: first saved vehicle becomes active; deleting the active vehicle activates the oldest remaining one; DB errors → `UnknownFailure`.
+- `garage/presentation`: stream providers (`vehiclesProvider`, `activeVehicleIdProvider`, `activeVehicleProvider`), `GarageController`; `GarageScreen` (empty state, cards, tap = set active, edit/delete with confirm + Undo snackbar, full tank/charge range); `VehicleFormScreen` (Fuel/Electric toggle, unit dropdown converts the typed value, comma decimals, validation, EV charging efficiency %).
+- **Navigation:** `StatefulShellRoute.indexedStack` with bottom bar (Map, Garage); routes in `core/router/app_routes.dart`; form routes on the root navigator; deep-linked form falls back to `go(garage)` when nothing to pop.
+- **Test decision:** drift streams inside `testWidgets` hang in the fake-async zone. Repository is tested against a real in-memory drift DB in plain `test`s; widget tests inject `FakeGarageRepository` (`test/helpers/`) via `garageRepositoryProvider` override (DI).
+
+### Tests (Batch 1.B)
+- `test/features/garage/garage_test.dart` → **13/13 passed** (4 drift repository, 3 unit conversion, 1 parser, 5 widget: add in km/L → stored 8 L/100 km + active, unit switch converts, validation, EV efficiency + deep-link return, select active + delete/undo).
+- Full suite **81/81 passed**; `flutter analyze` no issues.

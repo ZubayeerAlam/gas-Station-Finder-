@@ -141,8 +141,9 @@ Implementation history and evidence live in [BUILD.md](BUILD.md). Rule: work one
 - [ ] Custom markers with price/kW
 
 ### 1.9 My Garage
-- [ ] Multiple vehicles (name, make/model, fuel/energy type, tank/battery, consumption, preferred fuel)
-- [-] Range, trip cost, required fuel/energy, reachable stations — domain done (`VehicleProfile`, engine reachability); UI pending
+- [x] Multiple vehicles (name, fuel/energy type, tank/battery, consumption in 7 units, preferred fuel, EV charging efficiency) — drift (SQLite) persistence, active vehicle, edit/delete + undo
+- [-] Range, trip cost, required fuel/energy, reachable stations — full-tank range shown in Garage; trip cost/reachability wired into along-route UI later (1.2)
+- [ ] Make/model picker (free-text name only for now)
 
 ### 1.10 Fill-up & Trip History
 - [ ] Record fill-ups / charging sessions
@@ -185,7 +186,7 @@ Implementation history and evidence live in [BUILD.md](BUILD.md). Rule: work one
 ## Phase 3 — Production Quality, Offline & Release (Week 6+)
 
 ### 3.1 Offline-first
-- [ ] Evaluate Isar vs Hive (maintenance/compat)
+- [x] Evaluate Isar vs Hive → chose **drift** (SQLite; actively maintained, typed queries, migrations, testable in-memory) — see BUILD.md 1.B
 - [ ] Cache stations, prices, vehicles, trip history
 - [ ] Last-updated + offline indicators; resync; stale ≠ verified
 
