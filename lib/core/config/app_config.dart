@@ -15,6 +15,12 @@ class AppConfig {
     this.openChargeMapApiKey = '',
     this.androidPackageName = 'com.fuelwise.app',
     this.iosBundleId = 'com.fuelwise.app',
+    this.firebaseModeName = 'off',
+    this.firebaseEmulatorHost = 'localhost',
+    this.firebaseProjectId = '',
+    this.firebaseApiKey = '',
+    this.firebaseAppId = '',
+    this.firebaseSenderId = '',
   });
 
   factory AppConfig.fromEnvironment() => const AppConfig(
@@ -25,6 +31,12 @@ class AppConfig {
         ),
         androidCertSha1: String.fromEnvironment('ANDROID_CERT_SHA1'),
         openChargeMapApiKey: String.fromEnvironment('OCM_API_KEY'),
+        firebaseModeName: String.fromEnvironment('FIREBASE_MODE', defaultValue: 'off'),
+        firebaseEmulatorHost: String.fromEnvironment('FIREBASE_EMULATOR_HOST', defaultValue: 'localhost'),
+        firebaseProjectId: String.fromEnvironment('FIREBASE_PROJECT_ID'),
+        firebaseApiKey: String.fromEnvironment('FIREBASE_API_KEY'),
+        firebaseAppId: String.fromEnvironment('FIREBASE_APP_ID'),
+        firebaseSenderId: String.fromEnvironment('FIREBASE_MESSAGING_SENDER_ID'),
       );
 
   final String googleMapsApiKey;
@@ -39,8 +51,34 @@ class AppConfig {
   /// Open Charge Map key (free, per-app; also a client key, not a secret).
   final String openChargeMapApiKey;
 
+  /// Community backend: `off` (default), `emulator` (local Emulator Suite,
+  /// project `demo-fuelwise`) or `project` (a real Firebase project whose
+  /// client options are passed as dart-defines — never committed).
+  final String firebaseModeName;
+  FirebaseMode get firebaseMode => FirebaseMode.parse(firebaseModeName);
+
+  /// Emulator host: `localhost` for the iOS Simulator, `10.0.2.2` for the
+  /// Android emulator, the Mac's LAN IP for a physical device.
+  final String firebaseEmulatorHost;
+  final String firebaseProjectId;
+  final String firebaseApiKey;
+  final String firebaseAppId;
+  final String firebaseSenderId;
+
   bool get hasGoogleMapsKey => googleMapsApiKey.isNotEmpty;
   bool get hasOpenChargeMapKey => openChargeMapApiKey.isNotEmpty;
 }
 
 final appConfigProvider = Provider<AppConfig>((ref) => AppConfig.fromEnvironment());
+
+enum FirebaseMode {
+  off,
+  emulator,
+  project;
+
+  static FirebaseMode parse(String v) => switch (v.trim().toLowerCase()) {
+        'emulator' => emulator,
+        'project' => project,
+        _ => off,
+      };
+}

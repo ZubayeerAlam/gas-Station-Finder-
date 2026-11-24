@@ -35,6 +35,11 @@ class MapScreen extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('FuelWise'),
         actions: [
+          IconButton(
+            tooltip: 'Price alerts',
+            onPressed: () => context.push(AppRoutes.alerts),
+            icon: const Icon(Icons.notifications_none_rounded),
+          ),
           Padding(
             padding: const EdgeInsets.only(right: AppSpacing.sm),
             child: FilledButton.tonalIcon(

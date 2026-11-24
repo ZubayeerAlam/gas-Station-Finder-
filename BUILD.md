@@ -220,3 +220,32 @@
 - `test/unit/pricing.test.ts` → **13 passed** (`node --test`).
 - `test/emulator/rules.test.ts` → **6 passed** (Firestore emulator + `@firebase/rules-unit-testing`): report validation (auth, own uid, server time, ranges, currency, fuel, coords, no status, required fields), no update/delete, author-only read, read-only aggregates, private votes, validated alert rules, private FCM token.
 - `test/emulator/functions.test.ts` → **4 passed** with the **real triggers in the Functions emulator**: 3 reports → consensus 1.80 EUR, 4th at 2.50 rejected as outlier (trust 0.3333), corroborated reporter trust 0.6667, daily history + station doc; duplicate report rate-limited; votes → reliability 0.667 + out-of-stock count; alert fires for the matching rule only and exactly once inside the cooldown (1 emulator FCM log line).
+
+## Phase 1 — Batch 1.F (part 2): Community prices client (2026‑11‑25)
+*(implemented, unit/widget-tested, iOS-simulator-tested against the Firebase Emulator Suite — **nothing deployed**, no Firebase project, no billing)*
+- **Packages:** `firebase_core 5.2`, `firebase_auth 7.1`, `cloud_firestore 7.2` (iOS pulls the Firebase SDK via Swift Package Manager; first simulator build 3 min 21 s, later builds ~30 s).
+- **Config (`lib/core/config/app_config.dart`):** `FIREBASE_MODE` = `off` (default) · `emulator` (project `demo-fuelwise`, host `FIREBASE_EMULATOR_HOST`, default `localhost`) · `project` (client options via `FIREBASE_PROJECT_ID/_API_KEY/_APP_ID/_MESSAGING_SENDER_ID` dart-defines — nothing committed, no `GoogleService-Info.plist`/`google-services.json` in git).
+- **`lib/core/firebase/firebase_bootstrap.dart`:** starts Firebase before `runApp`, never blocks the app; result injected as `firebaseStatusProvider`. **Bug found on the simulator and fixed:** the native iOS Firebase Installations SDK aborts the whole process (uncatchable from Dart) when the API key is not 39 chars starting with `A` → emulator mode uses a format-valid placeholder, and project mode checks key/app-id format in Dart first (bad config = community off, not a crash). Regression test added.
+- **Domain (`features/prices/domain`):** `CommunityPrice` (consensus, report count, confidence, `expiresAt` → `isFresh`), `PriceHistoryDay`, `StationReliability` (null score = unknown), `PriceReportDraft`, `StationVote`, `PriceAlertRule`; validation mirrors the rules (price 0.01–1000, ISO currency, fuel whitelist incl. `EV_KWH`); plain-language reliability bands and server-verdict messages.
+- **Data:** `FirestoreCommunityRepository` — lazy anonymous sign-in shared by concurrent callers, real-time listeners, writes contain exactly the fields the rules allow (`reportedAt`/`at` = server timestamp), Firebase errors mapped to `AppFailure`s; pure, unit-tested mappers. `UnavailableCommunityRepository` when Firebase is off: empty reads, `ConfigFailure` writes — nothing faked.
+- **UI:**
+  - Station sheet → **Community prices** section: consensus per fuel (reports, age, "outdated" after TTL), tap → **price history chart** (7 / 30 days; consensus line + min–max band; one currency only), **reliability** (bar, %, band, vote counts, "not an official check"), **votes** (Open / Closed / Out of fuel).
+  - **Report a price** screen (`/prices/report`): fuel defaults to the active vehicle (EV → per-kWh), currency from the station's existing real prices (never from locale), live server verdict (accepted / outlier / duplicate / rate limited).
+  - **Price alerts** screen (`/alerts`, bell on the Map app bar): create (fuel, currency, max price, 1–50 km around current location), pause, delete. Honest note that push is not enabled yet.
+- **Ranking:** `CombinedQuoteLookup` — Google price first; a *fresh* community consensus for the exact fuel fills the gap (`PriceSource.community`); community reliability attached to stops → `StationOffer.reliability` (used by Best value). EV planning uses `EV_KWH`. Community failures/timeouts (5 s) never break planning.
+- `firestore.indexes.json`: + `priceHistory (fuelType, day)`.
+- **Bugs found and fixed while testing:** default fuel / currency read once in `initState` before the garage / price streams loaded (now follow the data until the user edits); alert sheet hid its fields behind the keyboard (used the screen's context for `viewInsets` instead of the sheet's).
+
+### Tests (1.F part 2)
+- `test/features/prices/community_prices_test.dart` → **22 passed**: Firestore mapping (Timestamps, incomplete docs, unknown reliability stays null, alert-rule keys ⊆ rule whitelist, UTC day key), Firebase error mapping, validation/defaults, `FIREBASE_MODE` parsing, Firebase option format guards, `CombinedQuoteLookup` (Google wins, stale/other-fuel ignored, reliability attached, backend off = Google only, EV kWh), widgets (prices + history 7→30 + votes, vote failure, backend off, report validate/submit/verdict, outlier verdict, alerts create/pause/delete, alerts off), unavailable repo.
+- Full suite: **149 passed**; `flutter analyze`: no issues.
+- **iOS simulator (iPhone 17e) + Emulator Suite (auth, firestore, functions):** app starts in emulator mode; Price alerts → anonymous sign-in + listener (empty state); created "Regular ≤ EUR 1.75 within 10 km" → stored under `users/{anonUid}/alertRules` through the real rules; a matching report (1.699 EUR, 0.4 km away) processed by the real trigger → consensus written and the **app-created rule matched** (`alertLog` cooldown claim; 0 pushes because no FCM token); pause → `enabled=false`; delete → doc gone (404).
+- **Not verified on device:** community section / report screen / history chart — they live in the station sheet, which needs stations from Places (current Google key → 403). Covered by widget tests only.
+
+### Run community features locally (no Firebase project needed)
+```bash
+cd functions && npm run build && cd ..
+firebase emulators:start --only auth,firestore,functions --project demo-fuelwise
+flutter run --dart-define-from-file=config/dev.json --dart-define=FIREBASE_MODE=emulator
+```
+Android emulator: add `--dart-define=FIREBASE_EMULATOR_HOST=10.0.2.2`; physical device: the Mac's LAN IP (and start the emulators with `host: 0.0.0.0`). **Not verified on Android yet:** Android 9+ blocks cleartext HTTP, so the Auth emulator may need a debug-only network security config.

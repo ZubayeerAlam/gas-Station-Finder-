@@ -5,6 +5,7 @@ import '../../../../core/error/app_failure.dart';
 import '../../../../core/location/geo_point.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/utils/formatters.dart';
+import '../../../prices/presentation/community_section.dart';
 import '../../domain/entities/station.dart';
 import '../stations_controllers.dart';
 
@@ -86,6 +87,8 @@ class StationDetailsSheet extends ConsumerWidget {
               child: Center(child: CircularProgressIndicator(semanticsLabel: 'Loading station details')),
             ),
         },
+        const Divider(height: AppSpacing.lg * 2),
+        CommunitySection(station: station),
       ],
     );
   }

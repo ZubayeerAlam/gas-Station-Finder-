@@ -91,6 +91,8 @@ const _fuelLabels = <String, String>{
   'E80': 'E80',
   'E85': 'E85',
   'E100': 'E100',
+  'E10': 'E10',
+  'EV_KWH': 'EV charging',
 };
 
 /// Human-readable label for a Places fuel type code.

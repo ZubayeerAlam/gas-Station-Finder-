@@ -8,4 +8,6 @@ abstract final class AppRoutes {
   static const planRoute = '/plan/route';
   static const history = '/history';
   static const fillUpNew = '/history/new';
+  static const reportPrice = '/prices/report';
+  static const alerts = '/alerts';
 }

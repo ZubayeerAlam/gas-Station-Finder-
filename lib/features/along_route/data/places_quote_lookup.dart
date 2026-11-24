@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../stations/data/stations_providers.dart';
 import '../../stations/domain/entities/station.dart';
 import '../../stations/domain/repositories/stations_repository.dart';
+import '../../ranking/domain/ranking_models.dart';
 import '../domain/along_route_repositories.dart';
 
 /// Prices + open status from Place Details (`fuelOptions`, `currentOpeningHours`).
@@ -22,9 +23,12 @@ class PlacesQuoteLookup implements StationQuoteLookup {
     final details = await Future.wait(stationIds.map(_details));
     return {
       for (var i = 0; i < stationIds.length; i++)
-        if (details[i] case final d?) stationIds[i]: StationQuote(price: pickPrice(d, fuelType), openNow: d.openNow),
+        if (details[i] case final d?) stationIds[i]: _quote(pickPrice(d, fuelType), d.openNow),
     };
   }
+
+  static StationQuote _quote(FuelPrice? p, bool? openNow) =>
+      StationQuote(price: p, openNow: openNow, priceSource: p == null ? null : PriceSource.google);
 
   Future<StationDetails?> _details(String id) async {
     final hit = _cache[id];
@@ -45,6 +49,7 @@ class PlacesQuoteLookup implements StationQuoteLookup {
   }
 }
 
-final stationQuoteLookupProvider = Provider<StationQuoteLookup>(
+/// Google-only lookup; see `stationQuoteLookupProvider` for the combined one.
+final placesQuoteLookupProvider = Provider<StationQuoteLookup>(
   (ref) => PlacesQuoteLookup(ref.watch(stationsRepositoryProvider)),
 );

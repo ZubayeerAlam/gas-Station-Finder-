@@ -125,7 +125,7 @@ class AlongRoutePlanner {
       final quoted = await quotes.quotes(quoteIds, fuelType: fuelType);
       stops = [
         for (final s in stops)
-          if (quoted[s.station.id] case final q?) s.copyWith(price: q.price, openNow: q.openNow) else s,
+          if (quoted[s.station.id] case final q?) s.copyWith(price: q.price, priceSource: q.priceSource, openNow: q.openNow, reliability: q.reliability) else s,
       ];
     }
 

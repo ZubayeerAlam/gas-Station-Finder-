@@ -855,7 +855,8 @@ mixin _$RouteStop {
 
  Station get station; double get alongMeters; double get offRouteMeters;/// Null when the routing service could not compute it.
  StopDetour? get detour;/// Price for the vehicle's fuel (from a real source) — null = unknown.
- FuelPrice? get price; bool? get openNow;
+ FuelPrice? get price; PriceSource? get priceSource; bool? get openNow;/// 0..1 community data-reliability score; null = unknown.
+ double? get reliability;
 /// Create a copy of RouteStop
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -867,20 +868,20 @@ $RouteStopCopyWith<RouteStop> get copyWith => _$RouteStopCopyWithImpl<RouteStop>
 @override
 bool operator ==(Object other) {
   final _this = this as RouteStop;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is RouteStop&&(identical(other.station, _this.station) || other.station == _this.station)&&(identical(other.alongMeters, _this.alongMeters) || other.alongMeters == _this.alongMeters)&&(identical(other.offRouteMeters, _this.offRouteMeters) || other.offRouteMeters == _this.offRouteMeters)&&(identical(other.detour, _this.detour) || other.detour == _this.detour)&&(identical(other.price, _this.price) || other.price == _this.price)&&(identical(other.openNow, _this.openNow) || other.openNow == _this.openNow));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is RouteStop&&(identical(other.station, _this.station) || other.station == _this.station)&&(identical(other.alongMeters, _this.alongMeters) || other.alongMeters == _this.alongMeters)&&(identical(other.offRouteMeters, _this.offRouteMeters) || other.offRouteMeters == _this.offRouteMeters)&&(identical(other.detour, _this.detour) || other.detour == _this.detour)&&(identical(other.price, _this.price) || other.price == _this.price)&&(identical(other.priceSource, _this.priceSource) || other.priceSource == _this.priceSource)&&(identical(other.openNow, _this.openNow) || other.openNow == _this.openNow)&&(identical(other.reliability, _this.reliability) || other.reliability == _this.reliability));
 }
 
 
 @override
 int get hashCode {
   final _this = this as RouteStop;
-  return Object.hash(runtimeType,_this.station,_this.alongMeters,_this.offRouteMeters,_this.detour,_this.price,_this.openNow);
+  return Object.hash(runtimeType,_this.station,_this.alongMeters,_this.offRouteMeters,_this.detour,_this.price,_this.priceSource,_this.openNow,_this.reliability);
 }
 
 @override
 String toString() {
   final _this = this as RouteStop;
-  return 'RouteStop(station: ${_this.station}, alongMeters: ${_this.alongMeters}, offRouteMeters: ${_this.offRouteMeters}, detour: ${_this.detour}, price: ${_this.price}, openNow: ${_this.openNow})';
+  return 'RouteStop(station: ${_this.station}, alongMeters: ${_this.alongMeters}, offRouteMeters: ${_this.offRouteMeters}, detour: ${_this.detour}, price: ${_this.price}, priceSource: ${_this.priceSource}, openNow: ${_this.openNow}, reliability: ${_this.reliability})';
 }
 
 
@@ -891,7 +892,7 @@ abstract mixin class $RouteStopCopyWith<$Res>  {
   factory $RouteStopCopyWith(RouteStop value, $Res Function(RouteStop) _then) = _$RouteStopCopyWithImpl;
 @useResult
 $Res call({
- Station station, double alongMeters, double offRouteMeters, StopDetour? detour, FuelPrice? price, bool? openNow
+ Station station, double alongMeters, double offRouteMeters, StopDetour? detour, FuelPrice? price, PriceSource? priceSource, bool? openNow, double? reliability
 });
 
 
@@ -908,15 +909,17 @@ class _$RouteStopCopyWithImpl<$Res>
 
 /// Create a copy of RouteStop
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? station = null,Object? alongMeters = null,Object? offRouteMeters = null,Object? detour = freezed,Object? price = freezed,Object? openNow = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? station = null,Object? alongMeters = null,Object? offRouteMeters = null,Object? detour = freezed,Object? price = freezed,Object? priceSource = freezed,Object? openNow = freezed,Object? reliability = freezed,}) {
   return _then(RouteStop(
 station: null == station ? _self.station : station // ignore: cast_nullable_to_non_nullable
 as Station,alongMeters: null == alongMeters ? _self.alongMeters : alongMeters // ignore: cast_nullable_to_non_nullable
 as double,offRouteMeters: null == offRouteMeters ? _self.offRouteMeters : offRouteMeters // ignore: cast_nullable_to_non_nullable
 as double,detour: freezed == detour ? _self.detour : detour // ignore: cast_nullable_to_non_nullable
 as StopDetour?,price: freezed == price ? _self.price : price // ignore: cast_nullable_to_non_nullable
-as FuelPrice?,openNow: freezed == openNow ? _self.openNow : openNow // ignore: cast_nullable_to_non_nullable
-as bool?,
+as FuelPrice?,priceSource: freezed == priceSource ? _self.priceSource : priceSource // ignore: cast_nullable_to_non_nullable
+as PriceSource?,openNow: freezed == openNow ? _self.openNow : openNow // ignore: cast_nullable_to_non_nullable
+as bool?,reliability: freezed == reliability ? _self.reliability : reliability // ignore: cast_nullable_to_non_nullable
+as double?,
   ));
 }
 /// Create a copy of RouteStop
@@ -1034,10 +1037,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( Station station,  double alongMeters,  double offRouteMeters,  StopDetour? detour,  FuelPrice? price,  bool? openNow)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( Station station,  double alongMeters,  double offRouteMeters,  StopDetour? detour,  FuelPrice? price,  PriceSource? priceSource,  bool? openNow,  double? reliability)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _RouteStop() when $default != null:
-return $default(_that.station,_that.alongMeters,_that.offRouteMeters,_that.detour,_that.price,_that.openNow);case _:
+return $default(_that.station,_that.alongMeters,_that.offRouteMeters,_that.detour,_that.price,_that.priceSource,_that.openNow,_that.reliability);case _:
   return orElse();
 
 }
@@ -1055,10 +1058,10 @@ return $default(_that.station,_that.alongMeters,_that.offRouteMeters,_that.detou
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( Station station,  double alongMeters,  double offRouteMeters,  StopDetour? detour,  FuelPrice? price,  bool? openNow)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( Station station,  double alongMeters,  double offRouteMeters,  StopDetour? detour,  FuelPrice? price,  PriceSource? priceSource,  bool? openNow,  double? reliability)  $default,) {final _that = this;
 switch (_that) {
 case _RouteStop():
-return $default(_that.station,_that.alongMeters,_that.offRouteMeters,_that.detour,_that.price,_that.openNow);case _:
+return $default(_that.station,_that.alongMeters,_that.offRouteMeters,_that.detour,_that.price,_that.priceSource,_that.openNow,_that.reliability);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -1075,10 +1078,10 @@ return $default(_that.station,_that.alongMeters,_that.offRouteMeters,_that.detou
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( Station station,  double alongMeters,  double offRouteMeters,  StopDetour? detour,  FuelPrice? price,  bool? openNow)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( Station station,  double alongMeters,  double offRouteMeters,  StopDetour? detour,  FuelPrice? price,  PriceSource? priceSource,  bool? openNow,  double? reliability)?  $default,) {final _that = this;
 switch (_that) {
 case _RouteStop() when $default != null:
-return $default(_that.station,_that.alongMeters,_that.offRouteMeters,_that.detour,_that.price,_that.openNow);case _:
+return $default(_that.station,_that.alongMeters,_that.offRouteMeters,_that.detour,_that.price,_that.priceSource,_that.openNow,_that.reliability);case _:
   return null;
 
 }
@@ -1090,7 +1093,7 @@ return $default(_that.station,_that.alongMeters,_that.offRouteMeters,_that.detou
 
 
 class _RouteStop implements RouteStop {
-  const _RouteStop({required this.station, required this.alongMeters, required this.offRouteMeters, this.detour, this.price, this.openNow});
+  const _RouteStop({required this.station, required this.alongMeters, required this.offRouteMeters, this.detour, this.price, this.priceSource, this.openNow, this.reliability});
   
 
 @override final  Station station;
@@ -1100,7 +1103,10 @@ class _RouteStop implements RouteStop {
 @override final  StopDetour? detour;
 /// Price for the vehicle's fuel (from a real source) — null = unknown.
 @override final  FuelPrice? price;
+@override final  PriceSource? priceSource;
 @override final  bool? openNow;
+/// 0..1 community data-reliability score; null = unknown.
+@override final  double? reliability;
 
 /// Create a copy of RouteStop
 /// with the given fields replaced by the non-null parameter values.
@@ -1112,18 +1118,18 @@ _$RouteStopCopyWith<_RouteStop> get copyWith => __$RouteStopCopyWithImpl<_RouteS
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _RouteStop&&(identical(other.station, station) || other.station == station)&&(identical(other.alongMeters, alongMeters) || other.alongMeters == alongMeters)&&(identical(other.offRouteMeters, offRouteMeters) || other.offRouteMeters == offRouteMeters)&&(identical(other.detour, detour) || other.detour == detour)&&(identical(other.price, price) || other.price == price)&&(identical(other.openNow, openNow) || other.openNow == openNow));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _RouteStop&&(identical(other.station, station) || other.station == station)&&(identical(other.alongMeters, alongMeters) || other.alongMeters == alongMeters)&&(identical(other.offRouteMeters, offRouteMeters) || other.offRouteMeters == offRouteMeters)&&(identical(other.detour, detour) || other.detour == detour)&&(identical(other.price, price) || other.price == price)&&(identical(other.priceSource, priceSource) || other.priceSource == priceSource)&&(identical(other.openNow, openNow) || other.openNow == openNow)&&(identical(other.reliability, reliability) || other.reliability == reliability));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,station,alongMeters,offRouteMeters,detour,price,openNow);
+    return Object.hash(runtimeType,station,alongMeters,offRouteMeters,detour,price,priceSource,openNow,reliability);
 }
 
 @override
 String toString() {
-    return 'RouteStop(station: $station, alongMeters: $alongMeters, offRouteMeters: $offRouteMeters, detour: $detour, price: $price, openNow: $openNow)';
+    return 'RouteStop(station: $station, alongMeters: $alongMeters, offRouteMeters: $offRouteMeters, detour: $detour, price: $price, priceSource: $priceSource, openNow: $openNow, reliability: $reliability)';
 }
 
 
@@ -1134,7 +1140,7 @@ abstract mixin class _$RouteStopCopyWith<$Res> implements $RouteStopCopyWith<$Re
   factory _$RouteStopCopyWith(_RouteStop value, $Res Function(_RouteStop) _then) = __$RouteStopCopyWithImpl;
 @override @useResult
 $Res call({
- Station station, double alongMeters, double offRouteMeters, StopDetour? detour, FuelPrice? price, bool? openNow
+ Station station, double alongMeters, double offRouteMeters, StopDetour? detour, FuelPrice? price, PriceSource? priceSource, bool? openNow, double? reliability
 });
 
 
@@ -1151,15 +1157,17 @@ class __$RouteStopCopyWithImpl<$Res>
 
 /// Create a copy of RouteStop
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? station = null,Object? alongMeters = null,Object? offRouteMeters = null,Object? detour = freezed,Object? price = freezed,Object? openNow = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? station = null,Object? alongMeters = null,Object? offRouteMeters = null,Object? detour = freezed,Object? price = freezed,Object? priceSource = freezed,Object? openNow = freezed,Object? reliability = freezed,}) {
   return _then(_RouteStop(
 station: null == station ? _self.station : station // ignore: cast_nullable_to_non_nullable
 as Station,alongMeters: null == alongMeters ? _self.alongMeters : alongMeters // ignore: cast_nullable_to_non_nullable
 as double,offRouteMeters: null == offRouteMeters ? _self.offRouteMeters : offRouteMeters // ignore: cast_nullable_to_non_nullable
 as double,detour: freezed == detour ? _self.detour : detour // ignore: cast_nullable_to_non_nullable
 as StopDetour?,price: freezed == price ? _self.price : price // ignore: cast_nullable_to_non_nullable
-as FuelPrice?,openNow: freezed == openNow ? _self.openNow : openNow // ignore: cast_nullable_to_non_nullable
-as bool?,
+as FuelPrice?,priceSource: freezed == priceSource ? _self.priceSource : priceSource // ignore: cast_nullable_to_non_nullable
+as PriceSource?,openNow: freezed == openNow ? _self.openNow : openNow // ignore: cast_nullable_to_non_nullable
+as bool?,reliability: freezed == reliability ? _self.reliability : reliability // ignore: cast_nullable_to_non_nullable
+as double?,
   ));
 }
 

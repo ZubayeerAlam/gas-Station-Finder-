@@ -9,6 +9,9 @@ import '../../features/garage/presentation/garage_screen.dart';
 import '../../features/garage/presentation/vehicle_form_screen.dart';
 import '../../features/history/presentation/fill_up_form_screen.dart';
 import '../../features/history/presentation/history_screen.dart';
+import '../../features/prices/presentation/alerts_screen.dart';
+import '../../features/prices/presentation/report_price_screen.dart';
+import '../../features/stations/domain/entities/station.dart';
 import '../../features/stations/presentation/map_screen.dart';
 import 'app_routes.dart';
 
@@ -62,6 +65,18 @@ GoRouter buildRouter({String initialLocation = AppRoutes.map}) => GoRouter(
           path: AppRoutes.fillUpNew,
           parentNavigatorKey: _rootKey,
           builder: (_, _) => const FillUpFormScreen(),
+        ),
+        GoRoute(
+          path: AppRoutes.reportPrice,
+          parentNavigatorKey: _rootKey,
+          // Needs the station; a deep link without one falls back to the map.
+          redirect: (_, state) => state.extra is Station ? null : AppRoutes.map,
+          builder: (_, state) => ReportPriceScreen(station: state.extra! as Station),
+        ),
+        GoRoute(
+          path: AppRoutes.alerts,
+          parentNavigatorKey: _rootKey,
+          builder: (_, _) => const AlertsScreen(),
         ),
         GoRoute(
           path: AppRoutes.vehicleEdit,

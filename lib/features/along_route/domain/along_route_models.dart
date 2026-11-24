@@ -1,6 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../../core/location/geo_point.dart';
+import '../../ranking/domain/ranking_models.dart';
 import '../../route/domain/route_info.dart';
 import '../../stations/domain/entities/station.dart';
 
@@ -46,7 +47,11 @@ abstract class RouteStop with _$RouteStop {
 
     /// Price for the vehicle's fuel (from a real source) — null = unknown.
     FuelPrice? price,
+    PriceSource? priceSource,
     bool? openNow,
+
+    /// 0..1 community data-reliability score; null = unknown.
+    double? reliability,
   }) = _RouteStop;
 }
 

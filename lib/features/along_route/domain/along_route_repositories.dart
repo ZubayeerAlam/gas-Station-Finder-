@@ -1,5 +1,6 @@
 import '../../../core/error/result.dart';
 import '../../../core/location/geo_point.dart';
+import '../../ranking/domain/ranking_models.dart';
 import '../../stations/domain/entities/station.dart';
 import 'along_route_models.dart';
 
@@ -23,10 +24,16 @@ abstract interface class DetourRepository {
 
 /// Price + open status for a station (from a real source, never estimated).
 class StationQuote {
-  const StationQuote({this.price, this.openNow});
+  const StationQuote({this.price, this.openNow, this.priceSource, this.reliability});
 
   final FuelPrice? price;
   final bool? openNow;
+
+  /// Where [price] came from (null when there is no price).
+  final PriceSource? priceSource;
+
+  /// 0..1 community data-reliability score; null = unknown.
+  final double? reliability;
 }
 
 abstract interface class StationQuoteLookup {

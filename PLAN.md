@@ -63,6 +63,11 @@ Implementation history and evidence live in [BUILD.md](BUILD.md). Rule: work one
 - [x] Application ID / bundle ID → `com.fuelwise.app` (emulator + simulator verified)
 - [x] App icon (`tool/make_icon.swift` + flutter_launcher_icons; adaptive Android icon verified on emulator)
 
+### Awaiting a Firebase project (no deploy / billing authorised)
+- [ ] `FIREBASE_MODE=project` with real client options; enable Anonymous auth
+- [ ] Deploy rules, indexes and functions (user's explicit OK only)
+- [ ] FCM + APNs for alert push
+
 ### Awaiting new Google Maps API key
 - [ ] Live Places nearby/details verification (iOS + Android)
 - [ ] Map tiles render (Maps SDK)
@@ -111,10 +116,10 @@ Implementation history and evidence live in [BUILD.md](BUILD.md). Rule: work one
 - [x] Honest "heuristic" labelling (Best value documented; approximate detours flagged)
 
 ### 1.5 Crowdsourced Live Fuel Prices
-- [ ] Firebase Auth (Google / anonymous)
+- [-] Firebase Auth — anonymous sign-in on first community use (verified on iOS simulator against the Auth emulator); Google sign-in not done
 - [x] Firestore model: top-level `priceReports` (append-only) → `stations/{id}/prices/{fuel}` aggregates (function-written)
-- [ ] Submit report (fuel type, price, timestamp)
-- [ ] Upvote / flag reports
+- [-] Submit report (fuel type, price, currency; server timestamp) + live server verdict (accepted / outlier / duplicate / rate-limited) — widget-tested; on-device blocked because stations come from Places (key 403)
+- [ ] Upvote / flag reports (replaced for now by outlier rejection + open/closed/out-of-fuel votes)
 - [x] Reporter reputation — Laplace trust (accepted+1)/(accepted+rejected+2); corroborated (±3 %, ≥ 2 reports) raises, outliers lower
 - [x] Cloud Function (TS) aggregation: TTL 72 h, majority currency (no conversion), leave-one-out outlier test (> 15 %), weighted median (trust × recency half-life 12 h), confidence
 - [x] Stale price expiry (72 h TTL, `expiresAt` on aggregate)
@@ -122,20 +127,21 @@ Implementation history and evidence live in [BUILD.md](BUILD.md). Rule: work one
 - [x] Emulator-tested (rules tests + real triggers in Functions emulator, `demo-fuelwise`, nothing deployed)
 
 ### 1.6 Price History & Analytics
-- [ ] 7-day / 30-day trends (fl_chart)
+- [-] 7-day / 30-day trends (fl_chart: consensus close line + daily min–max band, single currency) — widget-tested, not seen on device (needs Places stations)
 - [ ] Station and fuel-type comparisons
-- [ ] Verified vs unverified distinction
+- [-] Verified vs unverified distinction — community prices labelled with report count, age, "outdated" after TTL; Google prices labelled Google
 
 ### 1.7 Station Reliability Score
-- [-] Score = mean of known components: price freshness exp(−age/72 h) + open/closed vote agreement (30-day votes); unknown stays null (backend done, UI pending)
-- [ ] UI indicator (not presented as certification)
+- [x] Score = mean of known components: price freshness exp(−age/72 h) + open/closed vote agreement (30-day votes); unknown stays null
+- [-] UI indicator (bar + % + plain-language band, vote counts, "not an official check") — widget-tested; on-device needs Places stations
+- [x] Fed into ranking: `StationOffer.reliability` (Best value uses it) via `CombinedQuoteLookup`
 
 ### 1.8 EV Mode
 - [x] Fuel/EV toggle (defaults to active vehicle type; only the active mode's API is queried)
 - [x] Open Charge Map integration *(fixture-tested; needs free `OCM_API_KEY` — API returns 403 without one)*
 - [x] Places `evChargeOptions` data (details sheet, Phase 0) + EV along-route search uses `electric_vehicle_charging_station`
 - [x] Connectors, kW, AC/DC, quantity, operational status, last verified/status-update dates (community data labelled)
-- [-] Charging cost estimate — OCM free-text cost shown verbatim, never parsed; real per-kWh prices await community reports (1.5)
+- [-] Charging cost estimate — OCM free-text cost shown verbatim, never parsed; community `EV_KWH` prices now feed EV along-route ranking (unit-tested); OCM chargers have OCM ids, so community reports for them are not wired yet
 - [-] Route-based charger discovery — via Places along route (1.D); OCM along-route not implemented
 - [x] Marker clustering (google_maps_flutter `ClusterManager`, fuel + EV)
 - [-] Custom markers with price/kW — kW pill markers (fast / slow / not operational colours) done; fuel price markers need prices (1.5)
@@ -153,23 +159,24 @@ Implementation history and evidence live in [BUILD.md](BUILD.md). Rule: work one
 - [ ] Daily summaries / exportable reports
 
 ### 1.11 Price Alerts
-- [ ] Threshold alerts by fuel type, radius, saved location, station
-- [ ] Enable/disable alerts
+- [x] Threshold alerts by fuel type, currency, radius around current location (station-specific supported by backend, no UI yet) — created on iOS simulator, matched server-side
+- [x] Enable/disable + delete alerts (iOS simulator → Firestore emulator verified)
+- [ ] FCM token registration + push delivery (needs a real Firebase project + APNs key)
 - [x] Cloud Function + FCM (event-driven on consensus change, no polling schedule), 12 h cooldown per rule+station via transaction; emulator logs instead of FCM
-- [ ] Locally tested
+- [x] Locally tested — app-created rule matched a report in the Functions emulator, cooldown claim written (no push: no FCM token)
 
 ### 1.12 Community Station Verification
-- [ ] Open/closed, fuel availability, out-of-stock, closures, EV connector status, facilities
+- [-] Open/closed + out-of-fuel votes (one private vote per user, 30-day window) — widget-tested; closures / EV connector status / facilities not done
 - [ ] Trust scoring, expiry, moderation
 
 ### Phase 1 Acceptance
 - [ ] Nearby + destination route search work
 - [x] Along-route discovery + tested detours (detours live-verified via OSRM; Places search mocked)
 - [ ] Cost ranking mathematically verified
-- [ ] Price reports submit/retrieve; aggregation verified in Emulator Suite
+- [-] Price reports submit/retrieve; aggregation verified in Emulator Suite (backend + client mapping; client submit widget-tested only)
 - [ ] EV discovery works with supported data
 - [x] Garage + expenses work (widget/unit-tested; on-device: DB + tabs render on iOS simulator)
-- [ ] Alerts tested locally
+- [x] Alerts tested locally (iOS simulator + Firebase Emulator Suite)
 - [ ] No fabricated live-data claims
 
 ---

@@ -9,7 +9,7 @@ import '../../ranking/domain/ranking_models.dart';
 import '../../ranking/domain/trip_cost_engine.dart';
 import '../../route/data/osrm_route_repository.dart';
 import '../data/places_place_search_repository.dart';
-import '../data/places_quote_lookup.dart';
+import '../../prices/data/community_quote_lookup.dart';
 import '../domain/along_route_models.dart';
 import '../domain/along_route_planner.dart';
 
@@ -82,9 +82,10 @@ List<StationOffer> offersFromPlan(AlongRoutePlan plan) => [
       distanceToStationMeters: s.detour!.toStationMeters,
       pricePerUnit: s.price?.amount,
       currencyCode: s.price?.currencyCode,
-      priceSource: s.price == null ? null : PriceSource.google,
+      priceSource: s.price == null ? null : (s.priceSource ?? PriceSource.google),
       priceUpdatedAt: s.price?.updatedAt,
       openNow: s.openNow,
+      reliability: s.reliability,
     ),
 ];
 
