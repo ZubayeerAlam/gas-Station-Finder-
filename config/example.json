@@ -1,0 +1,5 @@
+{
+  "GOOGLE_MAPS_API_KEY": "your-restricted-google-maps-platform-key",
+  "OSRM_BASE_URL": "https://router.project-osrm.org",
+  "ANDROID_CERT_SHA1": "optional-sha1-of-signing-cert-without-colons"
+}
