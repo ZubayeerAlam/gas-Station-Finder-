@@ -1,0 +1,106 @@
+rules_version = '2';
+
+// FuelWise security rules. Clients may only create their own reports/votes and
+// manage their own alert rules; every aggregate (prices, history, reliability,
+// trust) is written by Cloud Functions (Admin SDK bypasses these rules).
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() { return request.auth != null; }
+    function isOwner(uid) { return signedIn() && request.auth.uid == uid; }
+    function fuelTypes() {
+      return ['REGULAR_UNLEADED', 'MIDGRADE', 'PREMIUM', 'DIESEL', 'DIESEL_PLUS', 'LPG', 'METHANE', 'E85', 'E10', 'EV_KWH'];
+    }
+    function validCoords(lat, lng) {
+      return lat is number && lng is number && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180;
+    }
+    function validCurrency(c) { return c is string && c.matches('^[A-Z]{3}$'); }
+
+    // ---- price reports (append-only, owner-readable) ----
+    match /priceReports/{reportId} {
+      allow read: if signedIn() && resource.data.uid == request.auth.uid;
+      allow create: if signedIn()
+        && request.resource.data.keys().hasOnly(['uid', 'stationId', 'stationName', 'stationLat', 'stationLng',
+                                                 'fuelType', 'price', 'currency', 'reportedAt'])
+        && request.resource.data.keys().hasAll(['uid', 'stationId', 'stationLat', 'stationLng',
+                                                'fuelType', 'price', 'currency', 'reportedAt'])
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.stationId is string
+        && request.resource.data.stationId.size() > 0 && request.resource.data.stationId.size() <= 200
+        && (!('stationName' in request.resource.data)
+            || (request.resource.data.stationName is string && request.resource.data.stationName.size() <= 120))
+        && validCoords(request.resource.data.stationLat, request.resource.data.stationLng)
+        && request.resource.data.fuelType in fuelTypes()
+        && request.resource.data.price is number
+        && request.resource.data.price >= 0.01 && request.resource.data.price <= 1000
+        && validCurrency(request.resource.data.currency)
+        && request.resource.data.reportedAt == request.time;
+      allow update, delete: if false;
+    }
+
+    // ---- public aggregates (function-written) ----
+    match /stations/{stationId} {
+      allow read: if signedIn();
+      allow write: if false;
+
+      match /prices/{fuelType} {
+        allow read: if signedIn();
+        allow write: if false;
+      }
+      match /priceHistory/{dayId} {
+        allow read: if signedIn();
+        allow write: if false;
+      }
+
+      // One vote per user per station (doc id = uid); votes themselves stay private.
+      match /verifications/{uid} {
+        allow read: if isOwner(uid);
+        allow create, update: if isOwner(uid)
+          && request.resource.data.keys().hasOnly(['open', 'fuelAvailable', 'at'])
+          && request.resource.data.keys().hasAll(['at'])
+          && (!('open' in request.resource.data) || request.resource.data.open is bool)
+          && (!('fuelAvailable' in request.resource.data) || request.resource.data.fuelAvailable is bool)
+          && ('open' in request.resource.data || 'fuelAvailable' in request.resource.data)
+          && request.resource.data.at == request.time;
+        allow delete: if isOwner(uid);
+      }
+    }
+
+    // ---- users ----
+    match /users/{uid} {
+      allow read: if isOwner(uid);   // trust stats, written by functions
+      allow write: if false;
+
+      match /alertRules/{ruleId} {
+        allow read, delete: if isOwner(uid);
+        allow create, update: if isOwner(uid)
+          && request.resource.data.keys().hasOnly(['fuelType', 'currency', 'maxPrice', 'lat', 'lng', 'radiusKm',
+                                                   'enabled', 'stationId', 'stationName', 'uid'])
+          && request.resource.data.uid == uid
+          && request.resource.data.fuelType in fuelTypes()
+          && validCurrency(request.resource.data.currency)
+          && request.resource.data.maxPrice is number
+          && request.resource.data.maxPrice > 0 && request.resource.data.maxPrice <= 1000
+          && validCoords(request.resource.data.lat, request.resource.data.lng)
+          && request.resource.data.radiusKm is number
+          && request.resource.data.radiusKm >= 1 && request.resource.data.radiusKm <= 50
+          && request.resource.data.enabled is bool
+          && (!('stationId' in request.resource.data) || request.resource.data.stationId is string)
+          && (!('stationName' in request.resource.data) || request.resource.data.stationName is string);
+      }
+
+      match /private/messaging {
+        allow read, delete: if isOwner(uid);
+        allow create, update: if isOwner(uid)
+          && request.resource.data.keys().hasOnly(['token', 'updatedAt'])
+          && request.resource.data.token is string && request.resource.data.token.size() < 4096
+          && request.resource.data.updatedAt == request.time;
+      }
+    }
+
+    // Everything else (alertLog, …) is server-only.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

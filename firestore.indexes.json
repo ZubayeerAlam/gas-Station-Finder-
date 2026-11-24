@@ -1,0 +1,32 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "priceReports",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "stationId", "order": "ASCENDING" },
+        { "fieldPath": "fuelType", "order": "ASCENDING" },
+        { "fieldPath": "reportedAt", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "priceReports",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "uid", "order": "ASCENDING" },
+        { "fieldPath": "reportedAt", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "alertRules",
+      "queryScope": "COLLECTION_GROUP",
+      "fields": [
+        { "fieldPath": "fuelType", "order": "ASCENDING" },
+        { "fieldPath": "currency", "order": "ASCENDING" },
+        { "fieldPath": "enabled", "order": "ASCENDING" },
+        { "fieldPath": "maxPrice", "order": "ASCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

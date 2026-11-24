@@ -112,14 +112,14 @@ Implementation history and evidence live in [BUILD.md](BUILD.md). Rule: work one
 
 ### 1.5 Crowdsourced Live Fuel Prices
 - [ ] Firebase Auth (Google / anonymous)
-- [ ] Firestore `stations/{stationId}/priceReports/{reportId}`
+- [x] Firestore model: top-level `priceReports` (append-only) → `stations/{id}/prices/{fuel}` aggregates (function-written)
 - [ ] Submit report (fuel type, price, timestamp)
 - [ ] Upvote / flag reports
-- [ ] Reporter reputation
-- [ ] Cloud Function (TS) aggregation + trust score (recency, reputation, verification, consistency, suspicious activity)
-- [ ] Stale price expiry
-- [ ] Spam / duplicate / manipulation protection
-- [ ] Emulator-tested
+- [x] Reporter reputation — Laplace trust (accepted+1)/(accepted+rejected+2); corroborated (±3 %, ≥ 2 reports) raises, outliers lower
+- [x] Cloud Function (TS) aggregation: TTL 72 h, majority currency (no conversion), leave-one-out outlier test (> 15 %), weighted median (trust × recency half-life 12 h), confidence
+- [x] Stale price expiry (72 h TTL, `expiresAt` on aggregate)
+- [x] Spam / duplicate protection — rules (own uid, server time, value ranges, field whitelist) + function rate limits (10/h, 1 per station+fuel per 10 min)
+- [x] Emulator-tested (rules tests + real triggers in Functions emulator, `demo-fuelwise`, nothing deployed)
 
 ### 1.6 Price History & Analytics
 - [ ] 7-day / 30-day trends (fl_chart)
@@ -127,7 +127,7 @@ Implementation history and evidence live in [BUILD.md](BUILD.md). Rule: work one
 - [ ] Verified vs unverified distinction
 
 ### 1.7 Station Reliability Score
-- [ ] Score from verified reports, reporter count, consistency, accuracy, flags, freshness
+- [-] Score = mean of known components: price freshness exp(−age/72 h) + open/closed vote agreement (30-day votes); unknown stays null (backend done, UI pending)
 - [ ] UI indicator (not presented as certification)
 
 ### 1.8 EV Mode
@@ -155,7 +155,7 @@ Implementation history and evidence live in [BUILD.md](BUILD.md). Rule: work one
 ### 1.11 Price Alerts
 - [ ] Threshold alerts by fuel type, radius, saved location, station
 - [ ] Enable/disable alerts
-- [ ] Cloud Function + FCM, duplicate prevention, cost-controlled scheduling
+- [x] Cloud Function + FCM (event-driven on consensus change, no polling schedule), 12 h cooldown per rule+station via transaction; emulator logs instead of FCM
 - [ ] Locally tested
 
 ### 1.12 Community Station Verification
@@ -220,9 +220,9 @@ Implementation history and evidence live in [BUILD.md](BUILD.md). Rule: work one
 ---
 
 ## Cross-phase — Security, Reliability & Cost Management
-- [ ] Firestore Security Rules + automated rules tests
+- [x] Firestore Security Rules + automated rules tests (6 groups)
 - [ ] App Check
-- [ ] Cloud Functions authn/authz + input validation + rate limiting
+- [x] Cloud Functions input validation + rate limiting (triggers only; no callable endpoints)
 - [ ] Spam / fake-report protection, abuse prevention
 - [ ] User data deletion
 - [ ] Secure key management + API quota monitoring

@@ -197,4 +197,26 @@
 ### Tests (Batch 1.E)
 - `test/features/ev/ev_test.dart` + fixture `test/fixtures/ocm_poi_berlin.json` → **13 passed**: parsing (fields, dates, AC/DC, invalid/duplicate entries skipped, unknown values stay unknown), missing-key guard, request parameters, filter combinations, labels, status texts incl. no retry for config errors, map mode default from vehicle + switching, PNG marker rendering + cache, charge point sheet (known + unknown data), filter sheet, and map-level flow (EV loads chargers once, no repeated fuel search, local filtering).
 - Full suite **127/127 passed**; `flutter analyze` no issues.
+- **Commit:** `0167c85` pushed to `origin/main`.
 - iOS simulator: toggle visible; EV mode shows filter button and "Open Charge Map API key is not configured" banner. **Not verified:** pill markers/clustering with real data on a device (needs OCM key).
+
+---
+
+## Phase 1 — Batch 1.F (part 1): Crowdsourced price backend (2026‑11‑25)
+*(implemented, unit-tested, emulator-tested — **not deployed**, no Firebase project, no billing)*
+- **Emulator project:** `.firebaserc` → `demo-fuelwise` (the `demo-` prefix makes the Emulator Suite run fully offline; no real project or login). `firebase.json`: Firestore rules/indexes, functions codebase (runtime nodejs22, region europe-west1, `maxInstances: 5`, 256 MiB — cost caps), emulator ports.
+- **Data model:**
+  - `priceReports/{id}` — client creates only (own uid, `reportedAt == request.time`, fuel type whitelist, price 0.01–1000, ISO currency, station coords); no update/delete; author-only read.
+  - `stations/{id}` (name, lat/lng, lastPriceAt, reliability, votes), `stations/{id}/prices/{fuel}` (consensus), `stations/{id}/priceHistory/{fuel_day}` (close/min/max/samples per UTC day) — read for signed-in users, **write only by functions**.
+  - `stations/{id}/verifications/{uid}` — one private vote per user (open / fuelAvailable, server time).
+  - `users/{uid}` (trust stats, function-written, owner-read), `users/{uid}/alertRules/{id}` (validated owner CRUD), `users/{uid}/private/messaging` (FCM token), `alertLog` (server-only).
+- **`functions/src/pricing.ts` (pure):** consensus (TTL 72 h → majority currency → leave-one-out outlier > 15 % when ≥ 3 reports → weighted median, weight = trust × 0.5^(age/12 h); confidence = (1 − e^(−Σw)) × (1 − mean deviation / 15 %)), Laplace trust, reliability (mean of known components: freshness, vote agreement; null when unknown), rate limits, alert matching (fuel, currency, threshold, radius or specific station), haversine.
+- **`functions/src/handlers.ts`:** `processReport` (idempotent: rate limit → consensus → aggregate + station + report status in one batch → trust → daily history in a transaction → reliability → alerts) and `refreshReliability`. Alerts: collection-group query on `alertRules` (composite index in `firestore.indexes.json`) then exact match in code; duplicate prevention by a transactional `alertLog` claim with 12 h cooldown; FCM in production, **log-only in the emulator**.
+- **Triggers (`index.ts`):** `onPriceReportCreated`, `onVerificationWritten` (v2 Firestore triggers). No HTTP/callable endpoints → no public attack surface besides rules.
+- **Decisions:** report trust only changes on evidence (corroborated or outlier) so spamming isolated reports cannot farm trust; two disagreeing reports never veto each other (outlier test needs ≥ 3); minority-currency reports stay `pending` (never converted).
+- `functions/node_modules` (≈ 280 MB) and `lib/` are gitignored.
+
+### Tests (1.F part 1) — run with `cd functions && npm test`
+- `test/unit/pricing.test.ts` → **13 passed** (`node --test`).
+- `test/emulator/rules.test.ts` → **6 passed** (Firestore emulator + `@firebase/rules-unit-testing`): report validation (auth, own uid, server time, ranges, currency, fuel, coords, no status, required fields), no update/delete, author-only read, read-only aggregates, private votes, validated alert rules, private FCM token.
+- `test/emulator/functions.test.ts` → **4 passed** with the **real triggers in the Functions emulator**: 3 reports → consensus 1.80 EUR, 4th at 2.50 rejected as outlier (trust 0.3333), corroborated reporter trust 0.6667, daily history + station doc; duplicate report rate-limited; votes → reliability 0.667 + out-of-stock count; alert fires for the matching rule only and exactly once inside the cooldown (1 emulator FCM log line).

@@ -51,3 +51,8 @@ app.*.map.json
 /config/*.json
 !/config/example.json
 /ios/Flutter/Secrets.xcconfig
+
+# Firebase emulator logs
+*-debug.log
+firebase-debug.log
+firestore-debug.log
