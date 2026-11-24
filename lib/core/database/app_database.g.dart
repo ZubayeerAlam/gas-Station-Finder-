@@ -751,16 +751,593 @@ class SettingsCompanion extends UpdateCompanion<Setting> {
   }
 }
 
+class $FillUpsTable extends FillUps with TableInfo<$FillUpsTable, FillUpRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $FillUpsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _vehicleIdMeta = const VerificationMeta(
+    'vehicleId',
+  );
+  @override
+  late final GeneratedColumn<String> vehicleId = GeneratedColumn<String>(
+    'vehicle_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _dateMeta = const VerificationMeta('date');
+  @override
+  late final GeneratedColumn<DateTime> date = GeneratedColumn<DateTime>(
+    'date',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _amountMeta = const VerificationMeta('amount');
+  @override
+  late final GeneratedColumn<double> amount = GeneratedColumn<double>(
+    'amount',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _totalCostMeta = const VerificationMeta(
+    'totalCost',
+  );
+  @override
+  late final GeneratedColumn<double> totalCost = GeneratedColumn<double>(
+    'total_cost',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _currencyCodeMeta = const VerificationMeta(
+    'currencyCode',
+  );
+  @override
+  late final GeneratedColumn<String> currencyCode = GeneratedColumn<String>(
+    'currency_code',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(
+      minTextLength: 1,
+      maxTextLength: 8,
+    ),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _odometerKmMeta = const VerificationMeta(
+    'odometerKm',
+  );
+  @override
+  late final GeneratedColumn<double> odometerKm = GeneratedColumn<double>(
+    'odometer_km',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _isFullMeta = const VerificationMeta('isFull');
+  @override
+  late final GeneratedColumn<bool> isFull = GeneratedColumn<bool>(
+    'is_full',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_full" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  static const VerificationMeta _stationNameMeta = const VerificationMeta(
+    'stationName',
+  );
+  @override
+  late final GeneratedColumn<String> stationName = GeneratedColumn<String>(
+    'station_name',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    vehicleId,
+    date,
+    amount,
+    totalCost,
+    currencyCode,
+    odometerKm,
+    isFull,
+    stationName,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'fill_ups';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<FillUpRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('vehicle_id')) {
+      context.handle(
+        _vehicleIdMeta,
+        vehicleId.isAcceptableOrUnknown(data['vehicle_id']!, _vehicleIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_vehicleIdMeta);
+    }
+    if (data.containsKey('date')) {
+      context.handle(
+        _dateMeta,
+        date.isAcceptableOrUnknown(data['date']!, _dateMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_dateMeta);
+    }
+    if (data.containsKey('amount')) {
+      context.handle(
+        _amountMeta,
+        amount.isAcceptableOrUnknown(data['amount']!, _amountMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_amountMeta);
+    }
+    if (data.containsKey('total_cost')) {
+      context.handle(
+        _totalCostMeta,
+        totalCost.isAcceptableOrUnknown(data['total_cost']!, _totalCostMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_totalCostMeta);
+    }
+    if (data.containsKey('currency_code')) {
+      context.handle(
+        _currencyCodeMeta,
+        currencyCode.isAcceptableOrUnknown(
+          data['currency_code']!,
+          _currencyCodeMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_currencyCodeMeta);
+    }
+    if (data.containsKey('odometer_km')) {
+      context.handle(
+        _odometerKmMeta,
+        odometerKm.isAcceptableOrUnknown(data['odometer_km']!, _odometerKmMeta),
+      );
+    }
+    if (data.containsKey('is_full')) {
+      context.handle(
+        _isFullMeta,
+        isFull.isAcceptableOrUnknown(data['is_full']!, _isFullMeta),
+      );
+    }
+    if (data.containsKey('station_name')) {
+      context.handle(
+        _stationNameMeta,
+        stationName.isAcceptableOrUnknown(
+          data['station_name']!,
+          _stationNameMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  FillUpRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return FillUpRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      vehicleId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}vehicle_id'],
+      )!,
+      date: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}date'],
+      )!,
+      amount: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}amount'],
+      )!,
+      totalCost: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}total_cost'],
+      )!,
+      currencyCode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}currency_code'],
+      )!,
+      odometerKm: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}odometer_km'],
+      ),
+      isFull: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_full'],
+      )!,
+      stationName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}station_name'],
+      ),
+    );
+  }
+
+  @override
+  $FillUpsTable createAlias(String alias) {
+    return $FillUpsTable(attachedDatabase, alias);
+  }
+}
+
+class FillUpRow extends DataClass implements Insertable<FillUpRow> {
+  final String id;
+  final String vehicleId;
+  final DateTime date;
+  final double amount;
+  final double totalCost;
+  final String currencyCode;
+  final double? odometerKm;
+  final bool isFull;
+  final String? stationName;
+  const FillUpRow({
+    required this.id,
+    required this.vehicleId,
+    required this.date,
+    required this.amount,
+    required this.totalCost,
+    required this.currencyCode,
+    this.odometerKm,
+    required this.isFull,
+    this.stationName,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['vehicle_id'] = Variable<String>(vehicleId);
+    map['date'] = Variable<DateTime>(date);
+    map['amount'] = Variable<double>(amount);
+    map['total_cost'] = Variable<double>(totalCost);
+    map['currency_code'] = Variable<String>(currencyCode);
+    if (!nullToAbsent || odometerKm != null) {
+      map['odometer_km'] = Variable<double>(odometerKm);
+    }
+    map['is_full'] = Variable<bool>(isFull);
+    if (!nullToAbsent || stationName != null) {
+      map['station_name'] = Variable<String>(stationName);
+    }
+    return map;
+  }
+
+  FillUpsCompanion toCompanion(bool nullToAbsent) {
+    return FillUpsCompanion(
+      id: Value(id),
+      vehicleId: Value(vehicleId),
+      date: Value(date),
+      amount: Value(amount),
+      totalCost: Value(totalCost),
+      currencyCode: Value(currencyCode),
+      odometerKm: odometerKm == null && nullToAbsent
+          ? const Value.absent()
+          : Value(odometerKm),
+      isFull: Value(isFull),
+      stationName: stationName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(stationName),
+    );
+  }
+
+  factory FillUpRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return FillUpRow(
+      id: serializer.fromJson<String>(json['id']),
+      vehicleId: serializer.fromJson<String>(json['vehicleId']),
+      date: serializer.fromJson<DateTime>(json['date']),
+      amount: serializer.fromJson<double>(json['amount']),
+      totalCost: serializer.fromJson<double>(json['totalCost']),
+      currencyCode: serializer.fromJson<String>(json['currencyCode']),
+      odometerKm: serializer.fromJson<double?>(json['odometerKm']),
+      isFull: serializer.fromJson<bool>(json['isFull']),
+      stationName: serializer.fromJson<String?>(json['stationName']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'vehicleId': serializer.toJson<String>(vehicleId),
+      'date': serializer.toJson<DateTime>(date),
+      'amount': serializer.toJson<double>(amount),
+      'totalCost': serializer.toJson<double>(totalCost),
+      'currencyCode': serializer.toJson<String>(currencyCode),
+      'odometerKm': serializer.toJson<double?>(odometerKm),
+      'isFull': serializer.toJson<bool>(isFull),
+      'stationName': serializer.toJson<String?>(stationName),
+    };
+  }
+
+  FillUpRow copyWith({
+    String? id,
+    String? vehicleId,
+    DateTime? date,
+    double? amount,
+    double? totalCost,
+    String? currencyCode,
+    Value<double?> odometerKm = const Value.absent(),
+    bool? isFull,
+    Value<String?> stationName = const Value.absent(),
+  }) => FillUpRow(
+    id: id ?? this.id,
+    vehicleId: vehicleId ?? this.vehicleId,
+    date: date ?? this.date,
+    amount: amount ?? this.amount,
+    totalCost: totalCost ?? this.totalCost,
+    currencyCode: currencyCode ?? this.currencyCode,
+    odometerKm: odometerKm.present ? odometerKm.value : this.odometerKm,
+    isFull: isFull ?? this.isFull,
+    stationName: stationName.present ? stationName.value : this.stationName,
+  );
+  FillUpRow copyWithCompanion(FillUpsCompanion data) {
+    return FillUpRow(
+      id: data.id.present ? data.id.value : this.id,
+      vehicleId: data.vehicleId.present ? data.vehicleId.value : this.vehicleId,
+      date: data.date.present ? data.date.value : this.date,
+      amount: data.amount.present ? data.amount.value : this.amount,
+      totalCost: data.totalCost.present ? data.totalCost.value : this.totalCost,
+      currencyCode: data.currencyCode.present
+          ? data.currencyCode.value
+          : this.currencyCode,
+      odometerKm: data.odometerKm.present
+          ? data.odometerKm.value
+          : this.odometerKm,
+      isFull: data.isFull.present ? data.isFull.value : this.isFull,
+      stationName: data.stationName.present
+          ? data.stationName.value
+          : this.stationName,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FillUpRow(')
+          ..write('id: $id, ')
+          ..write('vehicleId: $vehicleId, ')
+          ..write('date: $date, ')
+          ..write('amount: $amount, ')
+          ..write('totalCost: $totalCost, ')
+          ..write('currencyCode: $currencyCode, ')
+          ..write('odometerKm: $odometerKm, ')
+          ..write('isFull: $isFull, ')
+          ..write('stationName: $stationName')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    vehicleId,
+    date,
+    amount,
+    totalCost,
+    currencyCode,
+    odometerKm,
+    isFull,
+    stationName,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is FillUpRow &&
+          other.id == this.id &&
+          other.vehicleId == this.vehicleId &&
+          other.date == this.date &&
+          other.amount == this.amount &&
+          other.totalCost == this.totalCost &&
+          other.currencyCode == this.currencyCode &&
+          other.odometerKm == this.odometerKm &&
+          other.isFull == this.isFull &&
+          other.stationName == this.stationName);
+}
+
+class FillUpsCompanion extends UpdateCompanion<FillUpRow> {
+  final Value<String> id;
+  final Value<String> vehicleId;
+  final Value<DateTime> date;
+  final Value<double> amount;
+  final Value<double> totalCost;
+  final Value<String> currencyCode;
+  final Value<double?> odometerKm;
+  final Value<bool> isFull;
+  final Value<String?> stationName;
+  final Value<int> rowid;
+  const FillUpsCompanion({
+    this.id = const Value.absent(),
+    this.vehicleId = const Value.absent(),
+    this.date = const Value.absent(),
+    this.amount = const Value.absent(),
+    this.totalCost = const Value.absent(),
+    this.currencyCode = const Value.absent(),
+    this.odometerKm = const Value.absent(),
+    this.isFull = const Value.absent(),
+    this.stationName = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  FillUpsCompanion.insert({
+    required String id,
+    required String vehicleId,
+    required DateTime date,
+    required double amount,
+    required double totalCost,
+    required String currencyCode,
+    this.odometerKm = const Value.absent(),
+    this.isFull = const Value.absent(),
+    this.stationName = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       vehicleId = Value(vehicleId),
+       date = Value(date),
+       amount = Value(amount),
+       totalCost = Value(totalCost),
+       currencyCode = Value(currencyCode);
+  static Insertable<FillUpRow> custom({
+    Expression<String>? id,
+    Expression<String>? vehicleId,
+    Expression<DateTime>? date,
+    Expression<double>? amount,
+    Expression<double>? totalCost,
+    Expression<String>? currencyCode,
+    Expression<double>? odometerKm,
+    Expression<bool>? isFull,
+    Expression<String>? stationName,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (vehicleId != null) 'vehicle_id': vehicleId,
+      if (date != null) 'date': date,
+      if (amount != null) 'amount': amount,
+      if (totalCost != null) 'total_cost': totalCost,
+      if (currencyCode != null) 'currency_code': currencyCode,
+      if (odometerKm != null) 'odometer_km': odometerKm,
+      if (isFull != null) 'is_full': isFull,
+      if (stationName != null) 'station_name': stationName,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  FillUpsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? vehicleId,
+    Value<DateTime>? date,
+    Value<double>? amount,
+    Value<double>? totalCost,
+    Value<String>? currencyCode,
+    Value<double?>? odometerKm,
+    Value<bool>? isFull,
+    Value<String?>? stationName,
+    Value<int>? rowid,
+  }) {
+    return FillUpsCompanion(
+      id: id ?? this.id,
+      vehicleId: vehicleId ?? this.vehicleId,
+      date: date ?? this.date,
+      amount: amount ?? this.amount,
+      totalCost: totalCost ?? this.totalCost,
+      currencyCode: currencyCode ?? this.currencyCode,
+      odometerKm: odometerKm ?? this.odometerKm,
+      isFull: isFull ?? this.isFull,
+      stationName: stationName ?? this.stationName,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (vehicleId.present) {
+      map['vehicle_id'] = Variable<String>(vehicleId.value);
+    }
+    if (date.present) {
+      map['date'] = Variable<DateTime>(date.value);
+    }
+    if (amount.present) {
+      map['amount'] = Variable<double>(amount.value);
+    }
+    if (totalCost.present) {
+      map['total_cost'] = Variable<double>(totalCost.value);
+    }
+    if (currencyCode.present) {
+      map['currency_code'] = Variable<String>(currencyCode.value);
+    }
+    if (odometerKm.present) {
+      map['odometer_km'] = Variable<double>(odometerKm.value);
+    }
+    if (isFull.present) {
+      map['is_full'] = Variable<bool>(isFull.value);
+    }
+    if (stationName.present) {
+      map['station_name'] = Variable<String>(stationName.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FillUpsCompanion(')
+          ..write('id: $id, ')
+          ..write('vehicleId: $vehicleId, ')
+          ..write('date: $date, ')
+          ..write('amount: $amount, ')
+          ..write('totalCost: $totalCost, ')
+          ..write('currencyCode: $currencyCode, ')
+          ..write('odometerKm: $odometerKm, ')
+          ..write('isFull: $isFull, ')
+          ..write('stationName: $stationName, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
   late final $VehiclesTable vehicles = $VehiclesTable(this);
   late final $SettingsTable settings = $SettingsTable(this);
+  late final $FillUpsTable fillUps = $FillUpsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities => [vehicles, settings];
+  List<DatabaseSchemaEntity> get allSchemaEntities => [
+    vehicles,
+    settings,
+    fillUps,
+  ];
 }
 
 typedef $$VehiclesTableCreateCompanionBuilder = VehiclesCompanion Function({
@@ -1163,6 +1740,289 @@ typedef $$SettingsTableProcessedTableManager =
       Setting,
       PrefetchHooks Function()
     >;
+typedef $$FillUpsTableCreateCompanionBuilder = FillUpsCompanion Function({
+  required String id,
+  required String vehicleId,
+  required DateTime date,
+  required double amount,
+  required double totalCost,
+  required String currencyCode,
+  Value<double?> odometerKm,
+  Value<bool> isFull,
+  Value<String?> stationName,
+  Value<int> rowid,
+});
+typedef $$FillUpsTableUpdateCompanionBuilder = FillUpsCompanion Function({
+  Value<String> id,
+  Value<String> vehicleId,
+  Value<DateTime> date,
+  Value<double> amount,
+  Value<double> totalCost,
+  Value<String> currencyCode,
+  Value<double?> odometerKm,
+  Value<bool> isFull,
+  Value<String?> stationName,
+  Value<int> rowid,
+});
+
+class $$FillUpsTableFilterComposer
+    extends Composer<_$AppDatabase, $FillUpsTable> {
+  $$FillUpsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get vehicleId => $composableBuilder(
+    column: $table.vehicleId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get date => $composableBuilder(
+    column: $table.date,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get amount => $composableBuilder(
+    column: $table.amount,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get totalCost => $composableBuilder(
+    column: $table.totalCost,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get currencyCode => $composableBuilder(
+    column: $table.currencyCode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get odometerKm => $composableBuilder(
+    column: $table.odometerKm,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isFull => $composableBuilder(
+    column: $table.isFull,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get stationName => $composableBuilder(
+    column: $table.stationName,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$FillUpsTableOrderingComposer
+    extends Composer<_$AppDatabase, $FillUpsTable> {
+  $$FillUpsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get vehicleId => $composableBuilder(
+    column: $table.vehicleId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get date => $composableBuilder(
+    column: $table.date,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get amount => $composableBuilder(
+    column: $table.amount,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get totalCost => $composableBuilder(
+    column: $table.totalCost,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get currencyCode => $composableBuilder(
+    column: $table.currencyCode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get odometerKm => $composableBuilder(
+    column: $table.odometerKm,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isFull => $composableBuilder(
+    column: $table.isFull,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get stationName => $composableBuilder(
+    column: $table.stationName,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$FillUpsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $FillUpsTable> {
+  $$FillUpsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get vehicleId =>
+      $composableBuilder(column: $table.vehicleId, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get date =>
+      $composableBuilder(column: $table.date, builder: (column) => column);
+
+  GeneratedColumn<double> get amount =>
+      $composableBuilder(column: $table.amount, builder: (column) => column);
+
+  GeneratedColumn<double> get totalCost =>
+      $composableBuilder(column: $table.totalCost, builder: (column) => column);
+
+  GeneratedColumn<String> get currencyCode => $composableBuilder(
+    column: $table.currencyCode,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get odometerKm => $composableBuilder(
+    column: $table.odometerKm,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get isFull =>
+      $composableBuilder(column: $table.isFull, builder: (column) => column);
+
+  GeneratedColumn<String> get stationName => $composableBuilder(
+    column: $table.stationName,
+    builder: (column) => column,
+  );
+}
+
+class $$FillUpsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $FillUpsTable,
+          FillUpRow,
+          $$FillUpsTableFilterComposer,
+          $$FillUpsTableOrderingComposer,
+          $$FillUpsTableAnnotationComposer,
+          $$FillUpsTableCreateCompanionBuilder,
+          $$FillUpsTableUpdateCompanionBuilder,
+          (FillUpRow, BaseReferences<_$AppDatabase, $FillUpsTable, FillUpRow>),
+          FillUpRow,
+          PrefetchHooks Function()
+        > {
+  $$FillUpsTableTableManager(_$AppDatabase db, $FillUpsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$FillUpsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$FillUpsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$FillUpsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> vehicleId = const Value.absent(),
+                Value<DateTime> date = const Value.absent(),
+                Value<double> amount = const Value.absent(),
+                Value<double> totalCost = const Value.absent(),
+                Value<String> currencyCode = const Value.absent(),
+                Value<double?> odometerKm = const Value.absent(),
+                Value<bool> isFull = const Value.absent(),
+                Value<String?> stationName = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => FillUpsCompanion(
+                id: id,
+                vehicleId: vehicleId,
+                date: date,
+                amount: amount,
+                totalCost: totalCost,
+                currencyCode: currencyCode,
+                odometerKm: odometerKm,
+                isFull: isFull,
+                stationName: stationName,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String vehicleId,
+                required DateTime date,
+                required double amount,
+                required double totalCost,
+                required String currencyCode,
+                Value<double?> odometerKm = const Value.absent(),
+                Value<bool> isFull = const Value.absent(),
+                Value<String?> stationName = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => FillUpsCompanion.insert(
+                id: id,
+                vehicleId: vehicleId,
+                date: date,
+                amount: amount,
+                totalCost: totalCost,
+                currencyCode: currencyCode,
+                odometerKm: odometerKm,
+                isFull: isFull,
+                stationName: stationName,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$FillUpsTable, FillUpRow>(table),
+                  BaseReferences<_$AppDatabase, $FillUpsTable, FillUpRow>(
+                    db,
+                    table,
+                    e,
+                  ),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$FillUpsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $FillUpsTable,
+      FillUpRow,
+      $$FillUpsTableFilterComposer,
+      $$FillUpsTableOrderingComposer,
+      $$FillUpsTableAnnotationComposer,
+      $$FillUpsTableCreateCompanionBuilder,
+      $$FillUpsTableUpdateCompanionBuilder,
+      (FillUpRow, BaseReferences<_$AppDatabase, $FillUpsTable, FillUpRow>),
+      FillUpRow,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -1171,4 +2031,6 @@ class $AppDatabaseManager {
       $$VehiclesTableTableManager(_db, _db.vehicles);
   $$SettingsTableTableManager get settings =>
       $$SettingsTableTableManager(_db, _db.settings);
+  $$FillUpsTableTableManager get fillUps =>
+      $$FillUpsTableTableManager(_db, _db.fillUps);
 }

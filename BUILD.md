@@ -7,8 +7,8 @@
 - **Phase:** 0 — Foundation, Security & Architecture — **in progress**
 - **Mode (2026‑11‑25):** user authorized **autonomous development** — commit + push each verified batch to `origin/main`, no approval stops. No Firebase deploy / billing / paid APIs. Never force-push or commit secrets.
 - **Phase 0:** done except items awaiting the new Google key or a Firebase project (see "Awaiting" below).
-- **Phase 1:** in progress — Batch 1.A (true trip-cost engine), 1.B (My Garage) done.
-- **Next immediate task:** Batch 1.C — fill-up / charging history with summaries and charts.
+- **Phase 1:** in progress — Batch 1.A (true trip-cost engine), 1.B (My Garage), 1.C (fill-up history) done.
+- **Next immediate task:** Batch 1.D — along-route discovery (destination, route sampling, corridor search, detours, ranked list).
 
 ## Awaiting the new Google Maps API key (user will supply later)
 - Live Places (New) nearby search / details / fuelOptions / evChargeOptions verification on iOS + Android.
@@ -137,3 +137,22 @@
 ### Tests (Batch 1.B)
 - `test/features/garage/garage_test.dart` → **13/13 passed** (4 drift repository, 3 unit conversion, 1 parser, 5 widget: add in km/L → stored 8 L/100 km + active, unit switch converts, validation, EV efficiency + deep-link return, select active + delete/undo).
 - Full suite **81/81 passed**; `flutter analyze` no issues.
+- **Commit:** `f4ca6d4` pushed to `origin/main` (verified in sync).
+
+---
+
+## Phase 1 — Batch 1.C: Fill-up & charging history (2026‑11‑25)
+*(implemented, locally tested; iOS-simulator smoke-tested)*
+- `history/domain`: `FillUp` (freezed; amount in L/kWh, total cost + ISO-like currency code, optional odometer, full/partial, station), `FillUpRepository`, `HistoryAnalytics`:
+  - `monthly` — grouped by (month, **currency**); currencies are never mixed or converted.
+  - `consumption` — **full-to-full** method: litres/kWh bought since the previous full fill (partials included) ÷ km driven; segments with no odometer or no distance are skipped; cost/km only when the segment has a single currency.
+  - `averagePer100Km` (distance-weighted), `primaryCurrency`, `spendByMonth` (zero-filled, crosses year boundary).
+- DB: `FillUps` table (row class `FillUpRow`), **schemaVersion 2** with `onUpgrade` creating the table for v1 installs. Fill-ups are kept when a vehicle is deleted so the garage "Undo" restores history (orphans are hidden; cleanup = later task).
+- UI: new **History** tab (bottom bar: Map · History · Garage). Stats (this month, avg consumption, cost/km), 6-month spend bar chart (primary currency; caption counts entries in other currencies), consumption line chart with the garage value as a dashed reference, entry list with delete + Undo. Charts have text semantics labels for screen readers.
+- `FillUpFormScreen` (`/history/new`): date picker (no future dates), amount, total + currency (reuses last currency, never guessed from locale), live unit-price preview, optional odometer validated against earlier readings, full/partial switch, station; Save pinned to the bottom so it stays reachable.
+- Dependency: `fl_chart ^1.3.1`.
+
+### Tests (Batch 1.C)
+- `test/features/history/history_test.dart` → **13/13 passed**: full-to-full with partials, no-distance/mixed-currency cases, weighted average, monthly per-currency grouping, spend window incl. year boundary, odometer validation helper, drift round-trip/filter/order/delete, history kept across vehicle delete+undo, UI: no vehicle, add fill-up end-to-end (unit price preview, saved values), validation, stats + charts + delete/undo.
+- Full suite **94/94 passed**; `flutter analyze` no issues.
+- iOS simulator (iPhone 17e): debug build installs; drift DB opens on device; bottom bar with 3 tabs and Garage empty state render. **Not verified on device:** typing into forms (simulator text injection did not reach Flutter fields) — covered by widget tests only.

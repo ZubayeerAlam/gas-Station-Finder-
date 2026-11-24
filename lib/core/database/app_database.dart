@@ -30,7 +30,25 @@ class Settings extends Table {
   Set<Column> get primaryKey => {key};
 }
 
-@DriftDatabase(tables: [Vehicles, Settings])
+/// Fill-ups / charging sessions (history). Kept when a vehicle is deleted so
+/// "Undo" restores the full history.
+@DataClassName('FillUpRow')
+class FillUps extends Table {
+  TextColumn get id => text()();
+  TextColumn get vehicleId => text()();
+  DateTimeColumn get date => dateTime()();
+  RealColumn get amount => real()();
+  RealColumn get totalCost => real()();
+  TextColumn get currencyCode => text().withLength(min: 1, max: 8)();
+  RealColumn get odometerKm => real().nullable()();
+  BoolColumn get isFull => boolean().withDefault(const Constant(true))();
+  TextColumn get stationName => text().nullable()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+@DriftDatabase(tables: [Vehicles, Settings, FillUps])
 class AppDatabase extends _$AppDatabase {
   AppDatabase(super.executor);
 
@@ -38,7 +56,15 @@ class AppDatabase extends _$AppDatabase {
   factory AppDatabase.onDevice() => AppDatabase(driftDatabase(name: 'fuelwise'));
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
+
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+        onCreate: (m) => m.createAll(),
+        onUpgrade: (m, from, to) async {
+          if (from < 2) await m.createTable(fillUps);
+        },
+      );
 
   // ---- settings helpers ----
   Stream<String?> watchSetting(String key) =>

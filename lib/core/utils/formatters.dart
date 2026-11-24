@@ -30,4 +30,16 @@ abstract final class Fmt {
     if (diff.inDays < 30) return '${diff.inDays} d ago';
     return '${time.year}-${time.month.toString().padLeft(2, '0')}-${time.day.toString().padLeft(2, '0')}';
   }
+
+  static String money(double amount, String currencyCode) => '$currencyCode ${amount.toStringAsFixed(2)}';
+
+  static String date(DateTime d) =>
+      '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
+
+  static const _months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  static String monthShort(int month) => _months[month - 1];
+
+  /// Trims trailing zeros: 12.50 → "12.5", 40.0 → "40".
+  static String number(double v, {int maxDecimals = 2}) =>
+      v.toStringAsFixed(maxDecimals).replaceFirst(RegExp(r'\.?0+$'), '');
 }

@@ -146,9 +146,10 @@ Implementation history and evidence live in [BUILD.md](BUILD.md). Rule: work one
 - [ ] Make/model picker (free-text name only for now)
 
 ### 1.10 Fill-up & Trip History
-- [ ] Record fill-ups / charging sessions
-- [ ] Trip history
-- [ ] Daily/monthly summaries, consumption trends, per-vehicle reports, charts
+- [x] Record fill-ups / charging sessions (date, amount, cost, currency, odometer, full/partial, station) — drift, delete + undo
+- [ ] Trip history (needs along-route trips, 1.2)
+- [x] Monthly summaries (per currency, never converted), full-to-full consumption trend, cost per km, per-vehicle charts (fl_chart)
+- [ ] Daily summaries / exportable reports
 
 ### 1.11 Price Alerts
 - [ ] Threshold alerts by fuel type, radius, saved location, station
@@ -166,7 +167,7 @@ Implementation history and evidence live in [BUILD.md](BUILD.md). Rule: work one
 - [ ] Cost ranking mathematically verified
 - [ ] Price reports submit/retrieve; aggregation verified in Emulator Suite
 - [ ] EV discovery works with supported data
-- [ ] Garage + expenses work
+- [x] Garage + expenses work (widget/unit-tested; on-device: DB + tabs render on iOS simulator)
 - [ ] Alerts tested locally
 - [ ] No fabricated live-data claims
 
