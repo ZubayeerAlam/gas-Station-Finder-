@@ -19,7 +19,7 @@ Implementation history and evidence live in [BUILD.md](BUILD.md). Rule: work one
 - [x] iOS key via gitignored `ios/Flutter/Secrets.xcconfig` → Info.plist `GMSApiKey`
 - [x] Places (New) app-restriction headers (`X-Android-Package`/`X-Android-Cert`, `X-Ios-Bundle-Identifier`)
 - [x] HTTPS for all requests incl. OSRM
-- [ ] **(User)** Rotate exposed key (it is in git history) and apply Android/iOS + API restrictions
+- [-] **(User)** Rotate exposed key — user changed Console settings; key in project still 403 (see BUILD.md). Rotate exposed key (it is in git history) and apply Android/iOS + API restrictions
 - [ ] Firebase App Check (blocked until a Firebase project exists — `flutterfire configure`)
 - [x] Document client-key vs server-secret distinction (`lib/core/config/app_config.dart`, BUILD.md)
 
@@ -59,16 +59,16 @@ Implementation history and evidence live in [BUILD.md](BUILD.md). Rule: work one
 ### 0.6 UI Foundation
 - [x] Material 3 light + dark themes, design tokens
 - [x] Reusable loading / empty / error / permission components
-- [-] FuelWise app name (Android label + iOS display name done)
-- [ ] Application ID / bundle ID change (needs user confirmation)
-- [ ] App icon
+- [x] FuelWise app name (Android label + iOS display name)
+- [x] Application ID / bundle ID → `com.fuelwise.app` (emulator + simulator verified)
+- [x] App icon (`tool/make_icon.swift` + flutter_launcher_icons; adaptive Android icon verified on emulator)
 
 ### Phase 0 Acceptance
 - [x] `flutter analyze` clean
-- [-] Tests pass (43/43 for batch 0.A)
+- [-] Tests pass (46/46 after batch 0.B; final run at phase end)
 - [x] No hardcoded credentials in tracked source (key remains in git history → rotate)
 - [x] HTTPS networking works (OSRM live-verified; Places reachable, rejected 403 by key)
-- [-] App launches on iOS Simulator (verified); Android APK builds (not run on emulator yet)
+- [x] App launches on iOS Simulator and Android emulator (`fuelwise-api33`)
 - [ ] Existing features work after migration
 
 ---

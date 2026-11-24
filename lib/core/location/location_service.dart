@@ -40,12 +40,20 @@ class GeolocatorLocationService implements LocationService {
           'Location permission is blocked. Enable it in Settings to find stations near you.',
         ));
       }
-      final p = await Geolocator.getCurrentPosition(
-        locationSettings: const LocationSettings(
-          accuracy: LocationAccuracy.high,
-          timeLimit: Duration(seconds: 15),
-        ),
-      );
+      Position? p;
+      try {
+        p = await Geolocator.getCurrentPosition(
+          locationSettings: const LocationSettings(
+            accuracy: LocationAccuracy.high,
+            timeLimit: Duration(seconds: 15),
+          ),
+        );
+      } catch (_) {
+        // A cold GPS fix can exceed the time limit; fall back to the last
+        // position the OS already knows rather than failing outright.
+        p = await Geolocator.getLastKnownPosition();
+      }
+      if (p == null) throw StateError('No position available');
       return Ok(GeoPoint(latitude: p.latitude, longitude: p.longitude));
     } catch (_) {
       return const Err(LocationFailure(

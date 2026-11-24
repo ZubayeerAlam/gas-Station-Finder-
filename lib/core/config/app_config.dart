@@ -12,8 +12,8 @@ class AppConfig {
     required this.googleMapsApiKey,
     required this.osrmBaseUrl,
     this.androidCertSha1 = '',
-    this.androidPackageName = 'com.example.gas_station_finder',
-    this.iosBundleId = 'com.example.gasStationFinder',
+    this.androidPackageName = 'com.fuelwise.app',
+    this.iosBundleId = 'com.fuelwise.app',
   });
 
   factory AppConfig.fromEnvironment() => const AppConfig(

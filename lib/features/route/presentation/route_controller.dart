@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/location/geo_point.dart';
@@ -7,8 +9,10 @@ import '../domain/route_info.dart';
 
 /// Active driving route (null when none). Origin is the current location.
 class RouteController extends AsyncNotifier<RouteInfo?> {
+  /// Synchronous so the initial state is `AsyncData(null)`, not a loading
+  /// flash (which briefly showed "Calculating route…" on app start).
   @override
-  Future<RouteInfo?> build() async => null;
+  FutureOr<RouteInfo?> build() => null;
 
   Future<void> routeTo(GeoPoint destination) async {
     state = const AsyncLoading();

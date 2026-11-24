@@ -5,12 +5,12 @@
 
 ## Current status
 - **Phase:** 0 — Foundation, Security & Architecture — **in progress**
-- **Last checkpoint:** Batch 0.A (security + core + architecture migration) — complete, awaiting user's manual commit + "Let's proceed"
-- **Next immediate task (Batch 0.B):** app branding & IDs (applicationId/bundle ID after user confirms `com.fuelwise.app`), app icon, run on Android emulator, live Places verification once key is fixed. App Check after Firebase project exists.
+- **Last checkpoint:** Batch 0.B (app ID, icon, Android/iOS runs, route-flash + location-fallback fixes) — complete, awaiting user's manual commit + "Let's proceed"
+- **Next immediate task (Batch 0.C):** live Places verification as soon as a working key is in `config/dev.json` + `ios/Flutter/Secrets.xcconfig` (nearby → details → route on both platforms; record fuelOptions/EV coverage). Then App Check once a Firebase project exists → Phase 0 acceptance review.
 
 ## Blockers / needs user
-1. **Fix + rotate the Google API key.** Live check (2026‑11‑24): Places API (New) returns `403 PERMISSION_DENIED — Permission denied on the service` → **enable "Places API (New)"** in the key's Cloud project (and Maps SDK for iOS/Android; map tiles are blank on the simulator, same key). Legacy Places also refuses requests from this machine (key has app/IP restrictions). It was hardcoded and is in git history (commit `d481cb0`, `lib/repository/place_repository.dart`). It has been moved to gitignored local files so the app keeps working, but the old value must be revoked in Google Cloud Console and replaced with a restricted key (Android package + SHA‑1, iOS bundle ID, allowed APIs only).
-2. **Application ID / bundle ID** — still `com.example.gas_station_finder` / `com.example.gasStationFinder`. Proposed `com.fuelwise.app`; needs user confirmation (affects key restrictions & Play Store).
+1. **Fix + rotate the Google API key.** Re-checked after user's Console changes (2026‑11‑24, Batch 0.B): **still 403** with the key in `config/dev.json` (unchanged old key) for both iOS and Android identity headers. If a new key was created, it must be placed in `config/dev.json` and `ios/Flutter/Secrets.xcconfig`. Key restrictions must use the new IDs: Android `com.fuelwise.app` + debug SHA‑1 `2D:5C:C4:55:84:56:0D:08:A4:94:D8:E2:01:B1:71:84:84:28:71:91`; iOS `com.fuelwise.app`. A single key can only have one application-restriction type → use "None" during dev or separate Android/iOS keys. Earlier live check (2026‑11‑24): Places API (New) returns `403 PERMISSION_DENIED — Permission denied on the service` → **enable "Places API (New)"** in the key's Cloud project (and Maps SDK for iOS/Android; map tiles are blank on the simulator, same key). Legacy Places also refuses requests from this machine (key has app/IP restrictions). It was hardcoded and is in git history (commit `d481cb0`, `lib/repository/place_repository.dart`). It has been moved to gitignored local files so the app keeps working, but the old value must be revoked in Google Cloud Console and replaced with a restricted key (Android package + SHA‑1, iOS bundle ID, allowed APIs only).
+2. ~~Application ID / bundle ID~~ — resolved in Batch 0.B: `com.fuelwise.app` (user confirmed).
 3. **Firebase project** — none configured. App Check (Phase 0) and all Phase 1 backend work require `flutterfire configure` by the user (Spark/free plan is fine for emulator work; no billing).
 
 ## Configuration requirements
@@ -66,3 +66,28 @@
 - `flutter build ios --simulator --debug` → **built**. `flutter run` on iPhone 17e simulator (location set to Berlin): app launched, location resolved, Places request sent over HTTPS, **403 from Google** shown as banner "The map service rejected the request…" with Retry (error path verified). Map tiles blank (same key issue).
 - Live OSRM HTTPS check (curl): `Ok`, 1492 m / 224 s / 109 points.
 - Not yet verified: live nearby results/details/route on device (blocked by key), Android emulator run.
+
+---
+
+## Phase 0 — Session 2 (2026‑11‑24) — Batch 0.B
+
+### Repo state at session start
+- Project now has its own git repo (root = project folder), commit `e3d281e first commit` + user-staged files. Docs matched code. Places (New) still 403.
+
+### Done *(implemented, locally tested, Android-emulator tested, iOS-simulator tested)*
+- **App ID → `com.fuelwise.app`** (user confirmed): `android/app/build.gradle.kts` namespace + applicationId; `MainActivity.kt` moved `kotlin/com/example/gas_station_finder/` → `kotlin/com/fuelwise/app/` (plain `mv`, not staged) with new package; iOS `PRODUCT_BUNDLE_IDENTIFIER` (Runner + RunnerTests) in `project.pbxproj`; `AppConfig` defaults. Dart package name stays `gas_station_finder` (internal only).
+- **App icon:** `tool/make_icon.swift` (CoreGraphics, reproducible; no ImageMagick/PIL needed) → `assets/icon/icon.png` (1024, teal gradient + white map pin + fuel drop) and `icon_foreground.png` (adaptive, 62% safe zone). `flutter_launcher_icons ^0.14` (dev) config in `pubspec.yaml` → Android mipmaps + adaptive icon (`#0B8A6F` bg, `res/values/colors.xml`), iOS AppIcon set (alpha removed). Verified on Android 12+ splash screen.
+- `config/dev.json`: `ANDROID_CERT_SHA1` set to debug keystore SHA‑1 (sent as `X-Android-Cert`).
+- **Bug fix:** "Calculating route…" card flashed on app start — `RouteController.build()` was `async` → initial `AsyncLoading`. Now synchronous `FutureOr` → initial `AsyncData(null)`. Verified on emulator (no card while searching) + new unit test.
+- **Robustness fix:** cold GPS can exceed the 15 s limit → `GeolocatorLocationService` now falls back to `getLastKnownPosition()` before failing. Verified on emulator: location resolved and Places request sent.
+- **Android emulator:** existing shared AVD `nx-api33` could not resolve the activity (`Activity class does not exist`, `ceDataInode=0`) although the APK was correct (verified via `aapt2`); state polluted by other projects. Created dedicated AVD **`fuelwise-api33`** (Pixel 6, API 33, google_apis arm64) → app installs and runs.
+- **ANR observation:** one ANR on first launch after a cold emulator boot — reason `executing service com.baseflow.geolocator.GeolocatorLocationService`, system load avg 37 + heavy memory pressure (emulator overload). **Not reproduced** on two subsequent launches (0 ANRs). Watch for it on a real device/release build.
+
+### Tests executed (Batch 0.B)
+- `flutter analyze` → **No issues found**.
+- `flutter test` → **46/46 passed** (+3 `RouteController`: initial data(null), routeTo uses current location as origin, failure → typed error + clear).
+- Android `fuelwise-api33` emulator (Berlin): splash with new icon → map widget renders → Places request → 403 banner (full text, 4 lines) → no route-card flash. Log: `Google Maps Android API: Authorization failure` (key).
+- iOS iPhone 17e simulator: build has `CFBundleIdentifier = com.fuelwise.app`; new location permission text shown; after "Allow While Using App" → Places request → 403 (key).
+- Live Places check via curl with iOS/Android identity headers → `403 PERMISSION_DENIED`.
+- **Not verified:** live stations/details/route (blocked by key), App Check (no Firebase project), physical device.
+

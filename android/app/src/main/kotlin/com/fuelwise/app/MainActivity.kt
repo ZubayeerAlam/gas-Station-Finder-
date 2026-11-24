@@ -1,4 +1,4 @@
-package com.example.gas_station_finder
+package com.fuelwise.app
 
 import io.flutter.embedding.android.FlutterActivity
 
