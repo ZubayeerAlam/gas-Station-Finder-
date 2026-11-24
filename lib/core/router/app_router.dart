@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/along_route/presentation/along_route_screen.dart';
+import '../../features/along_route/presentation/destination_search_screen.dart';
 import '../../features/garage/domain/vehicle_profile.dart';
 import '../../features/garage/presentation/garage_screen.dart';
 import '../../features/garage/presentation/vehicle_form_screen.dart';
@@ -45,6 +47,16 @@ GoRouter buildRouter({String initialLocation = AppRoutes.map}) => GoRouter(
           path: AppRoutes.vehicleNew,
           parentNavigatorKey: _rootKey,
           builder: (_, _) => const VehicleFormScreen(),
+        ),
+        GoRoute(
+          path: AppRoutes.plan,
+          parentNavigatorKey: _rootKey,
+          builder: (_, _) => const DestinationSearchScreen(),
+        ),
+        GoRoute(
+          path: AppRoutes.planRoute,
+          parentNavigatorKey: _rootKey,
+          builder: (_, _) => const AlongRouteScreen(),
         ),
         GoRoute(
           path: AppRoutes.fillUpNew,

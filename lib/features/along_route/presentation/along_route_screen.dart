@@ -1,0 +1,430 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+
+import '../../../core/error/app_failure.dart';
+import '../../../core/location/geo_point.dart';
+import '../../../core/router/app_routes.dart';
+import '../../../core/theme/app_theme.dart';
+import '../../../core/utils/formatters.dart';
+import '../../../core/widgets/state_views.dart';
+import '../../garage/domain/vehicle_profile.dart';
+import '../../garage/presentation/garage_providers.dart';
+import '../../ranking/domain/ranking_models.dart';
+import '../../stations/domain/entities/station.dart';
+import '../domain/along_route_models.dart';
+import 'along_route_providers.dart';
+import 'ranking_explanation.dart';
+
+LatLng _ll(GeoPoint p) => LatLng(p.latitude, p.longitude);
+
+/// Route + ranked stations along it.
+class AlongRouteScreen extends ConsumerWidget {
+  const AlongRouteScreen({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final plan = ref.watch(alongRouteControllerProvider);
+    final title = plan.value?.destination.name;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(title == null ? 'Trip' : 'To $title', overflow: TextOverflow.ellipsis),
+        actions: [
+          IconButton(
+            tooltip: 'Change destination',
+            icon: const Icon(Icons.search_rounded),
+            onPressed: () => context.pushReplacement(AppRoutes.plan),
+          ),
+        ],
+      ),
+      body: switch (plan) {
+        AsyncData(value: final p?) => _PlanView(plan: p),
+        AsyncError(:final error) => AppErrorView(
+          message: error is AppFailure ? error.message : 'Could not plan this trip.',
+          onRetry: () => context.pushReplacement(AppRoutes.plan),
+        ),
+        AsyncData() => AppMessageView(
+          icon: Icons.alt_route_rounded,
+          title: 'No trip yet',
+          message: 'Choose a destination to find stations along the way.',
+          primaryLabel: 'Choose destination',
+          onPrimary: () => context.pushReplacement(AppRoutes.plan),
+        ),
+        _ => const AppLoading(label: 'Finding stations along your route…'),
+      },
+    );
+  }
+}
+
+class _PlanView extends ConsumerStatefulWidget {
+  const _PlanView({required this.plan});
+
+  final AlongRoutePlan plan;
+
+  @override
+  ConsumerState<_PlanView> createState() => _PlanViewState();
+}
+
+class _PlanViewState extends ConsumerState<_PlanView> {
+  GoogleMapController? _map;
+  String? _selected;
+
+  void _fit() {
+    final pts = widget.plan.route.points;
+    if (_map == null || pts.isEmpty) return;
+    var s = pts.first.latitude, n = s, w = pts.first.longitude, e = w;
+    for (final p in pts) {
+      s = p.latitude < s ? p.latitude : s;
+      n = p.latitude > n ? p.latitude : n;
+      w = p.longitude < w ? p.longitude : w;
+      e = p.longitude > e ? p.longitude : e;
+    }
+    _map!.animateCamera(
+      CameraUpdate.newLatLngBounds(LatLngBounds(southwest: LatLng(s, w), northeast: LatLng(n, e)), 48),
+    );
+  }
+
+  void _select(Station s) {
+    setState(() => _selected = s.id);
+    _map?.animateCamera(CameraUpdate.newLatLngZoom(_ll(s.location), 14));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final ranking = ref.watch(alongRouteRankingProvider);
+    final mapsEnabled = ref.watch(mapsEnabledProvider);
+    final content = _ResultsList(plan: widget.plan, ranking: ranking, selectedId: _selected, onSelect: _select);
+    if (!mapsEnabled) return content(null);
+
+    final scheme = Theme.of(context).colorScheme;
+    final top = {for (final r in ranking?.ranked.take(3) ?? const <RankedStation>[]) r.offer.stationId};
+    final stations = {for (final s in widget.plan.stops) s.station.id: s.station};
+    return Stack(
+      children: [
+        Positioned.fill(
+          child: GoogleMap(
+            initialCameraPosition: CameraPosition(target: _ll(widget.plan.origin), zoom: 11),
+            myLocationEnabled: true,
+            myLocationButtonEnabled: false,
+            padding: EdgeInsets.only(bottom: MediaQuery.sizeOf(context).height * 0.4),
+            onMapCreated: (c) {
+              _map = c;
+              _fit();
+            },
+            polylines: {
+              Polyline(
+                polylineId: const PolylineId('trip'),
+                points: widget.plan.route.points.map(_ll).toList(),
+                color: scheme.primary,
+                width: 5,
+              ),
+            },
+            markers: {
+              Marker(
+                markerId: const MarkerId('destination'),
+                position: _ll(widget.plan.destination.location),
+                infoWindow: InfoWindow(title: widget.plan.destination.name),
+              ),
+              for (final s in stations.values)
+                Marker(
+                  markerId: MarkerId(s.id),
+                  position: _ll(s.location),
+                  infoWindow: InfoWindow(title: s.name),
+                  zIndexInt: top.contains(s.id) ? 2 : 1,
+                  icon: BitmapDescriptor.defaultMarkerWithHue(
+                    s.id == _selected
+                        ? BitmapDescriptor.hueAzure
+                        : top.contains(s.id)
+                        ? BitmapDescriptor.hueGreen
+                        : BitmapDescriptor.hueOrange,
+                  ),
+                  onTap: () => setState(() => _selected = s.id),
+                ),
+            },
+          ),
+        ),
+        DraggableScrollableSheet(
+          initialChildSize: 0.45,
+          minChildSize: 0.2,
+          maxChildSize: 0.92,
+          snap: true,
+          builder: (context, controller) => Material(
+            elevation: 8,
+            color: scheme.surface,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+            clipBehavior: Clip.antiAlias,
+            child: content(controller),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Builds the result list (scroll controller comes from the sheet, if any).
+class _ResultsList {
+  const _ResultsList({required this.plan, required this.ranking, required this.selectedId, required this.onSelect});
+
+  final AlongRoutePlan plan;
+  final RankingResult? ranking;
+  final String? selectedId;
+  final void Function(Station) onSelect;
+
+  Widget call(ScrollController? controller) => Consumer(
+    builder: (context, ref, _) {
+      final vehicle = ref.watch(activeVehicleProvider).value;
+      final strategy = ref.watch(rankingStrategyProvider);
+      final r = ranking;
+      final byId = {for (final s in plan.stops) s.station.id: s};
+      final unit = vehicle?.unit ?? 'L';
+      final theme = Theme.of(context);
+
+      Widget tile(RankedStation rs, int? rank) {
+        final stop = byId[rs.offer.stationId]!;
+        return StationResultCard(
+          key: ValueKey(rs.offer.stationId),
+          ranked: rs,
+          stop: stop,
+          rank: rank,
+          mode: r!.mode,
+          unit: unit,
+          selected: selectedId == rs.offer.stationId,
+          onShowOnMap: () => onSelect(stop.station),
+        );
+      }
+
+      return ListView(
+        controller: controller,
+        padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.sm, AppSpacing.md, AppSpacing.xl),
+        children: [
+          if (controller != null)
+            Center(
+              child: Container(
+                width: 36,
+                height: 4,
+                margin: const EdgeInsets.only(bottom: AppSpacing.sm),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.outlineVariant,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+          Text(
+            '${Fmt.distance(plan.route.distanceMeters)} · ${Fmt.duration(plan.route.duration)} · '
+            '${plan.stops.length} ${plan.stops.length == 1 ? 'station' : 'stations'} on the way',
+            style: theme.textTheme.titleMedium,
+          ),
+          if (plan.fuelType != null)
+            Text(
+              'Comparing ${fuelTypeLabel(plan.fuelType!)} prices',
+              style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+            ),
+          if (plan.detoursApproximate)
+            const _Notice(
+              icon: Icons.info_outline_rounded,
+              text: 'Routing service unavailable — detours are straight-line estimates.',
+            ),
+          if (plan.skippedForDetour > 0)
+            _Notice(
+              icon: Icons.filter_alt_outlined,
+              text: '${plan.skippedForDetour} more stations farther from the route were not compared.',
+            ),
+          const SizedBox(height: AppSpacing.sm),
+          _VehicleControls(vehicle: vehicle),
+          const SizedBox(height: AppSpacing.sm),
+          SegmentedButton<RankingStrategy>(
+            showSelectedIcon: false,
+            segments: [for (final s in RankingStrategy.values) ButtonSegment(value: s, label: Text(strategyLabel(s)))],
+            selected: {strategy},
+            onSelectionChanged: (s) => ref.read(rankingStrategyProvider.notifier).set(s.first),
+          ),
+          const SizedBox(height: AppSpacing.md),
+          if (r == null || (r.ranked.isEmpty && r.unpriced.isEmpty))
+            const AppEmptyView(
+              title: 'No stations along this route',
+              message: 'Nothing found within 5 km of the route.',
+            )
+          else ...[
+            for (var i = 0; i < r.ranked.length; i++) tile(r.ranked[i], i + 1),
+            if (r.unpriced.isNotEmpty) ...[
+              Padding(
+                padding: const EdgeInsets.only(top: AppSpacing.md, bottom: AppSpacing.xs),
+                child: Text('Without a comparable price (${r.unpriced.length})', style: theme.textTheme.titleSmall),
+              ),
+              for (final u in r.unpriced) tile(u, null),
+            ],
+          ],
+        ],
+      );
+    },
+  );
+}
+
+class _Notice extends StatelessWidget {
+  const _Notice({required this.icon, required this.text});
+
+  final IconData icon;
+  final String text;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.only(top: AppSpacing.xs),
+    child: Row(
+      children: [
+        Icon(icon, size: 16),
+        const SizedBox(width: AppSpacing.xs),
+        Expanded(child: Text(text, style: Theme.of(context).textTheme.bodySmall)),
+      ],
+    ),
+  );
+}
+
+class _VehicleControls extends ConsumerWidget {
+  const _VehicleControls({required this.vehicle});
+
+  final VehicleProfile? vehicle;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final v = vehicle;
+    if (v == null) {
+      return Card(
+        margin: EdgeInsets.zero,
+        child: ListTile(
+          leading: const Icon(Icons.directions_car_filled_outlined),
+          title: const Text('Comparing price per litre only'),
+          subtitle: const Text('Add your vehicle to rank by true trip cost.'),
+          trailing: TextButton(onPressed: () => context.push(AppRoutes.vehicleNew), child: const Text('Add')),
+        ),
+      );
+    }
+    final level = ref.watch(fillLevelProvider);
+    return Card(
+      margin: EdgeInsets.zero,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.sm, AppSpacing.md, 0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '${v.name} · ${v.isElectric ? 'battery' : 'tank'} now ${(level * 100).round()}% → full '
+              '(${Fmt.number(v.capacity * (1 - level) / (v.isElectric ? v.chargingEfficiency : 1), maxDecimals: 1)} ${v.unit})',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            Slider(
+              value: level,
+              divisions: 20,
+              label: '${(level * 100).round()}%',
+              semanticFormatterCallback: (x) => '${(x * 100).round()} percent ${v.isElectric ? 'charge' : 'fuel'}',
+              onChanged: (x) => ref.read(fillLevelProvider.notifier).set(x),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class StationResultCard extends StatelessWidget {
+  const StationResultCard({
+    super.key,
+    required this.ranked,
+    required this.stop,
+    required this.rank,
+    required this.mode,
+    required this.unit,
+    required this.selected,
+    required this.onShowOnMap,
+  });
+
+  final RankedStation ranked;
+  final RouteStop stop;
+  final int? rank;
+  final CostMode mode;
+  final String unit;
+  final bool selected;
+  final VoidCallback onShowOnMap;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final o = ranked.offer;
+    final dimmed = ranked.caveats.contains(Caveat.closed) || ranked.caveats.contains(Caveat.unreachable);
+    final headline = switch ((mode, ranked.totalCost, o.pricePerUnit, o.currencyCode)) {
+      (CostMode.totalCost, final t?, _, final c?) => Fmt.money(t, c),
+      (_, _, final p?, final c?) => '${Fmt.price(p, c)}/$unit',
+      _ => '—',
+    };
+    return Card(
+      margin: const EdgeInsets.only(bottom: AppSpacing.sm),
+      color: selected ? theme.colorScheme.secondaryContainer : null,
+      child: Opacity(
+        opacity: dimmed ? 0.6 : 1,
+        child: ExpansionTile(
+          shape: const Border(),
+          leading: CircleAvatar(
+            backgroundColor: rank == 1 ? theme.colorScheme.primary : theme.colorScheme.surfaceContainerHighest,
+            foregroundColor: rank == 1 ? theme.colorScheme.onPrimary : theme.colorScheme.onSurface,
+            child: rank == null ? const Icon(Icons.help_outline_rounded, size: 20) : Text('$rank'),
+          ),
+          title: Text(o.name, maxLines: 1, overflow: TextOverflow.ellipsis),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('${detourText(o)} · ${Fmt.distance(stop.alongMeters)} into the trip'),
+              if (ranked.badges.isNotEmpty || ranked.caveats.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(top: AppSpacing.xs),
+                  child: Wrap(
+                    spacing: AppSpacing.xs,
+                    runSpacing: AppSpacing.xs,
+                    children: [
+                      for (final b in ranked.badges)
+                        _Chip(text: badgeLabel(b), color: theme.colorScheme.primaryContainer),
+                      for (final c in ranked.caveats)
+                        _Chip(text: caveatLabel(c), color: theme.colorScheme.errorContainer),
+                    ],
+                  ),
+                ),
+            ],
+          ),
+          trailing: Text(headline, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
+          childrenPadding: const EdgeInsets.fromLTRB(AppSpacing.md, 0, AppSpacing.md, AppSpacing.sm),
+          expandedCrossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            for (final line in explainRanking(ranked, mode: mode, unit: unit))
+              Padding(
+                padding: const EdgeInsets.only(bottom: AppSpacing.xs),
+                child: Text(line, style: theme.textTheme.bodyMedium),
+              ),
+            if (stop.station.address != null) Text(stop.station.address!, style: theme.textTheme.bodySmall),
+            Align(
+              alignment: Alignment.centerRight,
+              child: TextButton.icon(
+                onPressed: onShowOnMap,
+                icon: const Icon(Icons.map_outlined),
+                label: const Text('Show on map'),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _Chip extends StatelessWidget {
+  const _Chip({required this.text, required this.color});
+
+  final String text;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) => Container(
+    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+    decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(8)),
+    child: Text(text, style: Theme.of(context).textTheme.labelSmall),
+  );
+}

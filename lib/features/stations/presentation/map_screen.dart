@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../../core/error/app_failure.dart';
 import '../../../core/location/geo_point.dart';
 import '../../../core/location/location_controller.dart';
 import '../../../core/location/location_service.dart';
+import '../../../core/router/app_routes.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/state_views.dart';
@@ -25,7 +27,19 @@ class MapScreen extends ConsumerWidget {
     final location = ref.watch(locationControllerProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('FuelWise')),
+      appBar: AppBar(
+        title: const Text('FuelWise'),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: AppSpacing.sm),
+            child: FilledButton.tonalIcon(
+              onPressed: () => context.push(AppRoutes.plan),
+              icon: const Icon(Icons.alt_route_rounded),
+              label: const Text('Plan trip'),
+            ),
+          ),
+        ],
+      ),
       body: switch (location) {
         AsyncData(:final value) => _StationsMap(origin: value),
         AsyncError(:final error) => LocationProblemView(error: error),

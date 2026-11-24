@@ -7,13 +7,14 @@
 - **Phase:** 0 — Foundation, Security & Architecture — **in progress**
 - **Mode (2026‑11‑25):** user authorized **autonomous development** — commit + push each verified batch to `origin/main`, no approval stops. No Firebase deploy / billing / paid APIs. Never force-push or commit secrets.
 - **Phase 0:** done except items awaiting the new Google key or a Firebase project (see "Awaiting" below).
-- **Phase 1:** in progress — Batch 1.A (true trip-cost engine), 1.B (My Garage), 1.C (fill-up history) done.
-- **Next immediate task:** Batch 1.D — along-route discovery (destination, route sampling, corridor search, detours, ranked list).
+- **Phase 1:** in progress — Batch 1.A (true trip-cost engine), 1.B (My Garage), 1.C (fill-up history), 1.D (stations along route) done.
+- **Next immediate task:** Batch 1.E — EV mode (Open Charge Map client, Fuel/EV toggle, clustering, custom markers).
 
 ## Awaiting the new Google Maps API key (user will supply later)
 - Live Places (New) nearby search / details / fuelOptions / evChargeOptions verification on iOS + Android.
 - Map tiles (Maps SDK for Android/iOS).
 - Country coverage notes for `fuelOptions.fuelPrices` / `evChargeOptions` based on real responses.
+- Places Autocomplete (New), Text Search along route, destination details (trip planning, Batch 1.D) — request reaches Google from the simulator and returns 403 with the current key.
 - Everything above is implemented and tested with **fixtures/mocks only**.
 
 ## Awaiting a Firebase project (user runs `flutterfire configure`, Spark plan, no billing)
@@ -155,4 +156,25 @@
 ### Tests (Batch 1.C)
 - `test/features/history/history_test.dart` → **13/13 passed**: full-to-full with partials, no-distance/mixed-currency cases, weighted average, monthly per-currency grouping, spend window incl. year boundary, odometer validation helper, drift round-trip/filter/order/delete, history kept across vehicle delete+undo, UI: no vehicle, add fill-up end-to-end (unit price preview, saved values), validation, stats + charts + delete/undo.
 - Full suite **94/94 passed**; `flutter analyze` no issues.
+- **Commit:** `105431a` pushed to `origin/main`.
 - iOS simulator (iPhone 17e): debug build installs; drift DB opens on device; bottom bar with 3 tabs and Garage empty state render. **Not verified on device:** typing into forms (simulator text injection did not reach Flutter fields) — covered by widget tests only.
+
+---
+
+## Phase 1 — Batch 1.D: Stations along my route (2026‑11‑25)
+*(implemented, locally tested; OSRM parts live-verified; Places parts mocked — key blocked)*
+- **Pipeline** (`along_route/domain/along_route_planner.dart`): OSRM route → split into ≤ 4 pieces (piece size ≥ length/4 + longest edge, so the count is bounded) → Douglas–Peucker (30 m) → encoded polyline → Places **Text Search with `searchAlongRouteParameters`** per piece (parallel) → dedup by place id → 5 km corridor filter via point-to-polyline projection → 25 closest-to-route stations get detours from **one OSRM `/table` request** → details (price + open now) only for the 8 smallest detours (Enterprise SKU cost control, 10 min in-memory cache) → sorted by position along the route.
+- **Decision:** used Google's search-along-route instead of sampling many nearby searches: 1 request per piece instead of ~30 for a long trip, and results are route-aware. Pieces keep long trips from returning only stations near the start (20 results per request).
+- **Detour math:** `detour = d(origin→station) + d(station→destination) − d(origin→destination)` from the table (distance + duration), clamped ≥ 0. If the table call fails: `2 × off-route distance` and the plan is flagged **approximate** (shown in UI). Unroutable stations (null cells) are dropped.
+- **Prices:** exact fuel-type match only (`PlacesQuoteLookup.pickPrice`); a Premium price is never used for Regular. EVs: no Google price → unpriced (honest).
+- **Search target:** EV vehicle → `electric_vehicle_charging_station`; fuel → `gas_station` priced by the vehicle's fuel (default Regular when no vehicle).
+- **Ranking:** `alongRouteRankingProvider` feeds `TripCostEngine` locally — strategy / fill level / vehicle changes re-rank without network calls.
+- **UI:** "Plan trip" button on the map → `DestinationSearchScreen` (Autocomplete New, 350 ms debounce, stale-response guard, one session token for autocomplete + details) → `AlongRouteScreen`: map with route + markers (top 3 green, selected azure) under a draggable sheet with route summary, approximate/skipped notices, vehicle fill slider (or "add vehicle" prompt + unit-price mode), strategy segmented button, ranked cards (rank, detour km + min, position on trip, badges/caveats, total cost or unit price) with expandable plain-language explanation, and an "unpriced" section.
+- `OsrmRouteRepository` now also implements `DetourRepository` (separate interface, so existing route fakes are unaffected).
+
+### Tests (Batch 1.D)
+- `test/features/along_route/along_route_domain_test.dart` → **16 passed**: projection, simplification, split bounds/connectivity, encoded polyline vs Google's reference example, OSRM table parsing (real response shape) incl. null cells/error code, autocomplete + destination parsing, missing-key guard, exact-match price lookup + cache, planner (dedup, corridor, bounded piece count, detour mapping, quote budget, approximate fallback, error propagation), explanation lines with hand-computed totals (EUR 60.62 vs 63.77, saves 3.15), search target per vehicle.
+- `test/features/along_route/along_route_ui_test.dart` → **4 passed**: ranking + strategy re-order + explanation, fill slider recomputes (EUR 40.62 at 50 %), no-vehicle unit-price mode, full flow map → Plan trip → debounced search (1 request) → suggestion → plan rendered (shared session token).
+- **Live:** OSRM route + table on router.project-osrm.org (Berlin → Potsdam, 36.1 km): on-route point detour 0 m, 2 km off-route point detour 5.5 km (temporary test, not committed).
+- **iOS simulator:** Plan trip button → search screen; typing "Potsdam" sends a real Autocomplete request → Google 403 → error view with retry.
+- Full suite **114/114 passed**; `flutter analyze` no issues.

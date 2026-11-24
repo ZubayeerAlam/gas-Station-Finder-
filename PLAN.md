@@ -86,29 +86,29 @@ Implementation history and evidence live in [BUILD.md](BUILD.md). Rule: work one
 - [ ] Loading / empty / error / permission states
 
 ### 1.2 Stations Along My Route ⭐
-- [ ] Destination selection (search/autocomplete)
-- [ ] OSRM route + polyline decode
-- [ ] Sample points along route
-- [ ] Corridor search (configurable width)
-- [ ] Deduplicate stations
-- [ ] Detour via OSRM route/table
-- [ ] Map + ranked list display
+- [x] Destination selection — Places Autocomplete (New) with debounce + session tokens *(mocked; live call reaches Google → 403 until key)*
+- [x] OSRM route + GeoJSON geometry *(live-verified)*
+- [x] Route pieces instead of point sampling — route split into ≤ 4 pieces, each simplified (Douglas–Peucker) and encoded
+- [x] Corridor search — Places Text Search `searchAlongRouteParameters` per piece + 5 km corridor filter (point-to-polyline projection) *(mocked)*
+- [x] Deduplicate stations (by place id across pieces)
+- [x] Detour via one OSRM `/table` request: to + from − direct *(live-verified)*; straight-line fallback flagged as approximate
+- [x] Map + ranked list display (route polyline, top-3 markers, draggable sheet)
 - [ ] Route alternatives
-- [ ] Request batching + caching + failure handling
+- [-] Request batching + caching + failure handling — table batching, details cache (10 min), partial-failure tolerance done; persistent cache in Phase 3
 
 ### 1.3 True Trip Cost Ranking
 - [x] Fuel formula: fuel cost + detour fuel cost (unit-safe) — `TripCostEngine`, unit-tested
 - [x] EV formula: kWh/km, charge energy, price/kWh, detour energy (+ charging efficiency)
 - [x] Handle unknown price / consumption (never invent prices)
-- [-] Ranking explanations — badges + caveats in domain (done); UI wording pending
+- [x] Ranking explanations — expandable "why" per station (purchase, detour energy, total, savings, price source, caveats)
 - [x] "Save $X vs nearest" from real calculated values (domain)
 - [x] Unit tests verifying the math (22 tests, hand-computed)
 
 ### 1.4 Smart Route Optimization
-- [ ] Fastest / Cheapest-Fuel / Best-Overall strategies
-- [ ] Compare time, distance, cost, detours, total trip cost
-- [ ] User strategy selection
-- [ ] Honest "heuristic" labelling
+- [x] Cheapest / Least detour / Best value strategies (re-ranked locally, no new requests)
+- [-] Compare time, distance, cost, detours, total trip cost — per-station detour km + min, total cost; trip-level comparison of route alternatives pending
+- [x] User strategy selection (segmented button) + fill-level slider
+- [x] Honest "heuristic" labelling (Best value documented; approximate detours flagged)
 
 ### 1.5 Crowdsourced Live Fuel Prices
 - [ ] Firebase Auth (Google / anonymous)
@@ -163,7 +163,7 @@ Implementation history and evidence live in [BUILD.md](BUILD.md). Rule: work one
 
 ### Phase 1 Acceptance
 - [ ] Nearby + destination route search work
-- [ ] Along-route discovery + tested detours
+- [x] Along-route discovery + tested detours (detours live-verified via OSRM; Places search mocked)
 - [ ] Cost ranking mathematically verified
 - [ ] Price reports submit/retrieve; aggregation verified in Emulator Suite
 - [ ] EV discovery works with supported data
