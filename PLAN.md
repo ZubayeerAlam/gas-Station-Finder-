@@ -63,6 +63,11 @@ Implementation history and evidence live in [BUILD.md](BUILD.md). Rule: work one
 - [x] Application ID / bundle ID → `com.fuelwise.app` (emulator + simulator verified)
 - [x] App icon (`tool/make_icon.swift` + flutter_launcher_icons; adaptive Android icon verified on emulator)
 
+### Awaiting new Google Maps API key
+- [ ] Live Places nearby/details verification (iOS + Android)
+- [ ] Map tiles render (Maps SDK)
+- [ ] Real-response coverage notes for fuel prices / EV data
+
 ### Phase 0 Acceptance
 - [x] `flutter analyze` clean
 - [-] Tests pass (46/46 after batch 0.B; final run at phase end)
@@ -92,12 +97,12 @@ Implementation history and evidence live in [BUILD.md](BUILD.md). Rule: work one
 - [ ] Request batching + caching + failure handling
 
 ### 1.3 True Trip Cost Ranking
-- [ ] Fuel formula: fuel cost + detour fuel cost (unit-safe)
-- [ ] EV formula: kWh/km, charge energy, price/kWh, detour energy
-- [ ] Handle unknown price / consumption (never invent prices)
-- [ ] Ranking explanations (cheapest, best value, shortest detour, most reliable, open)
-- [ ] "Save $X vs nearest" from real calculated values
-- [ ] Unit tests verifying the math
+- [x] Fuel formula: fuel cost + detour fuel cost (unit-safe) — `TripCostEngine`, unit-tested
+- [x] EV formula: kWh/km, charge energy, price/kWh, detour energy (+ charging efficiency)
+- [x] Handle unknown price / consumption (never invent prices)
+- [-] Ranking explanations — badges + caveats in domain (done); UI wording pending
+- [x] "Save $X vs nearest" from real calculated values (domain)
+- [x] Unit tests verifying the math (22 tests, hand-computed)
 
 ### 1.4 Smart Route Optimization
 - [ ] Fastest / Cheapest-Fuel / Best-Overall strategies
@@ -137,7 +142,7 @@ Implementation history and evidence live in [BUILD.md](BUILD.md). Rule: work one
 
 ### 1.9 My Garage
 - [ ] Multiple vehicles (name, make/model, fuel/energy type, tank/battery, consumption, preferred fuel)
-- [ ] Range, trip cost, required fuel/energy, reachable stations
+- [-] Range, trip cost, required fuel/energy, reachable stations — domain done (`VehicleProfile`, engine reachability); UI pending
 
 ### 1.10 Fill-up & Trip History
 - [ ] Record fill-ups / charging sessions

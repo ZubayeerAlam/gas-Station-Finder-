@@ -5,8 +5,19 @@
 
 ## Current status
 - **Phase:** 0 — Foundation, Security & Architecture — **in progress**
-- **Last checkpoint:** Batch 0.B (app ID, icon, Android/iOS runs, route-flash + location-fallback fixes) — complete, awaiting user's manual commit + "Let's proceed"
-- **Next immediate task (Batch 0.C):** live Places verification as soon as a working key is in `config/dev.json` + `ios/Flutter/Secrets.xcconfig` (nearby → details → route on both platforms; record fuelOptions/EV coverage). Then App Check once a Firebase project exists → Phase 0 acceptance review.
+- **Mode (2026‑11‑25):** user authorized **autonomous development** — commit + push each verified batch to `origin/main`, no approval stops. No Firebase deploy / billing / paid APIs. Never force-push or commit secrets.
+- **Phase 0:** done except items awaiting the new Google key or a Firebase project (see "Awaiting" below).
+- **Phase 1:** in progress — Batch 1.A (true trip-cost engine) done.
+- **Next immediate task:** Batch 1.B — My Garage (vehicle CRUD, local persistence, range/trip-cost UI).
+
+## Awaiting the new Google Maps API key (user will supply later)
+- Live Places (New) nearby search / details / fuelOptions / evChargeOptions verification on iOS + Android.
+- Map tiles (Maps SDK for Android/iOS).
+- Country coverage notes for `fuelOptions.fuelPrices` / `evChargeOptions` based on real responses.
+- Everything above is implemented and tested with **fixtures/mocks only**.
+
+## Awaiting a Firebase project (user runs `flutterfire configure`, Spark plan, no billing)
+- App Check, Auth, Firestore, Cloud Functions (emulator-tested code can be written before this).
 
 ## Blockers / needs user
 1. **Fix + rotate the Google API key.** Re-checked after user's Console changes (2026‑11‑24, Batch 0.B): **still 403** with the key in `config/dev.json` (unchanged old key) for both iOS and Android identity headers. If a new key was created, it must be placed in `config/dev.json` and `ios/Flutter/Secrets.xcconfig`. Key restrictions must use the new IDs: Android `com.fuelwise.app` + debug SHA‑1 `2D:5C:C4:55:84:56:0D:08:A4:94:D8:E2:01:B1:71:84:84:28:71:91`; iOS `com.fuelwise.app`. A single key can only have one application-restriction type → use "None" during dev or separate Android/iOS keys. Earlier live check (2026‑11‑24): Places API (New) returns `403 PERMISSION_DENIED — Permission denied on the service` → **enable "Places API (New)"** in the key's Cloud project (and Maps SDK for iOS/Android; map tiles are blank on the simulator, same key). Legacy Places also refuses requests from this machine (key has app/IP restrictions). It was hardcoded and is in git history (commit `d481cb0`, `lib/repository/place_repository.dart`). It has been moved to gitignored local files so the app keeps working, but the old value must be revoked in Google Cloud Console and replaced with a restricted key (Android package + SHA‑1, iOS bundle ID, allowed APIs only).
@@ -90,4 +101,24 @@
 - iOS iPhone 17e simulator: build has `CFBundleIdentifier = com.fuelwise.app`; new location permission text shown; after "Allow While Using App" → Places request → 403 (key).
 - Live Places check via curl with iOS/Android identity headers → `403 PERMISSION_DENIED`.
 - **Not verified:** live stations/details/route (blocked by key), App Check (no Firebase project), physical device.
+- **Commit:** `a91860c` pushed to `origin/main` (verified `main...origin/main` in sync).
+
+---
+
+## Phase 1 — Batch 1.A: True Trip Cost engine (2026‑11‑25)
+*(implemented, unit-tested; pure domain logic — no API key needed; not yet wired to UI)*
+- `lib/core/utils/units.dart`: US/Imperial mpg, km/L, Wh/km, mi/kWh → per‑100 km; price per US gallon → per litre. Rejects non-positive input.
+- `lib/features/garage/domain/vehicle_profile.dart` (freezed): `EnergyType {fuel, electric}`, consumption per 100 km, capacity (L / kWh), preferred fuel code, `chargingEfficiency` (default **1.0** — no invented loss), `unitsForDistance`, `unitsToBuyForDistance`, `rangeMeters(level)`; asserts positive values.
+- `lib/features/ranking/domain/ranking_models.dart` (freezed): `StationOffer`, `FillRequest` (`FillToLevel` / `FillAmount`), `RankingStrategy {cheapestTotal, shortestDetour, bestValue}`, `CostMode {totalCost, unitPriceOnly}`, `RankingBadge`, `Caveat {closed, unreachable, otherCurrency, priceUnknown, stalePrice}`, `RankedStation`, `RankingResult`.
+- `lib/features/ranking/domain/trip_cost_engine.dart`:
+  - `total = (purchaseUnits + detourUnits) × price`; detour energy valued at the same station's price; EV purchase/detour divided by charging efficiency.
+  - **Honesty:** unknown price → `unpriced` (never estimated); other currency → `unpriced` (never converted); no vehicle → `unitPriceOnly` mode (no invented totals); stale prices (> 3 days) flagged but ranked.
+  - Eligibility: closed (`openNow == false`) or unreachable (distance > current range) stations are listed last and get no badges; unknown open status stays eligible.
+  - Savings vs nearest = real difference vs smallest-detour eligible priced station.
+  - Best value (heuristic, documented): `0.60·cost + 0.25·detour + 0.15·reliability`, min-max normalised; detour uses time when all candidates have it; unknown reliability = 0.5.
+- Decision: engine is pure + synchronous; callers (route/along-route features) build `StationOffer`s. Makes it reusable by the AI assistant tools in Phase 2.
+
+### Tests (Batch 1.A)
+- `test/features/ranking/trip_cost_engine_test.dart` → **22/22 passed**, incl. hand-computed case where the lowest pump price (1.65 €/L, 30 km detour = 69.22 €) loses to 1.70 €/L with 6 km detour (68.66 €); savings 3.3838 € vs nearest.
+- Full suite: **68/68 passed**; `flutter analyze`: no issues.
 
