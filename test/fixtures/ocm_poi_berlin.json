@@ -1,0 +1,39 @@
+[
+  {
+    "ID": 101,
+    "UUID": "A1",
+    "OperatorInfo": {"Title": "Allego"},
+    "UsageCost": "0,59 €/kWh",
+    "AddressInfo": {"Title": "Hauptbahnhof Nord", "AddressLine1": "Europaplatz 1", "Town": "Berlin", "Postcode": "10557",
+      "Latitude": 52.5262, "Longitude": 13.3692, "Distance": 2.4, "DistanceUnit": 1},
+    "Connections": [
+      {"ID": 1, "ConnectionTypeID": 33, "ConnectionType": {"Title": "CCS (Type 2)"}, "StatusType": {"IsOperational": true, "Title": "Operational"},
+       "PowerKW": 150.0, "CurrentType": {"Title": "DC"}, "Quantity": 2},
+      {"ID": 2, "ConnectionTypeID": 25, "ConnectionType": {"Title": "Type 2 (Socket Only)"}, "StatusType": {"IsOperational": true, "Title": "Operational"},
+       "PowerKW": 22.0, "CurrentType": {"Title": "AC (Three-Phase)"}, "Quantity": 1}
+    ],
+    "NumberOfPoints": 3,
+    "StatusType": {"IsOperational": true, "Title": "Operational"},
+    "DateLastVerified": "2026-11-20T09:00:00Z",
+    "DateLastStatusUpdate": "2026-11-21T09:00:00Z"
+  },
+  {
+    "ID": 102,
+    "AddressInfo": {"Title": "Hotel Garage", "Town": "Berlin", "Latitude": 52.51, "Longitude": 13.39},
+    "Connections": [
+      {"ConnectionTypeID": 25, "ConnectionType": {"Title": "Type 2 (Socket Only)"}, "PowerKW": 11.0, "CurrentType": {"Title": "AC (Three-Phase)"}}
+    ],
+    "StatusType": {"IsOperational": false, "Title": "Not Operational"}
+  },
+  {
+    "ID": 103,
+    "AddressInfo": {"Title": "Unknown kit", "Latitude": 52.5, "Longitude": 13.4},
+    "Connections": [{"ConnectionTypeID": 999}]
+  },
+  {"ID": 104, "AddressInfo": {"Title": "No coordinates"}},
+  {"AddressInfo": {"Title": "No id", "Latitude": 1, "Longitude": 1}},
+  {
+    "ID": 101,
+    "AddressInfo": {"Title": "Duplicate", "Latitude": 52.5262, "Longitude": 13.3692}
+  }
+]

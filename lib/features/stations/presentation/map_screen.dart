@@ -13,6 +13,11 @@ import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/state_views.dart';
 import '../../route/domain/route_info.dart';
 import '../../route/presentation/route_controller.dart';
+import '../../ev/domain/charge_point.dart';
+import '../../ev/presentation/ev_providers.dart';
+import '../../ev/presentation/widgets/charge_point_sheet.dart';
+import '../../ev/presentation/widgets/ev_filter_sheet.dart';
+import '../../ev/presentation/widgets/marker_icons.dart';
 import '../domain/entities/station.dart';
 import 'stations_controllers.dart';
 import 'widgets/station_details_sheet.dart';
@@ -127,39 +132,105 @@ class _StationsMapState extends ConsumerState<_StationsMap> {
       if (p.longitude < minLng) minLng = p.longitude;
       if (p.longitude > maxLng) maxLng = p.longitude;
     }
-    _map?.animateCamera(CameraUpdate.newLatLngBounds(
-      LatLngBounds(southwest: LatLng(minLat, minLng), northeast: LatLng(maxLat, maxLng)),
-      64,
-    ));
+    _map?.animateCamera(
+      CameraUpdate.newLatLngBounds(
+        LatLngBounds(southwest: LatLng(minLat, minLng), northeast: LatLng(maxLat, maxLng)),
+        64,
+      ),
+    );
   }
+
+  static const _cluster = ClusterManagerId('places');
+  final _icons = PillMarkerIcons();
+  final _readyIcons = <String, BitmapDescriptor>{};
+  final _pendingIcons = <String>{};
+
+  /// Pill icon for a charger, drawn once and cached; null until ready.
+  BitmapDescriptor? _chargerIcon(ChargePoint p, ColorScheme scheme, double dpr) {
+    final label = chargeMarkerLabel(p);
+    final (bg, fg) = p.isOperational == false
+        ? (Colors.grey.shade600, Colors.white)
+        : p.isFast
+        ? (scheme.primary, scheme.onPrimary)
+        : (scheme.tertiary, scheme.onTertiary);
+    final key = '$label|${bg.toARGB32()}';
+    final ready = _readyIcons[key];
+    if (ready == null && _pendingIcons.add(key)) {
+      _icons.get(label, background: bg, foreground: fg, dpr: dpr).then((d) {
+        if (mounted) setState(() => _readyIcons[key] = d);
+      });
+    }
+    return ready;
+  }
+
+  void _openChargePoint(ChargePoint p) {
+    showChargePointSheet(
+      context,
+      point: p,
+      origin: widget.origin,
+      onDirections: () {
+        Navigator.of(context).pop();
+        ref.read(routeControllerProvider.notifier).routeTo(p.location);
+      },
+    );
+  }
+
+  Future<void> _openFilters(List<ChargePoint> all) => showModalBottomSheet<void>(
+    context: context,
+    isScrollControlled: true,
+    showDragHandle: true,
+    builder: (_) => EvFilterSheet(availableConnectors: connectorTypesOf(all)),
+  );
 
   @override
   Widget build(BuildContext context) {
-    final stations = ref.watch(nearbyStationsProvider);
+    final mode = ref.watch(mapModeProvider);
+    final ev = mode == MapMode.ev;
+    // Only the active mode's data source is queried (each search is billed).
+    final AsyncValue<List<Station>> stations = ev ? const AsyncData(<Station>[]) : ref.watch(nearbyStationsProvider);
+    final AsyncValue<List<ChargePoint>> chargers = ev
+        ? ref.watch(filteredChargePointsProvider)
+        : const AsyncData(<ChargePoint>[]);
+    final allChargers = ev
+        ? ref.watch(nearbyChargePointsProvider).value ?? const <ChargePoint>[]
+        : const <ChargePoint>[];
+    final filter = ref.watch(evFilterProvider);
     final route = ref.watch(routeControllerProvider);
     final scheme = Theme.of(context).colorScheme;
+    final dpr = MediaQuery.devicePixelRatioOf(context);
 
     ref.listen(routeControllerProvider, (prev, next) {
       switch (next) {
         case AsyncData(:final value?):
           _fitRoute(value);
         case AsyncError(:final error):
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(error is AppFailure ? error.message : 'Could not get directions.'),
-          ));
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text(error is AppFailure ? error.message : 'Could not get directions.')));
         default:
       }
     });
 
     final markers = <Marker>{
-      for (final s in stations.value ?? const <Station>[])
-        Marker(
-          markerId: MarkerId(s.id),
-          position: _latLng(s.location),
-          infoWindow: InfoWindow(title: s.name, snippet: Fmt.distance(widget.origin.distanceTo(s.location))),
-          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
-          onTap: () => _openStation(s),
-        ),
+      if (!ev)
+        for (final s in stations.value ?? const <Station>[])
+          Marker(
+            markerId: MarkerId(s.id),
+            clusterManagerId: _cluster,
+            position: _latLng(s.location),
+            infoWindow: InfoWindow(title: s.name, snippet: Fmt.distance(widget.origin.distanceTo(s.location))),
+            icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
+            onTap: () => _openStation(s),
+          )
+      else
+        for (final p in chargers.value ?? const <ChargePoint>[])
+          Marker(
+            markerId: MarkerId(p.id),
+            clusterManagerId: _cluster,
+            position: _latLng(p.location),
+            infoWindow: InfoWindow(title: p.name, snippet: chargeMarkerLabel(p)),
+            icon: _chargerIcon(p, scheme, dpr) ?? BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
+            onTap: () => _openChargePoint(p),
+          ),
     };
 
     final polylines = <Polyline>{
@@ -172,6 +243,13 @@ class _StationsMapState extends ConsumerState<_StationsMap> {
         ),
     };
 
+    final status = ev ? evStatus(chargers, filtered: filter.isActive) : fuelStatus(stations);
+    final VoidCallback? retry = !status.showRetry
+        ? null
+        : ev
+        ? () => ref.invalidate(nearbyChargePointsProvider)
+        : () => ref.invalidate(nearbyStationsProvider);
+
     return Stack(
       children: [
         GoogleMap(
@@ -179,6 +257,7 @@ class _StationsMapState extends ConsumerState<_StationsMap> {
           onMapCreated: (c) => _map = c,
           myLocationEnabled: true,
           myLocationButtonEnabled: true,
+          clusterManagers: {const ClusterManager(clusterManagerId: _cluster)},
           markers: markers,
           polylines: polylines,
         ),
@@ -186,9 +265,23 @@ class _StationsMapState extends ConsumerState<_StationsMap> {
           top: AppSpacing.md,
           left: AppSpacing.md,
           right: 72,
-          child: _StatusBanner(
-            stations: stations,
-            onRetry: () => ref.invalidate(nearbyStationsProvider),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              MapModeBar(
+                mode: mode,
+                filterActive: filter.isActive,
+                onMode: (m) => ref.read(mapModeProvider.notifier).set(m),
+                onFilters: ev ? () => _openFilters(allChargers) : null,
+              ),
+              const SizedBox(height: AppSpacing.sm),
+              _StatusBanner(status: status, onRetry: retry),
+              if (ev && (chargers.value?.isNotEmpty ?? false))
+                Padding(
+                  padding: const EdgeInsets.only(top: AppSpacing.xs),
+                  child: Text(kOcmAttribution, style: Theme.of(context).textTheme.labelSmall),
+                ),
+            ],
           ),
         ),
         if (route.isLoading || route.value != null)
@@ -209,32 +302,112 @@ class _StationsMapState extends ConsumerState<_StationsMap> {
   }
 }
 
-class _StatusBanner extends StatelessWidget {
-  const _StatusBanner({required this.stations, required this.onRetry});
+/// Text shown in the map's status banner.
+typedef MapStatus = ({IconData icon, String text, bool showRetry});
 
-  final AsyncValue<List<Station>> stations;
-  final VoidCallback onRetry;
+MapStatus fuelStatus(AsyncValue<List<Station>> stations) => switch (stations) {
+  AsyncLoading() => (icon: Icons.search_rounded, text: 'Searching nearby stations…', showRetry: false),
+  AsyncError(:final error) => (
+    icon: Icons.error_outline_rounded,
+    text: error is AppFailure ? error.message : 'Could not load stations.',
+    showRetry: error is! ConfigFailure, // retrying cannot fix missing config
+  ),
+  AsyncData(:final value) when value.isEmpty => (
+    icon: Icons.search_off_rounded,
+    text: 'No fuel stations within 5 km.',
+    showRetry: true,
+  ),
+  AsyncData(:final value) => (
+    icon: Icons.local_gas_station_rounded,
+    text: '${value.length} stations nearby',
+    showRetry: false,
+  ),
+};
+
+MapStatus evStatus(AsyncValue<List<ChargePoint>> chargers, {required bool filtered}) => switch (chargers) {
+  AsyncLoading() => (icon: Icons.search_rounded, text: 'Searching chargers…', showRetry: false),
+  AsyncError(:final error) => (
+    icon: Icons.error_outline_rounded,
+    text: error is AppFailure ? error.message : 'Could not load chargers.',
+    showRetry: error is! ConfigFailure,
+  ),
+  AsyncData(:final value) when value.isEmpty => (
+    icon: Icons.search_off_rounded,
+    text: filtered ? 'No chargers match your filters.' : 'No chargers within 10 km.',
+    showRetry: !filtered,
+  ),
+  AsyncData(:final value) => (
+    icon: Icons.ev_station_rounded,
+    text: '${value.length} ${value.length == 1 ? 'charger' : 'chargers'} nearby${filtered ? ' (filtered)' : ''}',
+    showRetry: false,
+  ),
+};
+
+/// Fuel / EV switch + filter button.
+class MapModeBar extends StatelessWidget {
+  const MapModeBar({super.key, required this.mode, required this.onMode, this.onFilters, this.filterActive = false});
+
+  final MapMode mode;
+  final ValueChanged<MapMode> onMode;
+  final VoidCallback? onFilters;
+  final bool filterActive;
 
   @override
   Widget build(BuildContext context) {
-    final (IconData icon, String text, bool showRetry) = switch (stations) {
-      AsyncLoading() => (Icons.search_rounded, 'Searching nearby stations…', false),
-      AsyncError(:final error) =>
-        (Icons.error_outline_rounded, error is AppFailure ? error.message : 'Could not load stations.', true),
-      AsyncData(:final value) when value.isEmpty =>
-        (Icons.search_off_rounded, 'No fuel stations within 5 km.', true),
-      AsyncData(:final value) => (Icons.local_gas_station_rounded, '${value.length} stations nearby', false),
-    };
+    final scheme = Theme.of(context).colorScheme;
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Material(
+          color: scheme.surface,
+          elevation: 2,
+          shape: const StadiumBorder(),
+          child: SegmentedButton<MapMode>(
+            showSelectedIcon: false,
+            segments: const [
+              ButtonSegment(value: MapMode.fuel, icon: Icon(Icons.local_gas_station_rounded), label: Text('Fuel')),
+              ButtonSegment(value: MapMode.ev, icon: Icon(Icons.ev_station_rounded), label: Text('EV')),
+            ],
+            selected: {mode},
+            onSelectionChanged: (s) => onMode(s.first),
+          ),
+        ),
+        if (onFilters != null) ...[
+          const SizedBox(width: AppSpacing.sm),
+          Badge(
+            isLabelVisible: filterActive,
+            smallSize: 10,
+            child: IconButton.filledTonal(
+              tooltip: 'Charger filters',
+              onPressed: onFilters,
+              icon: const Icon(Icons.tune_rounded),
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+}
+
+class _StatusBanner extends StatelessWidget {
+  const _StatusBanner({required this.status, this.onRetry});
+
+  final MapStatus status;
+  final VoidCallback? onRetry;
+
+  @override
+  Widget build(BuildContext context) {
     return Card(
       elevation: 2,
+      margin: EdgeInsets.zero,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm),
         child: Row(
           children: [
-            Icon(icon, size: 20),
+            Icon(status.icon, size: 20),
             const SizedBox(width: AppSpacing.sm),
-            Expanded(child: Text(text, maxLines: 4, overflow: TextOverflow.ellipsis)),
-            if (showRetry) TextButton(onPressed: onRetry, child: const Text('Retry')),
+            Expanded(child: Text(status.text, maxLines: 4, overflow: TextOverflow.ellipsis)),
+            if (onRetry != null) TextButton(onPressed: onRetry, child: const Text('Retry')),
           ],
         ),
       ),
@@ -268,11 +441,7 @@ class _RouteSummaryCard extends StatelessWidget {
                       style: theme.textTheme.titleMedium,
                     ),
             ),
-            IconButton(
-              tooltip: 'Clear route',
-              onPressed: onClear,
-              icon: const Icon(Icons.close_rounded),
-            ),
+            IconButton(tooltip: 'Clear route', onPressed: onClear, icon: const Icon(Icons.close_rounded)),
           ],
         ),
       ),

@@ -12,6 +12,7 @@ class AppConfig {
     required this.googleMapsApiKey,
     required this.osrmBaseUrl,
     this.androidCertSha1 = '',
+    this.openChargeMapApiKey = '',
     this.androidPackageName = 'com.fuelwise.app',
     this.iosBundleId = 'com.fuelwise.app',
   });
@@ -23,6 +24,7 @@ class AppConfig {
           defaultValue: 'https://router.project-osrm.org',
         ),
         androidCertSha1: String.fromEnvironment('ANDROID_CERT_SHA1'),
+        openChargeMapApiKey: String.fromEnvironment('OCM_API_KEY'),
       );
 
   final String googleMapsApiKey;
@@ -34,7 +36,11 @@ class AppConfig {
   final String androidPackageName;
   final String iosBundleId;
 
+  /// Open Charge Map key (free, per-app; also a client key, not a secret).
+  final String openChargeMapApiKey;
+
   bool get hasGoogleMapsKey => googleMapsApiKey.isNotEmpty;
+  bool get hasOpenChargeMapKey => openChargeMapApiKey.isNotEmpty;
 }
 
 final appConfigProvider = Provider<AppConfig>((ref) => AppConfig.fromEnvironment());

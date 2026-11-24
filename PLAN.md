@@ -131,14 +131,15 @@ Implementation history and evidence live in [BUILD.md](BUILD.md). Rule: work one
 - [ ] UI indicator (not presented as certification)
 
 ### 1.8 EV Mode
-- [ ] Fuel/EV toggle
-- [ ] Open Charge Map integration
-- [ ] Places `evChargeOptions` data
-- [ ] Connectors, kW, availability (reported vs verified)
-- [ ] Charging cost estimate
-- [ ] Route-based charger discovery
-- [ ] Marker clustering
-- [ ] Custom markers with price/kW
+- [x] Fuel/EV toggle (defaults to active vehicle type; only the active mode's API is queried)
+- [x] Open Charge Map integration *(fixture-tested; needs free `OCM_API_KEY` — API returns 403 without one)*
+- [x] Places `evChargeOptions` data (details sheet, Phase 0) + EV along-route search uses `electric_vehicle_charging_station`
+- [x] Connectors, kW, AC/DC, quantity, operational status, last verified/status-update dates (community data labelled)
+- [-] Charging cost estimate — OCM free-text cost shown verbatim, never parsed; real per-kWh prices await community reports (1.5)
+- [-] Route-based charger discovery — via Places along route (1.D); OCM along-route not implemented
+- [x] Marker clustering (google_maps_flutter `ClusterManager`, fuel + EV)
+- [-] Custom markers with price/kW — kW pill markers (fast / slow / not operational colours) done; fuel price markers need prices (1.5)
+- [x] Client-side filters: min power (Any/22/50/150 kW), connector types present nearby, operational only
 
 ### 1.9 My Garage
 - [x] Multiple vehicles (name, fuel/energy type, tank/battery, consumption in 7 units, preferred fuel, EV charging efficiency) — drift (SQLite) persistence, active vehicle, edit/delete + undo

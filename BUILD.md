@@ -7,8 +7,8 @@
 - **Phase:** 0 — Foundation, Security & Architecture — **in progress**
 - **Mode (2026‑11‑25):** user authorized **autonomous development** — commit + push each verified batch to `origin/main`, no approval stops. No Firebase deploy / billing / paid APIs. Never force-push or commit secrets.
 - **Phase 0:** done except items awaiting the new Google key or a Firebase project (see "Awaiting" below).
-- **Phase 1:** in progress — Batch 1.A (true trip-cost engine), 1.B (My Garage), 1.C (fill-up history), 1.D (stations along route) done.
-- **Next immediate task:** Batch 1.E — EV mode (Open Charge Map client, Fuel/EV toggle, clustering, custom markers).
+- **Phase 1:** in progress — Batch 1.A (true trip-cost engine), 1.B (My Garage), 1.C (fill-up history), 1.D (stations along route), 1.E (EV mode) done.
+- **Next immediate task:** Batch 1.F — crowdsourced prices, trust scoring, price history, reliability, alerts, community verification (Firebase Emulator Suite, `demo-` project, no deploy).
 
 ## Awaiting the new Google Maps API key (user will supply later)
 - Live Places (New) nearby search / details / fuelOptions / evChargeOptions verification on iOS + Android.
@@ -16,6 +16,9 @@
 - Country coverage notes for `fuelOptions.fuelPrices` / `evChargeOptions` based on real responses.
 - Places Autocomplete (New), Text Search along route, destination details (trip planning, Batch 1.D) — request reaches Google from the simulator and returns 403 with the current key.
 - Everything above is implemented and tested with **fixtures/mocks only**.
+
+## Awaiting an Open Charge Map API key (free; user registers at openchargemap.org → `OCM_API_KEY` in config/dev.json)
+- Live EV charger loading in EV mode (currently shows "Open Charge Map API key is not configured").
 
 ## Awaiting a Firebase project (user runs `flutterfire configure`, Spark plan, no billing)
 - App Check, Auth, Firestore, Cloud Functions (emulator-tested code can be written before this).
@@ -178,3 +181,20 @@
 - **Live:** OSRM route + table on router.project-osrm.org (Berlin → Potsdam, 36.1 km): on-route point detour 0 m, 2 km off-route point detour 5.5 km (temporary test, not committed).
 - **iOS simulator:** Plan trip button → search screen; typing "Potsdam" sends a real Autocomplete request → Google 403 → error view with retry.
 - Full suite **114/114 passed**; `flutter analyze` no issues.
+- **Commit:** `073be94` pushed to `origin/main`.
+
+---
+
+## Phase 1 — Batch 1.E: EV mode (2026‑11‑25)
+*(implemented, locally tested; fixture-tested OCM — key required; iOS-simulator checked)*
+- `ev/domain`: `ChargePoint` (connectors, max kW, fast ≥ 50 kW, operational status, operator, free-text usage cost, last verified/status dates), `ChargeConnector` (type, kW, AC/DC, quantity, status), `EvFilter` (min power, connector types, operational only — a connector must satisfy power **and** type together), `chargeMarkerLabel`.
+- `ev/data/open_charge_map_repository.dart`: `GET /v3/poi` (lat/lng, 10 km, max 100, `compact=false` for connector/status titles, `verbose=false`), key in `X-API-Key` header (never in URL/logs), tolerant parser (skips entries without id/coordinates, dedups, unknown connector → "Connector <id>"). Missing key → `ConfigFailure` without a request. `OCM_API_KEY` added to `AppConfig` + `config/example.json`.
+- **Probe:** OCM API without a key → `403 You must specify an API key` (so live data needs the user's free key).
+- **Map:** Fuel/EV segmented toggle (defaults to the active vehicle's type), filter button with active badge, status banner per mode (no Retry for configuration errors), **marker clustering** via `ClusterManager`, **custom pill markers** drawn with `dart:ui` showing max kW (teal fast, tertiary slow, grey not operational), cached per label/colour. Only the selected mode's API is called (saves Places requests in EV mode).
+- `ChargePointSheet`: status chip, max power, connector list, cost shown verbatim as "listed by the community; not verified", last verified, Directions (OSRM route), attribution "Charging data © Open Charge Map contributors (CC BY-SA 4.0)" — also shown on the map when chargers are visible.
+- `EvFilterSheet`: power steps, connector chips built from connectors present nearby, operational-only switch, reset.
+
+### Tests (Batch 1.E)
+- `test/features/ev/ev_test.dart` + fixture `test/fixtures/ocm_poi_berlin.json` → **13 passed**: parsing (fields, dates, AC/DC, invalid/duplicate entries skipped, unknown values stay unknown), missing-key guard, request parameters, filter combinations, labels, status texts incl. no retry for config errors, map mode default from vehicle + switching, PNG marker rendering + cache, charge point sheet (known + unknown data), filter sheet, and map-level flow (EV loads chargers once, no repeated fuel search, local filtering).
+- Full suite **127/127 passed**; `flutter analyze` no issues.
+- iOS simulator: toggle visible; EV mode shows filter button and "Open Charge Map API key is not configured" banner. **Not verified:** pill markers/clustering with real data on a device (needs OCM key).
