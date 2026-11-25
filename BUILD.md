@@ -339,3 +339,20 @@ flutter run --dart-define-from-file=config/dev.json --dart-define=FIREBASE_MODE=
 ## Final report (2026‑11‑25)
 - Written: [docs/FINAL_REPORT.md](docs/FINAL_REPORT.md).
 - **Correction to the key note in "Next steps" above:** commit `d481cb0` belongs to the older parent repository `~/FluterDev/Project`, not to this repo. `git log -S AIza` over this repo's whole history finds nothing. That commit is not on any remote branch there, and the GitHub repo its remote points to cannot be reached. The key was still kept in plain text locally, so rotating it remains recommended.
+
+## Phase 4 — Vehicle care reminders (user-chosen problem, 2026‑11‑25)
+Plan: document-expiry and service reminders per vehicle (BRTA tax token, fitness, insurance, route permit, CNG cylinder retest, oil change, tyre rotation, custom), due by date, by km, or both, using odometer readings already logged in History. Fully offline; no API key or paid service. No existing feature is removed or changed.
+
+### Batch 4.A — domain + data *(implemented, unit/repository-tested)*
+- `lib/features/care/domain/care_reminder.dart`: freezed `CareReminder`; `CareType` enum.
+- `lib/features/care/domain/care_schedule.dart` (pure):
+  - `CareStatus.of`: bands overdue / dueSoon / upcoming / needsSetup / done. Days are calendar days, so the time of day and DST don't shift them. "Due soon" = within the reminder's notice days, within 500 km, or an estimated date within the notice days. The effective due date is whichever of the real date and the km/day estimate comes first, and estimates are flagged. Progress is computed from the last done point.
+  - Also: `sortByUrgency`, `markDone` (rolls repeating reminders forward; one-offs become *done*), `addMonths` (31 Jan + 1 → 28 Feb), presets via `kCarePresets` / `suggestedCareTypes` / `reminderFromPreset`, and `careNotices` (N days before + on the day at 09:00; past times dropped).
+  - Preset intervals are starting values only. Document dates always come from the user.
+- `HistoryAnalytics.odometerStats`: the latest odometer is the **highest** reading (entries can be logged out of order). km/day comes from the earliest to the latest dated reading, needing ≥ 1 day between them.
+- Drift: new `care_reminders` table, schema **v3 → v4** (`createTable` on upgrade). The type is stored by name, so reordering the enum can't corrupt data, and unknown types are skipped. Rows outlive a deleted vehicle, like fill-ups, so Undo works.
+- `DriftCareRepository`; failures → `FailureCode.careSaveFailed`, with EN/BN text.
+- Tests:
+  - `test/features/care/care_domain_test.dart`: 21 tests (bands and boundaries, time of day, progress, km-only / both, estimates, mark-done, month clamping, presets per vehicle type, notices, urgency sort, odometer stats).
+  - `care_data_test.dart`: 4 tests (round-trip, per-vehicle list/update/delete, unknown type skipped, failure code) plus a **real v3 → v4 upgrade test** (a database built from the v3 tables with `user_version = 3` keeps its settings and gains the new table).
+  - Full suite **213 passed**; analyze clean.

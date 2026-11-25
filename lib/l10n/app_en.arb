@@ -388,5 +388,6 @@
   "@lastVerified": {"placeholders": {"time": {"type": "String"}}},
   "statusUpdated": "status updated {time}",
   "@statusUpdated": {"placeholders": {"time": {"type": "String"}}},
-  "monthsShort": "Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec"
+  "monthsShort": "Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec",
+  "errorCareSave": "Could not save the reminder. Please try again."
 }

@@ -2069,6 +2069,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec'**
   String get monthsShort;
+
+  /// No description provided for @errorCareSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save the reminder. Please try again.'**
+  String get errorCareSave;
 }
 
 class _AppLocalizationsDelegate

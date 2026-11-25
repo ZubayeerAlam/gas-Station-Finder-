@@ -62,7 +62,31 @@ class PlaceLocations extends Table {
   Set<Column> get primaryKey => {placeId};
 }
 
-@DriftDatabase(tables: [Vehicles, Settings, FillUps, PlaceLocations])
+/// Vehicle-care reminders (document expiry, service intervals). Like
+/// fill-ups, rows outlive a deleted vehicle so "Undo" restores them.
+@DataClassName('CareReminderRow')
+class CareReminders extends Table {
+  TextColumn get id => text()();
+  TextColumn get vehicleId => text()();
+
+  /// `CareType.name` (stable across enum reordering).
+  TextColumn get type => text()();
+  TextColumn get title => text().nullable()();
+  DateTimeColumn get dueDate => dateTime().nullable()();
+  RealColumn get dueOdometerKm => real().nullable()();
+  IntColumn get repeatMonths => integer().nullable()();
+  RealColumn get repeatKm => real().nullable()();
+  DateTimeColumn get lastDoneAt => dateTime().nullable()();
+  RealColumn get lastDoneKm => real().nullable()();
+  IntColumn get notifyDaysBefore => integer().withDefault(const Constant(7))();
+  TextColumn get note => text().nullable()();
+  DateTimeColumn get createdAt => dateTime()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+@DriftDatabase(tables: [Vehicles, Settings, FillUps, PlaceLocations, CareReminders])
 class AppDatabase extends _$AppDatabase {
   AppDatabase(super.executor);
 
@@ -70,7 +94,7 @@ class AppDatabase extends _$AppDatabase {
   factory AppDatabase.onDevice() => AppDatabase(driftDatabase(name: 'fuelwise'));
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -78,6 +102,7 @@ class AppDatabase extends _$AppDatabase {
         onUpgrade: (m, from, to) async {
           if (from < 2) await m.createTable(fillUps);
           if (from < 3) await m.createTable(placeLocations);
+          if (from < 4) await m.createTable(careReminders);
         },
       );
 

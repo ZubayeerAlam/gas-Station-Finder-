@@ -1635,6 +1635,785 @@ class PlaceLocationsCompanion extends UpdateCompanion<PlaceLocationRow> {
   }
 }
 
+class $CareRemindersTable extends CareReminders
+    with TableInfo<$CareRemindersTable, CareReminderRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CareRemindersTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _vehicleIdMeta = const VerificationMeta(
+    'vehicleId',
+  );
+  @override
+  late final GeneratedColumn<String> vehicleId = GeneratedColumn<String>(
+    'vehicle_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _typeMeta = const VerificationMeta('type');
+  @override
+  late final GeneratedColumn<String> type = GeneratedColumn<String>(
+    'type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _titleMeta = const VerificationMeta('title');
+  @override
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+    'title',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _dueDateMeta = const VerificationMeta(
+    'dueDate',
+  );
+  @override
+  late final GeneratedColumn<DateTime> dueDate = GeneratedColumn<DateTime>(
+    'due_date',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _dueOdometerKmMeta = const VerificationMeta(
+    'dueOdometerKm',
+  );
+  @override
+  late final GeneratedColumn<double> dueOdometerKm = GeneratedColumn<double>(
+    'due_odometer_km',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _repeatMonthsMeta = const VerificationMeta(
+    'repeatMonths',
+  );
+  @override
+  late final GeneratedColumn<int> repeatMonths = GeneratedColumn<int>(
+    'repeat_months',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _repeatKmMeta = const VerificationMeta(
+    'repeatKm',
+  );
+  @override
+  late final GeneratedColumn<double> repeatKm = GeneratedColumn<double>(
+    'repeat_km',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _lastDoneAtMeta = const VerificationMeta(
+    'lastDoneAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastDoneAt = GeneratedColumn<DateTime>(
+    'last_done_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _lastDoneKmMeta = const VerificationMeta(
+    'lastDoneKm',
+  );
+  @override
+  late final GeneratedColumn<double> lastDoneKm = GeneratedColumn<double>(
+    'last_done_km',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _notifyDaysBeforeMeta = const VerificationMeta(
+    'notifyDaysBefore',
+  );
+  @override
+  late final GeneratedColumn<int> notifyDaysBefore = GeneratedColumn<int>(
+    'notify_days_before',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(7),
+  );
+  static const VerificationMeta _noteMeta = const VerificationMeta('note');
+  @override
+  late final GeneratedColumn<String> note = GeneratedColumn<String>(
+    'note',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    vehicleId,
+    type,
+    title,
+    dueDate,
+    dueOdometerKm,
+    repeatMonths,
+    repeatKm,
+    lastDoneAt,
+    lastDoneKm,
+    notifyDaysBefore,
+    note,
+    createdAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'care_reminders';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<CareReminderRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('vehicle_id')) {
+      context.handle(
+        _vehicleIdMeta,
+        vehicleId.isAcceptableOrUnknown(data['vehicle_id']!, _vehicleIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_vehicleIdMeta);
+    }
+    if (data.containsKey('type')) {
+      context.handle(
+        _typeMeta,
+        type.isAcceptableOrUnknown(data['type']!, _typeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_typeMeta);
+    }
+    if (data.containsKey('title')) {
+      context.handle(
+        _titleMeta,
+        title.isAcceptableOrUnknown(data['title']!, _titleMeta),
+      );
+    }
+    if (data.containsKey('due_date')) {
+      context.handle(
+        _dueDateMeta,
+        dueDate.isAcceptableOrUnknown(data['due_date']!, _dueDateMeta),
+      );
+    }
+    if (data.containsKey('due_odometer_km')) {
+      context.handle(
+        _dueOdometerKmMeta,
+        dueOdometerKm.isAcceptableOrUnknown(
+          data['due_odometer_km']!,
+          _dueOdometerKmMeta,
+        ),
+      );
+    }
+    if (data.containsKey('repeat_months')) {
+      context.handle(
+        _repeatMonthsMeta,
+        repeatMonths.isAcceptableOrUnknown(
+          data['repeat_months']!,
+          _repeatMonthsMeta,
+        ),
+      );
+    }
+    if (data.containsKey('repeat_km')) {
+      context.handle(
+        _repeatKmMeta,
+        repeatKm.isAcceptableOrUnknown(data['repeat_km']!, _repeatKmMeta),
+      );
+    }
+    if (data.containsKey('last_done_at')) {
+      context.handle(
+        _lastDoneAtMeta,
+        lastDoneAt.isAcceptableOrUnknown(
+          data['last_done_at']!,
+          _lastDoneAtMeta,
+        ),
+      );
+    }
+    if (data.containsKey('last_done_km')) {
+      context.handle(
+        _lastDoneKmMeta,
+        lastDoneKm.isAcceptableOrUnknown(
+          data['last_done_km']!,
+          _lastDoneKmMeta,
+        ),
+      );
+    }
+    if (data.containsKey('notify_days_before')) {
+      context.handle(
+        _notifyDaysBeforeMeta,
+        notifyDaysBefore.isAcceptableOrUnknown(
+          data['notify_days_before']!,
+          _notifyDaysBeforeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('note')) {
+      context.handle(
+        _noteMeta,
+        note.isAcceptableOrUnknown(data['note']!, _noteMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  CareReminderRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CareReminderRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      vehicleId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}vehicle_id'],
+      )!,
+      type: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}type'],
+      )!,
+      title: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}title'],
+      ),
+      dueDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}due_date'],
+      ),
+      dueOdometerKm: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}due_odometer_km'],
+      ),
+      repeatMonths: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}repeat_months'],
+      ),
+      repeatKm: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}repeat_km'],
+      ),
+      lastDoneAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_done_at'],
+      ),
+      lastDoneKm: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}last_done_km'],
+      ),
+      notifyDaysBefore: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}notify_days_before'],
+      )!,
+      note: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}note'],
+      ),
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+    );
+  }
+
+  @override
+  $CareRemindersTable createAlias(String alias) {
+    return $CareRemindersTable(attachedDatabase, alias);
+  }
+}
+
+class CareReminderRow extends DataClass implements Insertable<CareReminderRow> {
+  final String id;
+  final String vehicleId;
+
+  /// `CareType.name` (stable across enum reordering).
+  final String type;
+  final String? title;
+  final DateTime? dueDate;
+  final double? dueOdometerKm;
+  final int? repeatMonths;
+  final double? repeatKm;
+  final DateTime? lastDoneAt;
+  final double? lastDoneKm;
+  final int notifyDaysBefore;
+  final String? note;
+  final DateTime createdAt;
+  const CareReminderRow({
+    required this.id,
+    required this.vehicleId,
+    required this.type,
+    this.title,
+    this.dueDate,
+    this.dueOdometerKm,
+    this.repeatMonths,
+    this.repeatKm,
+    this.lastDoneAt,
+    this.lastDoneKm,
+    required this.notifyDaysBefore,
+    this.note,
+    required this.createdAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['vehicle_id'] = Variable<String>(vehicleId);
+    map['type'] = Variable<String>(type);
+    if (!nullToAbsent || title != null) {
+      map['title'] = Variable<String>(title);
+    }
+    if (!nullToAbsent || dueDate != null) {
+      map['due_date'] = Variable<DateTime>(dueDate);
+    }
+    if (!nullToAbsent || dueOdometerKm != null) {
+      map['due_odometer_km'] = Variable<double>(dueOdometerKm);
+    }
+    if (!nullToAbsent || repeatMonths != null) {
+      map['repeat_months'] = Variable<int>(repeatMonths);
+    }
+    if (!nullToAbsent || repeatKm != null) {
+      map['repeat_km'] = Variable<double>(repeatKm);
+    }
+    if (!nullToAbsent || lastDoneAt != null) {
+      map['last_done_at'] = Variable<DateTime>(lastDoneAt);
+    }
+    if (!nullToAbsent || lastDoneKm != null) {
+      map['last_done_km'] = Variable<double>(lastDoneKm);
+    }
+    map['notify_days_before'] = Variable<int>(notifyDaysBefore);
+    if (!nullToAbsent || note != null) {
+      map['note'] = Variable<String>(note);
+    }
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  CareRemindersCompanion toCompanion(bool nullToAbsent) {
+    return CareRemindersCompanion(
+      id: Value(id),
+      vehicleId: Value(vehicleId),
+      type: Value(type),
+      title: title == null && nullToAbsent
+          ? const Value.absent()
+          : Value(title),
+      dueDate: dueDate == null && nullToAbsent
+          ? const Value.absent()
+          : Value(dueDate),
+      dueOdometerKm: dueOdometerKm == null && nullToAbsent
+          ? const Value.absent()
+          : Value(dueOdometerKm),
+      repeatMonths: repeatMonths == null && nullToAbsent
+          ? const Value.absent()
+          : Value(repeatMonths),
+      repeatKm: repeatKm == null && nullToAbsent
+          ? const Value.absent()
+          : Value(repeatKm),
+      lastDoneAt: lastDoneAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastDoneAt),
+      lastDoneKm: lastDoneKm == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastDoneKm),
+      notifyDaysBefore: Value(notifyDaysBefore),
+      note: note == null && nullToAbsent ? const Value.absent() : Value(note),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory CareReminderRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return CareReminderRow(
+      id: serializer.fromJson<String>(json['id']),
+      vehicleId: serializer.fromJson<String>(json['vehicleId']),
+      type: serializer.fromJson<String>(json['type']),
+      title: serializer.fromJson<String?>(json['title']),
+      dueDate: serializer.fromJson<DateTime?>(json['dueDate']),
+      dueOdometerKm: serializer.fromJson<double?>(json['dueOdometerKm']),
+      repeatMonths: serializer.fromJson<int?>(json['repeatMonths']),
+      repeatKm: serializer.fromJson<double?>(json['repeatKm']),
+      lastDoneAt: serializer.fromJson<DateTime?>(json['lastDoneAt']),
+      lastDoneKm: serializer.fromJson<double?>(json['lastDoneKm']),
+      notifyDaysBefore: serializer.fromJson<int>(json['notifyDaysBefore']),
+      note: serializer.fromJson<String?>(json['note']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'vehicleId': serializer.toJson<String>(vehicleId),
+      'type': serializer.toJson<String>(type),
+      'title': serializer.toJson<String?>(title),
+      'dueDate': serializer.toJson<DateTime?>(dueDate),
+      'dueOdometerKm': serializer.toJson<double?>(dueOdometerKm),
+      'repeatMonths': serializer.toJson<int?>(repeatMonths),
+      'repeatKm': serializer.toJson<double?>(repeatKm),
+      'lastDoneAt': serializer.toJson<DateTime?>(lastDoneAt),
+      'lastDoneKm': serializer.toJson<double?>(lastDoneKm),
+      'notifyDaysBefore': serializer.toJson<int>(notifyDaysBefore),
+      'note': serializer.toJson<String?>(note),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  CareReminderRow copyWith({
+    String? id,
+    String? vehicleId,
+    String? type,
+    Value<String?> title = const Value.absent(),
+    Value<DateTime?> dueDate = const Value.absent(),
+    Value<double?> dueOdometerKm = const Value.absent(),
+    Value<int?> repeatMonths = const Value.absent(),
+    Value<double?> repeatKm = const Value.absent(),
+    Value<DateTime?> lastDoneAt = const Value.absent(),
+    Value<double?> lastDoneKm = const Value.absent(),
+    int? notifyDaysBefore,
+    Value<String?> note = const Value.absent(),
+    DateTime? createdAt,
+  }) => CareReminderRow(
+    id: id ?? this.id,
+    vehicleId: vehicleId ?? this.vehicleId,
+    type: type ?? this.type,
+    title: title.present ? title.value : this.title,
+    dueDate: dueDate.present ? dueDate.value : this.dueDate,
+    dueOdometerKm: dueOdometerKm.present
+        ? dueOdometerKm.value
+        : this.dueOdometerKm,
+    repeatMonths: repeatMonths.present ? repeatMonths.value : this.repeatMonths,
+    repeatKm: repeatKm.present ? repeatKm.value : this.repeatKm,
+    lastDoneAt: lastDoneAt.present ? lastDoneAt.value : this.lastDoneAt,
+    lastDoneKm: lastDoneKm.present ? lastDoneKm.value : this.lastDoneKm,
+    notifyDaysBefore: notifyDaysBefore ?? this.notifyDaysBefore,
+    note: note.present ? note.value : this.note,
+    createdAt: createdAt ?? this.createdAt,
+  );
+  CareReminderRow copyWithCompanion(CareRemindersCompanion data) {
+    return CareReminderRow(
+      id: data.id.present ? data.id.value : this.id,
+      vehicleId: data.vehicleId.present ? data.vehicleId.value : this.vehicleId,
+      type: data.type.present ? data.type.value : this.type,
+      title: data.title.present ? data.title.value : this.title,
+      dueDate: data.dueDate.present ? data.dueDate.value : this.dueDate,
+      dueOdometerKm: data.dueOdometerKm.present
+          ? data.dueOdometerKm.value
+          : this.dueOdometerKm,
+      repeatMonths: data.repeatMonths.present
+          ? data.repeatMonths.value
+          : this.repeatMonths,
+      repeatKm: data.repeatKm.present ? data.repeatKm.value : this.repeatKm,
+      lastDoneAt: data.lastDoneAt.present
+          ? data.lastDoneAt.value
+          : this.lastDoneAt,
+      lastDoneKm: data.lastDoneKm.present
+          ? data.lastDoneKm.value
+          : this.lastDoneKm,
+      notifyDaysBefore: data.notifyDaysBefore.present
+          ? data.notifyDaysBefore.value
+          : this.notifyDaysBefore,
+      note: data.note.present ? data.note.value : this.note,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CareReminderRow(')
+          ..write('id: $id, ')
+          ..write('vehicleId: $vehicleId, ')
+          ..write('type: $type, ')
+          ..write('title: $title, ')
+          ..write('dueDate: $dueDate, ')
+          ..write('dueOdometerKm: $dueOdometerKm, ')
+          ..write('repeatMonths: $repeatMonths, ')
+          ..write('repeatKm: $repeatKm, ')
+          ..write('lastDoneAt: $lastDoneAt, ')
+          ..write('lastDoneKm: $lastDoneKm, ')
+          ..write('notifyDaysBefore: $notifyDaysBefore, ')
+          ..write('note: $note, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    vehicleId,
+    type,
+    title,
+    dueDate,
+    dueOdometerKm,
+    repeatMonths,
+    repeatKm,
+    lastDoneAt,
+    lastDoneKm,
+    notifyDaysBefore,
+    note,
+    createdAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CareReminderRow &&
+          other.id == this.id &&
+          other.vehicleId == this.vehicleId &&
+          other.type == this.type &&
+          other.title == this.title &&
+          other.dueDate == this.dueDate &&
+          other.dueOdometerKm == this.dueOdometerKm &&
+          other.repeatMonths == this.repeatMonths &&
+          other.repeatKm == this.repeatKm &&
+          other.lastDoneAt == this.lastDoneAt &&
+          other.lastDoneKm == this.lastDoneKm &&
+          other.notifyDaysBefore == this.notifyDaysBefore &&
+          other.note == this.note &&
+          other.createdAt == this.createdAt);
+}
+
+class CareRemindersCompanion extends UpdateCompanion<CareReminderRow> {
+  final Value<String> id;
+  final Value<String> vehicleId;
+  final Value<String> type;
+  final Value<String?> title;
+  final Value<DateTime?> dueDate;
+  final Value<double?> dueOdometerKm;
+  final Value<int?> repeatMonths;
+  final Value<double?> repeatKm;
+  final Value<DateTime?> lastDoneAt;
+  final Value<double?> lastDoneKm;
+  final Value<int> notifyDaysBefore;
+  final Value<String?> note;
+  final Value<DateTime> createdAt;
+  final Value<int> rowid;
+  const CareRemindersCompanion({
+    this.id = const Value.absent(),
+    this.vehicleId = const Value.absent(),
+    this.type = const Value.absent(),
+    this.title = const Value.absent(),
+    this.dueDate = const Value.absent(),
+    this.dueOdometerKm = const Value.absent(),
+    this.repeatMonths = const Value.absent(),
+    this.repeatKm = const Value.absent(),
+    this.lastDoneAt = const Value.absent(),
+    this.lastDoneKm = const Value.absent(),
+    this.notifyDaysBefore = const Value.absent(),
+    this.note = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  CareRemindersCompanion.insert({
+    required String id,
+    required String vehicleId,
+    required String type,
+    this.title = const Value.absent(),
+    this.dueDate = const Value.absent(),
+    this.dueOdometerKm = const Value.absent(),
+    this.repeatMonths = const Value.absent(),
+    this.repeatKm = const Value.absent(),
+    this.lastDoneAt = const Value.absent(),
+    this.lastDoneKm = const Value.absent(),
+    this.notifyDaysBefore = const Value.absent(),
+    this.note = const Value.absent(),
+    required DateTime createdAt,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       vehicleId = Value(vehicleId),
+       type = Value(type),
+       createdAt = Value(createdAt);
+  static Insertable<CareReminderRow> custom({
+    Expression<String>? id,
+    Expression<String>? vehicleId,
+    Expression<String>? type,
+    Expression<String>? title,
+    Expression<DateTime>? dueDate,
+    Expression<double>? dueOdometerKm,
+    Expression<int>? repeatMonths,
+    Expression<double>? repeatKm,
+    Expression<DateTime>? lastDoneAt,
+    Expression<double>? lastDoneKm,
+    Expression<int>? notifyDaysBefore,
+    Expression<String>? note,
+    Expression<DateTime>? createdAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (vehicleId != null) 'vehicle_id': vehicleId,
+      if (type != null) 'type': type,
+      if (title != null) 'title': title,
+      if (dueDate != null) 'due_date': dueDate,
+      if (dueOdometerKm != null) 'due_odometer_km': dueOdometerKm,
+      if (repeatMonths != null) 'repeat_months': repeatMonths,
+      if (repeatKm != null) 'repeat_km': repeatKm,
+      if (lastDoneAt != null) 'last_done_at': lastDoneAt,
+      if (lastDoneKm != null) 'last_done_km': lastDoneKm,
+      if (notifyDaysBefore != null) 'notify_days_before': notifyDaysBefore,
+      if (note != null) 'note': note,
+      if (createdAt != null) 'created_at': createdAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  CareRemindersCompanion copyWith({
+    Value<String>? id,
+    Value<String>? vehicleId,
+    Value<String>? type,
+    Value<String?>? title,
+    Value<DateTime?>? dueDate,
+    Value<double?>? dueOdometerKm,
+    Value<int?>? repeatMonths,
+    Value<double?>? repeatKm,
+    Value<DateTime?>? lastDoneAt,
+    Value<double?>? lastDoneKm,
+    Value<int>? notifyDaysBefore,
+    Value<String?>? note,
+    Value<DateTime>? createdAt,
+    Value<int>? rowid,
+  }) {
+    return CareRemindersCompanion(
+      id: id ?? this.id,
+      vehicleId: vehicleId ?? this.vehicleId,
+      type: type ?? this.type,
+      title: title ?? this.title,
+      dueDate: dueDate ?? this.dueDate,
+      dueOdometerKm: dueOdometerKm ?? this.dueOdometerKm,
+      repeatMonths: repeatMonths ?? this.repeatMonths,
+      repeatKm: repeatKm ?? this.repeatKm,
+      lastDoneAt: lastDoneAt ?? this.lastDoneAt,
+      lastDoneKm: lastDoneKm ?? this.lastDoneKm,
+      notifyDaysBefore: notifyDaysBefore ?? this.notifyDaysBefore,
+      note: note ?? this.note,
+      createdAt: createdAt ?? this.createdAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (vehicleId.present) {
+      map['vehicle_id'] = Variable<String>(vehicleId.value);
+    }
+    if (type.present) {
+      map['type'] = Variable<String>(type.value);
+    }
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
+    }
+    if (dueDate.present) {
+      map['due_date'] = Variable<DateTime>(dueDate.value);
+    }
+    if (dueOdometerKm.present) {
+      map['due_odometer_km'] = Variable<double>(dueOdometerKm.value);
+    }
+    if (repeatMonths.present) {
+      map['repeat_months'] = Variable<int>(repeatMonths.value);
+    }
+    if (repeatKm.present) {
+      map['repeat_km'] = Variable<double>(repeatKm.value);
+    }
+    if (lastDoneAt.present) {
+      map['last_done_at'] = Variable<DateTime>(lastDoneAt.value);
+    }
+    if (lastDoneKm.present) {
+      map['last_done_km'] = Variable<double>(lastDoneKm.value);
+    }
+    if (notifyDaysBefore.present) {
+      map['notify_days_before'] = Variable<int>(notifyDaysBefore.value);
+    }
+    if (note.present) {
+      map['note'] = Variable<String>(note.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CareRemindersCompanion(')
+          ..write('id: $id, ')
+          ..write('vehicleId: $vehicleId, ')
+          ..write('type: $type, ')
+          ..write('title: $title, ')
+          ..write('dueDate: $dueDate, ')
+          ..write('dueOdometerKm: $dueOdometerKm, ')
+          ..write('repeatMonths: $repeatMonths, ')
+          ..write('repeatKm: $repeatKm, ')
+          ..write('lastDoneAt: $lastDoneAt, ')
+          ..write('lastDoneKm: $lastDoneKm, ')
+          ..write('notifyDaysBefore: $notifyDaysBefore, ')
+          ..write('note: $note, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -1642,6 +2421,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $SettingsTable settings = $SettingsTable(this);
   late final $FillUpsTable fillUps = $FillUpsTable(this);
   late final $PlaceLocationsTable placeLocations = $PlaceLocationsTable(this);
+  late final $CareRemindersTable careReminders = $CareRemindersTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -1651,6 +2431,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     settings,
     fillUps,
     placeLocations,
+    careReminders,
   ];
 }
 
@@ -2533,6 +3314,377 @@ typedef $$PlaceLocationsTableProcessedTableManager =
       PlaceLocationRow,
       PrefetchHooks Function()
     >;
+typedef $$CareRemindersTableCreateCompanionBuilder =
+    CareRemindersCompanion Function({
+      required String id,
+      required String vehicleId,
+      required String type,
+      Value<String?> title,
+      Value<DateTime?> dueDate,
+      Value<double?> dueOdometerKm,
+      Value<int?> repeatMonths,
+      Value<double?> repeatKm,
+      Value<DateTime?> lastDoneAt,
+      Value<double?> lastDoneKm,
+      Value<int> notifyDaysBefore,
+      Value<String?> note,
+      required DateTime createdAt,
+      Value<int> rowid,
+    });
+typedef $$CareRemindersTableUpdateCompanionBuilder =
+    CareRemindersCompanion Function({
+      Value<String> id,
+      Value<String> vehicleId,
+      Value<String> type,
+      Value<String?> title,
+      Value<DateTime?> dueDate,
+      Value<double?> dueOdometerKm,
+      Value<int?> repeatMonths,
+      Value<double?> repeatKm,
+      Value<DateTime?> lastDoneAt,
+      Value<double?> lastDoneKm,
+      Value<int> notifyDaysBefore,
+      Value<String?> note,
+      Value<DateTime> createdAt,
+      Value<int> rowid,
+    });
+
+class $$CareRemindersTableFilterComposer
+    extends Composer<_$AppDatabase, $CareRemindersTable> {
+  $$CareRemindersTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get vehicleId => $composableBuilder(
+    column: $table.vehicleId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get type => $composableBuilder(
+    column: $table.type,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get dueDate => $composableBuilder(
+    column: $table.dueDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get dueOdometerKm => $composableBuilder(
+    column: $table.dueOdometerKm,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get repeatMonths => $composableBuilder(
+    column: $table.repeatMonths,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get repeatKm => $composableBuilder(
+    column: $table.repeatKm,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastDoneAt => $composableBuilder(
+    column: $table.lastDoneAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get lastDoneKm => $composableBuilder(
+    column: $table.lastDoneKm,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get notifyDaysBefore => $composableBuilder(
+    column: $table.notifyDaysBefore,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get note => $composableBuilder(
+    column: $table.note,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$CareRemindersTableOrderingComposer
+    extends Composer<_$AppDatabase, $CareRemindersTable> {
+  $$CareRemindersTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get vehicleId => $composableBuilder(
+    column: $table.vehicleId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get type => $composableBuilder(
+    column: $table.type,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get dueDate => $composableBuilder(
+    column: $table.dueDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get dueOdometerKm => $composableBuilder(
+    column: $table.dueOdometerKm,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get repeatMonths => $composableBuilder(
+    column: $table.repeatMonths,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get repeatKm => $composableBuilder(
+    column: $table.repeatKm,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lastDoneAt => $composableBuilder(
+    column: $table.lastDoneAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get lastDoneKm => $composableBuilder(
+    column: $table.lastDoneKm,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get notifyDaysBefore => $composableBuilder(
+    column: $table.notifyDaysBefore,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get note => $composableBuilder(
+    column: $table.note,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$CareRemindersTableAnnotationComposer
+    extends Composer<_$AppDatabase, $CareRemindersTable> {
+  $$CareRemindersTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get vehicleId =>
+      $composableBuilder(column: $table.vehicleId, builder: (column) => column);
+
+  GeneratedColumn<String> get type =>
+      $composableBuilder(column: $table.type, builder: (column) => column);
+
+  GeneratedColumn<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get dueDate =>
+      $composableBuilder(column: $table.dueDate, builder: (column) => column);
+
+  GeneratedColumn<double> get dueOdometerKm => $composableBuilder(
+    column: $table.dueOdometerKm,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get repeatMonths => $composableBuilder(
+    column: $table.repeatMonths,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get repeatKm =>
+      $composableBuilder(column: $table.repeatKm, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get lastDoneAt => $composableBuilder(
+    column: $table.lastDoneAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get lastDoneKm => $composableBuilder(
+    column: $table.lastDoneKm,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get notifyDaysBefore => $composableBuilder(
+    column: $table.notifyDaysBefore,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get note =>
+      $composableBuilder(column: $table.note, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+}
+
+class $$CareRemindersTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $CareRemindersTable,
+          CareReminderRow,
+          $$CareRemindersTableFilterComposer,
+          $$CareRemindersTableOrderingComposer,
+          $$CareRemindersTableAnnotationComposer,
+          $$CareRemindersTableCreateCompanionBuilder,
+          $$CareRemindersTableUpdateCompanionBuilder,
+          (
+            CareReminderRow,
+            BaseReferences<_$AppDatabase, $CareRemindersTable, CareReminderRow>,
+          ),
+          CareReminderRow,
+          PrefetchHooks Function()
+        > {
+  $$CareRemindersTableTableManager(_$AppDatabase db, $CareRemindersTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$CareRemindersTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$CareRemindersTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$CareRemindersTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> vehicleId = const Value.absent(),
+                Value<String> type = const Value.absent(),
+                Value<String?> title = const Value.absent(),
+                Value<DateTime?> dueDate = const Value.absent(),
+                Value<double?> dueOdometerKm = const Value.absent(),
+                Value<int?> repeatMonths = const Value.absent(),
+                Value<double?> repeatKm = const Value.absent(),
+                Value<DateTime?> lastDoneAt = const Value.absent(),
+                Value<double?> lastDoneKm = const Value.absent(),
+                Value<int> notifyDaysBefore = const Value.absent(),
+                Value<String?> note = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => CareRemindersCompanion(
+                id: id,
+                vehicleId: vehicleId,
+                type: type,
+                title: title,
+                dueDate: dueDate,
+                dueOdometerKm: dueOdometerKm,
+                repeatMonths: repeatMonths,
+                repeatKm: repeatKm,
+                lastDoneAt: lastDoneAt,
+                lastDoneKm: lastDoneKm,
+                notifyDaysBefore: notifyDaysBefore,
+                note: note,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String vehicleId,
+                required String type,
+                Value<String?> title = const Value.absent(),
+                Value<DateTime?> dueDate = const Value.absent(),
+                Value<double?> dueOdometerKm = const Value.absent(),
+                Value<int?> repeatMonths = const Value.absent(),
+                Value<double?> repeatKm = const Value.absent(),
+                Value<DateTime?> lastDoneAt = const Value.absent(),
+                Value<double?> lastDoneKm = const Value.absent(),
+                Value<int> notifyDaysBefore = const Value.absent(),
+                Value<String?> note = const Value.absent(),
+                required DateTime createdAt,
+                Value<int> rowid = const Value.absent(),
+              }) => CareRemindersCompanion.insert(
+                id: id,
+                vehicleId: vehicleId,
+                type: type,
+                title: title,
+                dueDate: dueDate,
+                dueOdometerKm: dueOdometerKm,
+                repeatMonths: repeatMonths,
+                repeatKm: repeatKm,
+                lastDoneAt: lastDoneAt,
+                lastDoneKm: lastDoneKm,
+                notifyDaysBefore: notifyDaysBefore,
+                note: note,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$CareRemindersTable, CareReminderRow>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $CareRemindersTable,
+                    CareReminderRow
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$CareRemindersTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $CareRemindersTable,
+      CareReminderRow,
+      $$CareRemindersTableFilterComposer,
+      $$CareRemindersTableOrderingComposer,
+      $$CareRemindersTableAnnotationComposer,
+      $$CareRemindersTableCreateCompanionBuilder,
+      $$CareRemindersTableUpdateCompanionBuilder,
+      (
+        CareReminderRow,
+        BaseReferences<_$AppDatabase, $CareRemindersTable, CareReminderRow>,
+      ),
+      CareReminderRow,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -2545,4 +3697,6 @@ class $AppDatabaseManager {
       $$FillUpsTableTableManager(_db, _db.fillUps);
   $$PlaceLocationsTableTableManager get placeLocations =>
       $$PlaceLocationsTableTableManager(_db, _db.placeLocations);
+  $$CareRemindersTableTableManager get careReminders =>
+      $$CareRemindersTableTableManager(_db, _db.careReminders);
 }

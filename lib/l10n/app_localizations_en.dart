@@ -1232,4 +1232,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get monthsShort => 'Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec';
+
+  @override
+  String get errorCareSave => 'Could not save the reminder. Please try again.';
 }

@@ -1226,4 +1226,8 @@ class AppLocalizationsBn extends AppLocalizations {
   @override
   String get monthsShort =>
       'জানু,ফেব্রু,মার্চ,এপ্রিল,মে,জুন,জুলাই,আগস্ট,সেপ্টে,অক্টো,নভে,ডিসে';
+
+  @override
+  String get errorCareSave =>
+      'রিমাইন্ডার সংরক্ষণ করা যায়নি। আবার চেষ্টা করুন।';
 }

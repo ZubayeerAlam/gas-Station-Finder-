@@ -124,4 +124,17 @@ abstract final class HistoryAnalytics {
     }
     return out;
   }
+
+  /// Latest odometer (the highest reading — entries may be logged out of
+  /// order) and the average km driven per day between the earliest and the
+  /// latest dated readings. km/day needs ≥ 2 readings at least a day apart.
+  static ({double? latestKm, double? kmPerDay}) odometerStats(List<FillUp> fillUps) {
+    final readings = [for (final f in fillUps) if (f.odometerKm != null) f]..sort((a, b) => a.date.compareTo(b.date));
+    if (readings.isEmpty) return (latestKm: null, kmPerDay: null);
+    final latestKm = readings.map((f) => f.odometerKm!).reduce((a, b) => a > b ? a : b);
+    final first = readings.first, last = readings.last;
+    final days = last.date.difference(first.date).inHours / 24;
+    final km = last.odometerKm! - first.odometerKm!;
+    return (latestKm: latestKm, kmPerDay: days >= 1 && km > 0 ? km / days : null);
+  }
 }
