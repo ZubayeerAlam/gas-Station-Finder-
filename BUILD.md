@@ -296,7 +296,7 @@ flutter run --dart-define-from-file=config/dev.json --dart-define=FIREBASE_MODE=
 ```
 
 ## Phase 3 — Batch 3.A: offline, CI, localization, accessibility, README (2026‑11‑25)
-*(implemented, unit/widget-tested, iOS-simulator-tested for localization; CI workflow pushed — result recorded below)*
+*(implemented, unit/widget-tested, iOS-simulator-tested for localization; CI verified green on GitHub)*
 - **Offline (Places-policy compliant):** Google's Places policies (checked on developers.google.com, Places API (New) → Policies) allow storing only **place IDs** (indefinitely) and **lat/lng for ≤ 30 consecutive days**; names, addresses and other content may not be stored. The Service Specific Terms page could not be read by the fetch tool, so the stricter reading is used.
   - New drift table `place_locations(place_id, lat, lng, fetched_at)` (schema v3 + migration). Nothing else from Places is written to disk.
   - `OfflineFallbackStationsRepository` wraps the Places repository. Live results pass through and their id + position are saved. On a **network/timeout** failure it returns saved positions within the radius, nearest first, named "Saved station" with `offlineSavedAt`. Config/403/server errors are **not** masked. Rows older than 30 days are purged on every read/write.
@@ -314,4 +314,5 @@ flutter run --dart-define-from-file=config/dev.json --dart-define=FIREBASE_MODE=
 - `test/l10n/l10n_a11y_test.dart` → 10 passed (every EN key has a BN translation and vice versa; locale preference; EN/BN plurals; Bengali navigation + garage; language menu switches the whole app and back to system; drift store round-trip; accessibility guidelines at 200 % for Garage and Assistant EN/BN; Bengali unavailable state).
 - Full suite: **177 passed**; `flutter analyze`: no issues; functions: unit 19, rules 7, assistant 7, integration 5 — all passed.
 - **iOS simulator (iPhone 17e):** Garage → translate menu → বাংলা: title, empty state, buttons and navigation switch to Bengali; choice survives an app restart (Map app bar, Fuel/EV toggle, Retry in Bengali). Visible gap: failure messages from the data layer are still English.
-- **Not verified:** offline fallback on a device (cache can't fill while Places returns 403) · CI on GitHub (see below).
+- **CI on GitHub:** run 45639465141 for commit 9ba7cfb — **both jobs passed** (Functions 1m36s, Flutter 9m21s; artifacts `coverage` + `app-debug-apk`). Warnings only: actions v4 run on Node 20 (deprecated) and setup-java v4 is deprecated → bump to v5 in a later batch.
+- **Not verified:** offline fallback on a device (cache can't fill while Places returns 403).
