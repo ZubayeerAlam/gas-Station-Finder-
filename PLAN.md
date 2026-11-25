@@ -236,7 +236,7 @@ Problem: expired BRTA documents (tax token, fitness, insurance, route permit) me
 - [x] 4.B Care screen (grouped by urgency), add/edit form, mark-done sheet, Garage menu + badge, EN/BN
 - [x] 4.C Local notifications (before + on the day, 09:00), permission on first save, Android/iOS setup
 - [x] Simulator walkthrough (iOS: Bengali flow, permission prompt, scheduled count logged)
-- [ ] CI green for 4.C *(checked after push; see BUILD.md)*
+- [x] CI green for 4.C: run 45651331824 (`0763927`), including the Android debug APK build
 - [ ] Not verifiable here: a notification actually firing at 09:00 on a device, Android reboot rescheduling, any Android run beyond the CI debug build
 
 ---

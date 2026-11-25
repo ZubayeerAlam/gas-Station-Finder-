@@ -419,3 +419,4 @@ Plan: document-expiry and service reminders per vehicle (BRTA tax token, fitness
   - a notification actually firing at 09:00 (needs real time passing on a device)
   - Android notification permission, delivery and reboot rescheduling (CI only builds the debug APK)
   - the Android channel name is English only (set once at creation; the notification text itself is localized)
+- **Batch 4.C pushed:** `0763927`. CI run [45651331824](https://github.com/ZubayeerAlam/gas-Station-Finder-/actions/runs/45651331824) is **green**: generated code, analyze, tests, the coverage gate, the debug APK build (so the desugaring and manifest changes compile), and Cloud Functions tests. GitHub created no run for `4056a3b` (4.B); its code is included in and covered by this run.
