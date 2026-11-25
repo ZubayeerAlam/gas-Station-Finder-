@@ -125,9 +125,16 @@ class VehicleCard extends ConsumerWidget {
                     if (attention > 0)
                       Padding(
                         padding: const EdgeInsets.only(top: AppSpacing.xs),
-                        child: ActionChip(
+                        // A button rather than a chip: its label wraps, so long
+                        // translations and large text sizes are never clipped.
+                        child: OutlinedButton.icon(
                           key: ValueKey('careChip-${vehicle.id}'),
-                          avatar: Icon(Icons.build_circle_rounded, size: 18, color: theme.colorScheme.error),
+                          style: OutlinedButton.styleFrom(
+                            backgroundColor: theme.colorScheme.surface,
+                            foregroundColor: theme.colorScheme.onSurface,
+                            alignment: Alignment.centerLeft,
+                          ),
+                          icon: Icon(Icons.build_circle_rounded, size: 18, color: theme.colorScheme.error),
                           label: Text(context.l10n.careAttention(attention)),
                           onPressed: () => context.push(AppRoutes.care, extra: vehicle),
                         ),

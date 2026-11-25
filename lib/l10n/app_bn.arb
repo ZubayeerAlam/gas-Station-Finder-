@@ -387,5 +387,9 @@
   "careAttention": "{count, plural, other{{count}টি রিমাইন্ডারে মনোযোগ দরকার}}",
   "careWholeNumber": "একটি পূর্ণ সংখ্যা লিখুন",
   "careProgressSemantics": "সময়সীমার {percent} শতাংশ পার হয়েছে",
-  "careOptions": "রিমাইন্ডার অপশন"
+  "careOptions": "রিমাইন্ডার অপশন",
+  "careNoticeTitle": "{reminder} · {vehicle}",
+  "careNoticeEstimated": " (আপনার চালানোর হিসাবে আনুমানিক)",
+  "careChannelName": "গাড়ির যত্নের রিমাইন্ডার",
+  "careChannelDescription": "আপনার গাড়ির কাগজপত্রের মেয়াদ ও সার্ভিসের রিমাইন্ডার"
 }

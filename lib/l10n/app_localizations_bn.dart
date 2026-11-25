@@ -1471,4 +1471,19 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get careOptions => 'রিমাইন্ডার অপশন';
+
+  @override
+  String careNoticeTitle(String reminder, String vehicle) {
+    return '$reminder · $vehicle';
+  }
+
+  @override
+  String get careNoticeEstimated => ' (আপনার চালানোর হিসাবে আনুমানিক)';
+
+  @override
+  String get careChannelName => 'গাড়ির যত্নের রিমাইন্ডার';
+
+  @override
+  String get careChannelDescription =>
+      'আপনার গাড়ির কাগজপত্রের মেয়াদ ও সার্ভিসের রিমাইন্ডার';
 }

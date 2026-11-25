@@ -1481,4 +1481,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get careOptions => 'Reminder options';
+
+  @override
+  String careNoticeTitle(String reminder, String vehicle) {
+    return '$reminder · $vehicle';
+  }
+
+  @override
+  String get careNoticeEstimated => ' (estimated from your driving)';
+
+  @override
+  String get careChannelName => 'Vehicle care reminders';
+
+  @override
+  String get careChannelDescription =>
+      'Document expiry and service reminders for your vehicles';
 }

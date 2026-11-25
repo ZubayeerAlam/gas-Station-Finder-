@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -8,6 +9,7 @@ import '../../garage/domain/vehicle_profile.dart';
 import '../../history/domain/history_analytics.dart';
 import '../../history/presentation/history_providers.dart';
 import '../data/drift_care_repository.dart';
+import '../data/local_reminder_notifier.dart';
 import '../domain/care_reminder.dart';
 import '../domain/care_schedule.dart';
 import '../domain/care_schedule.dart' as schedule show markDone;
@@ -57,7 +59,20 @@ class CareController {
   String newId() => 'care_${DateTime.now().microsecondsSinceEpoch}_${_random.nextInt(1 << 20)}';
   DateTime _now() => _ref.read(nowProvider)();
 
-  Future<Result<void>> save(CareReminder r) => _ref.read(careRepositoryProvider).save(r);
+  bool _askedPermission = false;
+
+  /// Saves; the first reminder with a due date or km also asks for notification permission
+  /// (never at app start). A denial only means no notifications — the screen still shows status.
+  Future<Result<void>> save(CareReminder r) async {
+    final result = await _ref.read(careRepositoryProvider).save(r);
+    if (result.isOk && r.hasDue && !_askedPermission) {
+      _askedPermission = true;
+      // Not awaited: the form closes at once while the OS dialog is shown.
+      unawaited(_ref.read(reminderNotifierProvider).requestPermission());
+    }
+    return result;
+  }
+
   Future<Result<void>> delete(String id) => _ref.read(careRepositoryProvider).delete(id);
 
   /// Adds the suggested presets this vehicle doesn't have yet; returns how many.

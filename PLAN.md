@@ -234,8 +234,10 @@ Problem: expired BRTA documents (tax token, fitness, insurance, route permit) me
 - [x] 4.A Domain: `CareReminder`, status by date / km / both (whichever first), km/day estimate, mark-done roll-forward, presets (CNG retest only for CNG, no oil change for EVs), notice times; `HistoryAnalytics.odometerStats`
 - [x] 4.A Data: drift `care_reminders` (schema v4 + migration, upgrade-tested), `DriftCareRepository`, `FailureCode.careSaveFailed`
 - [x] 4.B Care screen (grouped by urgency), add/edit form, mark-done sheet, Garage menu + badge, EN/BN
-- [ ] 4.C Local notifications (before + on the day, 09:00), permission on first save, Android/iOS setup
-- [ ] Simulator walkthrough; CI green
+- [x] 4.C Local notifications (before + on the day, 09:00), permission on first save, Android/iOS setup
+- [x] Simulator walkthrough (iOS: Bengali flow, permission prompt, scheduled count logged)
+- [ ] CI green for 4.C *(checked after push; see BUILD.md)*
+- [ ] Not verifiable here: a notification actually firing at 09:00 on a device, Android reboot rescheduling, any Android run beyond the CI debug build
 
 ---
 

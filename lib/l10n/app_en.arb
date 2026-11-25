@@ -464,5 +464,10 @@
   "careWholeNumber": "Enter a whole number",
   "careProgressSemantics": "{percent} percent of the interval used",
   "@careProgressSemantics": {"placeholders": {"percent": {"type": "int"}}},
-  "careOptions": "Reminder options"
+  "careOptions": "Reminder options",
+  "careNoticeTitle": "{reminder} · {vehicle}",
+  "@careNoticeTitle": {"placeholders": {"reminder": {"type": "String"}, "vehicle": {"type": "String"}}},
+  "careNoticeEstimated": " (estimated from your driving)",
+  "careChannelName": "Vehicle care reminders",
+  "careChannelDescription": "Document expiry and service reminders for your vehicles"
 }

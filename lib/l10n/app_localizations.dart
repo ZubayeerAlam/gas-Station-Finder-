@@ -2435,6 +2435,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Reminder options'**
   String get careOptions;
+
+  /// No description provided for @careNoticeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{reminder} · {vehicle}'**
+  String careNoticeTitle(String reminder, String vehicle);
+
+  /// No description provided for @careNoticeEstimated.
+  ///
+  /// In en, this message translates to:
+  /// **' (estimated from your driving)'**
+  String get careNoticeEstimated;
+
+  /// No description provided for @careChannelName.
+  ///
+  /// In en, this message translates to:
+  /// **'Vehicle care reminders'**
+  String get careChannelName;
+
+  /// No description provided for @careChannelDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Document expiry and service reminders for your vehicles'**
+  String get careChannelDescription;
 }
 
 class _AppLocalizationsDelegate

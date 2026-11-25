@@ -379,3 +379,43 @@ Plan: document-expiry and service reminders per vehicle (BRTA tax token, fitness
   - Bengali at 200 % text passes the tap-target, label and contrast guidelines
 
   Full suite **220 passed**; analyze clean.
+- **Batch 4.B pushed:** `4056a3b`.
+
+### Batch 4.C — local notifications *(implemented, unit-tested, iOS Simulator-checked)*
+- Packages, pinned exactly and all at least 2 weeks old:
+  - `flutter_local_notifications` 22.3.3 (23.x was under 2 weeks old and a new major)
+  - `timezone` 0.11.2
+  - `flutter_timezone` 5.1.1
+
+  The lockfile only gained these packages; no existing dependency changed.
+- `domain/reminder_notifier.dart`: `ReminderNotifier` interface (`requestPermission`, `sync`), `ScheduledCareNotice`, reserved ids 7000–7049 (`kMaxCareNotices = 50`, under iOS's limit of 64 pending notifications).
+- `data/local_reminder_notifier.dart`:
+  - Lazy setup (time zones, device zone via `flutter_timezone`, UTC fallback), no permission prompt at start-up.
+  - `sync` is serialized, skips an unchanged list, cancels the reserved ids and schedules again with `inexactAllowWhileIdle`, so no exact-alarm permission is needed.
+  - Never throws: when the plugin is missing or fails it logs and does nothing, and the in-app status stays the source of truth.
+  - Debug builds log `Care reminders: N notification(s) scheduled`.
+- `presentation/care_notifications.dart`:
+  - Pure `buildCareSchedule`: soonest first, capped at 50, skips overdue / undated / past / deleted-vehicle reminders. Text is in the user's language, e.g. "Tax token · Axio" / "Due in 7 days · 7 Dec 2026"; for km-based dates it adds "(estimated from your driving)".
+  - `careScheduleProvider` and `careSyncProvider`, watched by `FuelWiseApp`, so any change to reminders, vehicles, odometer or language re-syncs.
+- Permission: asked **once, on the first save of a reminder with a due date or km**. Undated presets never prompt. The request is not awaited, so the form closes at once.
+- Android:
+  - `POST_NOTIFICATIONS` + `RECEIVE_BOOT_COMPLETED`.
+  - The plugin's scheduled and boot receivers.
+  - Core-library desugaring (`desugar_jdk_libs` 2.1.4), as the plugin README requires.
+- iOS: `UNUserNotificationCenter.current().delegate = self` in `AppDelegate`, so notices also show while the app is open.
+- **Bug found on the Simulator, then fixed:** on iOS, `initialize()` returns *permission granted*, which is false until the user is asked, not *setup succeeded*. The first version treated `false` as "unavailable", so neither the prompt nor any scheduling ever happened, while unit tests with the fake notifier passed. Setup now counts as successful whenever `initialize` doesn't throw.
+- **UI fix found on the Simulator:** the Garage attention chip clipped the Bengali label ("…মনোযোগ দর"). It is now an outlined button whose label wraps.
+- Tests:
+  - `care_notifications_test.dart`, 7 tests: schedule order, times, ids and English text; skipping rules; notify 0; km estimate + Bengali; the 50 cap; sync provider re-syncs on change; permission asked once; the real notifier doesn't throw without the plugin.
+  - The UI tests now use `FakeReminderNotifier` and assert: undated presets don't prompt, the first dated save prompts once.
+  - Full suite **227 passed**, analyze clean, domain coverage **94.7%**.
+- **iOS Simulator (iPhone 17e, Bengali):**
+  1. Added a vehicle; the Garage menu shows "যত্ন ও রিমাইন্ডার".
+  2. Empty state, then "add suggested" adds 5 reminders (no CNG retest for petrol) with a Bengali SnackBar.
+  3. Set Tax token to 30 Nov 2026: it moves to "শীঘ্রই করতে হবে · 5 দিন বাকি · 30 নভে 2026", and the Garage shows "1টি রিমাইন্ডারে মনোযোগ দরকার".
+  4. The log shows `Care reminders: 1 notification(s) scheduled`: the 7-days-before notice was already in the past, so only the on-day one.
+  5. The first dated save showed the iOS permission dialog; after Allow, the schedule was unchanged, so it was not rescheduled.
+- **Not verified:**
+  - a notification actually firing at 09:00 (needs real time passing on a device)
+  - Android notification permission, delivery and reboot rescheduling (CI only builds the debug APK)
+  - the Android channel name is English only (set once at creation; the notification text itself is localized)

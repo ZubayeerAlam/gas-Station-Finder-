@@ -5,6 +5,7 @@ import 'package:gas_station_finder/core/router/app_router.dart';
 import 'package:gas_station_finder/core/theme/app_theme.dart';
 import 'package:gas_station_finder/features/along_route/presentation/along_route_providers.dart';
 import 'package:gas_station_finder/features/care/data/drift_care_repository.dart';
+import 'package:gas_station_finder/features/care/data/local_reminder_notifier.dart';
 import 'package:gas_station_finder/features/care/domain/care_reminder.dart';
 import 'package:gas_station_finder/features/garage/data/drift_garage_repository.dart';
 import 'package:gas_station_finder/features/garage/domain/vehicle_profile.dart';
@@ -15,6 +16,9 @@ import 'package:gas_station_finder/l10n/l10n.dart';
 import '../../helpers/fake_care_repository.dart';
 import '../../helpers/fake_fill_up_repository.dart';
 import '../../helpers/fake_garage_repository.dart';
+import '../../helpers/fake_reminder_notifier.dart';
+
+late FakeReminderNotifier notifier;
 
 const car = VehicleProfile(
   id: 'v1',
@@ -68,6 +72,7 @@ void main() {
     tester.view.devicePixelRatio = 2.5;
     addTearDown(tester.view.reset);
     final care = FakeCareRepository(reminders);
+    notifier = FakeReminderNotifier();
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
@@ -79,6 +84,7 @@ void main() {
             ]),
           ),
           careRepositoryProvider.overrideWithValue(care),
+          reminderNotifierProvider.overrideWithValue(notifier),
           nowProvider.overrideWithValue(() => now),
         ],
         retry: (_, _) => null,
@@ -128,6 +134,7 @@ void main() {
       CareType.tyreRotation,
     ]);
     expect(find.text('5 reminders added — set their dates'), findsOneWidget);
+    expect(notifier.permissionRequests, 0, reason: 'undated presets never prompt');
     expect(find.text('Needs a date'), findsOneWidget);
     expect(find.textContaining('Odometer 11900 km'), findsOneWidget);
   });
@@ -208,6 +215,7 @@ void main() {
       (CareType.custom, 'Brake pads', 12500, null, null),
     );
     expect(find.text('Brake pads'), findsOneWidget);
+    expect(notifier.permissionRequests, 1, reason: 'first dated save asks once');
     expect(find.textContaining('In 600 km'), findsOneWidget);
   });
 
