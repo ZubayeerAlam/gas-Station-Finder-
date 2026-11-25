@@ -145,10 +145,10 @@ class FirestoreCommunityRepository implements CommunityRepository {
 AppFailure mapFirebaseError(Object e) => switch (e) {
       AppFailure() => e,
       FirebaseAuthException(code: 'operation-not-allowed' || 'admin-restricted-operation') =>
-        const ConfigFailure('Community features need anonymous sign-in enabled in Firebase.'),
+        const ConfigFailure('Community features need anonymous sign-in enabled in Firebase.', code: FailureCode.communityNeedsSignIn),
       FirebaseAuthException(code: 'network-request-failed') => const NetworkFailure(),
       FirebaseException(code: 'permission-denied') =>
-        const ServerFailure('That change was not allowed. Check the values and try again.', statusCode: 403),
+        const ServerFailure('That change was not allowed. Check the values and try again.', statusCode: 403, code: FailureCode.notAllowed),
       FirebaseException(code: 'unavailable') => const NetworkFailure(),
       FirebaseException(code: 'deadline-exceeded') => const TimeoutFailure(),
       _ => const UnknownFailure(),

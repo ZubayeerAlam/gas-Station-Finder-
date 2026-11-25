@@ -7,6 +7,7 @@ import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/state_views.dart';
 import '../../along_route/presentation/along_route_providers.dart';
 import '../../along_route/presentation/along_route_screen.dart' show StationResultCard;
+import '../../../l10n/failure_text.dart';
 import '../../../l10n/l10n.dart';
 import 'assistant_controller.dart';
 
@@ -222,7 +223,11 @@ class _MessageView extends StatelessWidget {
         ),
       ),
       child: Text(
-        m.text,
+        m.tooManySteps
+            ? context.l10n.assistantTooManySteps
+            : m.failure != null
+                ? describeFailure(m.failure, context.l10n)
+                : m.text,
         style: theme.textTheme.bodyMedium?.copyWith(
           color: m.fromUser
               ? cs.onPrimary

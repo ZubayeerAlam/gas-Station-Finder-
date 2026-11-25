@@ -10,6 +10,9 @@ import '../../garage/presentation/garage_providers.dart';
 import '../../stations/domain/entities/station.dart';
 import '../../stations/presentation/stations_controllers.dart';
 import '../domain/community_models.dart';
+import '../../../l10n/domain_labels.dart';
+import '../../../l10n/failure_text.dart';
+import '../../../l10n/l10n.dart';
 import 'community_providers.dart';
 
 final _currencyPattern = RegExp(r'^[A-Z]{3}$');
@@ -40,6 +43,7 @@ class _ReportPriceScreenState extends ConsumerState<ReportPriceScreen> {
   final _form = GlobalKey<FormState>();
   final _price = TextEditingController();
   late final TextEditingController _currency;
+
   /// Null until the user picks one; until then it follows the active vehicle
   /// (which may still be loading when the screen opens).
   String? _pickedFuel;
@@ -78,21 +82,25 @@ class _ReportPriceScreenState extends ConsumerState<ReportPriceScreen> {
     if (!_form.currentState!.validate()) return;
     setState(() => _sending = true);
     final s = widget.station;
-    final result = await ref.read(communityRepositoryProvider).submitReport(PriceReportDraft(
-          stationId: s.id,
-          stationName: s.name,
-          stationLocation: s.location,
-          fuelType: _fuel,
-          price: double.parse(_price.text.trim().replaceAll(',', '.')),
-          currencyCode: _currency.text.trim().toUpperCase(),
-        ));
+    final result = await ref
+        .read(communityRepositoryProvider)
+        .submitReport(
+          PriceReportDraft(
+            stationId: s.id,
+            stationName: s.name,
+            stationLocation: s.location,
+            fuelType: _fuel,
+            price: double.parse(_price.text.trim().replaceAll(',', '.')),
+            currencyCode: _currency.text.trim().toUpperCase(),
+          ),
+        );
     if (!mounted) return;
     setState(() {
       _sending = false;
       if (result case Ok(:final value)) _reportId = value;
     });
     if (result case Err(:final failure)) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(failure.message)));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(describeFailure(failure, context.l10n))));
     }
   }
 
@@ -101,8 +109,9 @@ class _ReportPriceScreenState extends ConsumerState<ReportPriceScreen> {
     final theme = Theme.of(context);
     ref.watch(activeVehicleProvider);
     final unit = _fuel == 'EV_KWH' ? 'kWh' : 'L';
+    final l = context.l10n;
     return Scaffold(
-      appBar: AppBar(title: const Text('Report a price')),
+      appBar: AppBar(title: Text(l.reportAPrice)),
       body: _reportId != null
           ? _Submitted(reportId: _reportId!, onDone: () => context.pop())
           : Form(
@@ -117,11 +126,16 @@ class _ReportPriceScreenState extends ConsumerState<ReportPriceScreen> {
                     subtitle: widget.station.address == null ? null : Text(widget.station.address!),
                   ),
                   DropdownButtonFormField<String>(
+                    isExpanded: true, // long labels at large text sizes ellipsize instead of overflowing
                     key: ValueKey('fuel-$_fuel'),
                     initialValue: _fuel,
-                    decoration: const InputDecoration(labelText: 'Fuel'),
+                    decoration: InputDecoration(labelText: l.fuel),
                     items: [
-                      for (final f in kCommunityFuelTypes) DropdownMenuItem(value: f, child: Text(fuelTypeLabel(f))),
+                      for (final f in kCommunityFuelTypes)
+                        DropdownMenuItem(
+                          value: f,
+                          child: Text(localizedFuelType(f, l), overflow: TextOverflow.ellipsis),
+                        ),
                     ],
                     onChanged: (f) => setState(() => _pickedFuel = f),
                   ),
@@ -137,8 +151,8 @@ class _ReportPriceScreenState extends ConsumerState<ReportPriceScreen> {
                           autofocus: true,
                           keyboardType: const TextInputType.numberWithOptions(decimal: true),
                           inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]'))],
-                          decoration: InputDecoration(labelText: 'Price per $unit'),
-                          validator: validateReportPrice,
+                          decoration: InputDecoration(labelText: l.pricePerUnit(unit)),
+                          validator: (t) => validateReportPriceL10n(t, l),
                         ),
                       ),
                       const SizedBox(width: AppSpacing.sm),
@@ -152,16 +166,15 @@ class _ReportPriceScreenState extends ConsumerState<ReportPriceScreen> {
                             FilteringTextInputFormatter.allow(RegExp('[A-Za-z]')),
                             TextInputFormatter.withFunction((_, n) => n.copyWith(text: n.text.toUpperCase())),
                           ],
-                          decoration: const InputDecoration(labelText: 'Currency', hintText: 'EUR', counterText: ''),
-                          validator: (t) => _currencyPattern.hasMatch((t ?? '').trim()) ? null : '3-letter code',
+                          decoration: InputDecoration(labelText: l.currency, hintText: 'EUR', counterText: ''),
+                          validator: (t) => _currencyPattern.hasMatch((t ?? '').trim()) ? null : l.currencyCodeError,
                         ),
                       ),
                     ],
                   ),
                   const SizedBox(height: AppSpacing.sm),
                   Text(
-                    'Report the price shown at the pump right now. Reports are combined with others; '
-                    'prices far from recent reports are not used.',
+                    l.reportPriceHelp,
                     style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
                   ),
                 ],
@@ -174,7 +187,7 @@ class _ReportPriceScreenState extends ConsumerState<ReportPriceScreen> {
                 padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.sm, AppSpacing.md, AppSpacing.md),
                 child: FilledButton(
                   onPressed: _sending ? null : _submit,
-                  child: Text(_sending ? 'Sending…' : 'Send report'),
+                  child: Text(_sending ? l.sending : l.sendReport),
                 ),
               ),
             ),
@@ -211,12 +224,12 @@ class _Submitted extends ConsumerWidget {
               ),
             const SizedBox(height: AppSpacing.md),
             Text(
-              reportStatusMessage(status?.status, status?.reason),
+              localizedReportStatus(status?.status, status?.reason, context.l10n),
               textAlign: TextAlign.center,
               style: theme.textTheme.titleMedium,
             ),
             const SizedBox(height: AppSpacing.lg),
-            FilledButton(onPressed: onDone, child: const Text('Done')),
+            FilledButton(onPressed: onDone, child: Text(context.l10n.done)),
           ],
         ),
       ),

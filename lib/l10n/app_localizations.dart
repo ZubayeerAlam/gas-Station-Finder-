@@ -625,6 +625,1450 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'That took too many steps. Please try a simpler question.'**
   String get assistantTooManySteps;
+
+  /// No description provided for @errorNetwork.
+  ///
+  /// In en, this message translates to:
+  /// **'No internet connection. Check your network and try again.'**
+  String get errorNetwork;
+
+  /// No description provided for @errorTimeout.
+  ///
+  /// In en, this message translates to:
+  /// **'The server took too long to respond. Please try again.'**
+  String get errorTimeout;
+
+  /// No description provided for @errorNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing was found.'**
+  String get errorNotFound;
+
+  /// No description provided for @errorUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong. Please try again.'**
+  String get errorUnknown;
+
+  /// No description provided for @errorCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'The request was cancelled.'**
+  String get errorCancelled;
+
+  /// No description provided for @errorBadResponse.
+  ///
+  /// In en, this message translates to:
+  /// **'Received an unexpected response from the server.'**
+  String get errorBadResponse;
+
+  /// No description provided for @errorRequestRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'The map service rejected the request. Check the API key and its restrictions.'**
+  String get errorRequestRejected;
+
+  /// No description provided for @errorTooManyRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'Too many requests. Please wait a moment.'**
+  String get errorTooManyRequests;
+
+  /// No description provided for @errorServer.
+  ///
+  /// In en, this message translates to:
+  /// **'Server error ({status}). Please try again.'**
+  String errorServer(String status);
+
+  /// No description provided for @errorMissingGoogleKey.
+  ///
+  /// In en, this message translates to:
+  /// **'Google Maps API key is not configured in this build.'**
+  String get errorMissingGoogleKey;
+
+  /// No description provided for @errorMissingOcmKey.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Charge Map API key is not configured in this build.'**
+  String get errorMissingOcmKey;
+
+  /// No description provided for @errorCommunityUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Community prices are not set up in this build.'**
+  String get errorCommunityUnavailable;
+
+  /// No description provided for @errorCommunityNeedsSignIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Community features need anonymous sign-in enabled in Firebase.'**
+  String get errorCommunityNeedsSignIn;
+
+  /// No description provided for @errorNotAllowed.
+  ///
+  /// In en, this message translates to:
+  /// **'That change was not allowed. Check the values and try again.'**
+  String get errorNotAllowed;
+
+  /// No description provided for @errorSignInFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not sign in.'**
+  String get errorSignInFailed;
+
+  /// No description provided for @errorAssistantFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'The assistant could not answer. Please try again.'**
+  String get errorAssistantFailed;
+
+  /// No description provided for @errorNoDetours.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not compute detours.'**
+  String get errorNoDetours;
+
+  /// No description provided for @errorNoRouteToDestination.
+  ///
+  /// In en, this message translates to:
+  /// **'No route to the destination.'**
+  String get errorNoRouteToDestination;
+
+  /// No description provided for @errorNoRouteToStation.
+  ///
+  /// In en, this message translates to:
+  /// **'No driving route found to this station.'**
+  String get errorNoRouteToStation;
+
+  /// No description provided for @errorHistorySave.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not update your history. Please try again.'**
+  String get errorHistorySave;
+
+  /// No description provided for @errorGarageSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save to the local garage. Please try again.'**
+  String get errorGarageSave;
+
+  /// No description provided for @errorLocationServiceDisabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Location services are turned off. Turn them on to find stations near you.'**
+  String get errorLocationServiceDisabled;
+
+  /// No description provided for @errorLocationDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'FuelWise needs location permission to find stations near you.'**
+  String get errorLocationDenied;
+
+  /// No description provided for @errorLocationDeniedForever.
+  ///
+  /// In en, this message translates to:
+  /// **'Location permission is blocked. Enable it in Settings to find stations near you.'**
+  String get errorLocationDeniedForever;
+
+  /// No description provided for @errorLocationUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not determine your location. Please try again.'**
+  String get errorLocationUnavailable;
+
+  /// No description provided for @timeJustNow.
+  ///
+  /// In en, this message translates to:
+  /// **'just now'**
+  String get timeJustNow;
+
+  /// No description provided for @timeMinutesAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} min ago'**
+  String timeMinutesAgo(int count);
+
+  /// No description provided for @timeHoursAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} h ago'**
+  String timeHoursAgo(int count);
+
+  /// No description provided for @timeDaysAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} d ago'**
+  String timeDaysAgo(int count);
+
+  /// No description provided for @save.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get save;
+
+  /// No description provided for @saving.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving…'**
+  String get saving;
+
+  /// No description provided for @historyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'History'**
+  String get historyTitle;
+
+  /// No description provided for @historyTitleFor.
+  ///
+  /// In en, this message translates to:
+  /// **'History · {vehicle}'**
+  String historyTitleFor(String vehicle);
+
+  /// No description provided for @addCharge.
+  ///
+  /// In en, this message translates to:
+  /// **'Add charge'**
+  String get addCharge;
+
+  /// No description provided for @addFillUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Add fill-up'**
+  String get addFillUp;
+
+  /// No description provided for @couldNotLoadHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load your history.'**
+  String get couldNotLoadHistory;
+
+  /// No description provided for @noActiveVehicle.
+  ///
+  /// In en, this message translates to:
+  /// **'No active vehicle'**
+  String get noActiveVehicle;
+
+  /// No description provided for @noActiveVehicleMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a vehicle in your garage to track fill-ups, spending and consumption.'**
+  String get noActiveVehicleMessage;
+
+  /// No description provided for @openGarage.
+  ///
+  /// In en, this message translates to:
+  /// **'Open garage'**
+  String get openGarage;
+
+  /// No description provided for @noChargesYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No charging sessions yet'**
+  String get noChargesYet;
+
+  /// No description provided for @noFillUpsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No fill-ups yet'**
+  String get noFillUpsYet;
+
+  /// No description provided for @logChargesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Log each charge to see your spending and real consumption.'**
+  String get logChargesHint;
+
+  /// No description provided for @logFillUpsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Log each fill-up to see your spending and real consumption.'**
+  String get logFillUpsHint;
+
+  /// No description provided for @statThisMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'This month'**
+  String get statThisMonth;
+
+  /// No description provided for @statAvgConsumption.
+  ///
+  /// In en, this message translates to:
+  /// **'Avg consumption'**
+  String get statAvgConsumption;
+
+  /// No description provided for @statCostPerKm.
+  ///
+  /// In en, this message translates to:
+  /// **'Cost per km'**
+  String get statCostPerKm;
+
+  /// No description provided for @spendingChartTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Spending · last 6 months ({currency})'**
+  String spendingChartTitle(String currency);
+
+  /// No description provided for @otherCurrencyEntries.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 entry in another currency not shown (no conversion).} other{{count} entries in other currencies not shown (no conversion).}}'**
+  String otherCurrencyEntries(int count);
+
+  /// No description provided for @consumptionChartTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Consumption trend ({unit}/100 km)'**
+  String consumptionChartTitle(String unit);
+
+  /// No description provided for @needMoreCharges.
+  ///
+  /// In en, this message translates to:
+  /// **'Log at least three full charges with odometer readings to see a trend.'**
+  String get needMoreCharges;
+
+  /// No description provided for @needMoreFillUps.
+  ///
+  /// In en, this message translates to:
+  /// **'Log at least three full fill-ups with odometer readings to see a trend.'**
+  String get needMoreFillUps;
+
+  /// No description provided for @measuredFullToFull.
+  ///
+  /// In en, this message translates to:
+  /// **'Measured full-to-full; compare with your garage value {value} {unit}/100 km.'**
+  String measuredFullToFull(String value, String unit);
+
+  /// No description provided for @entries.
+  ///
+  /// In en, this message translates to:
+  /// **'Entries'**
+  String get entries;
+
+  /// No description provided for @monthlySpendingSemantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly spending: {values}'**
+  String monthlySpendingSemantics(String values);
+
+  /// No description provided for @consumptionTrendSemantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Consumption trend: {values}'**
+  String consumptionTrendSemantics(String values);
+
+  /// No description provided for @entryDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Entry deleted'**
+  String get entryDeleted;
+
+  /// No description provided for @couldNotDeleteEntry.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not delete entry'**
+  String get couldNotDeleteEntry;
+
+  /// No description provided for @deleteEntry.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete entry'**
+  String get deleteEntry;
+
+  /// No description provided for @partialFill.
+  ///
+  /// In en, this message translates to:
+  /// **'partial'**
+  String get partialFill;
+
+  /// No description provided for @addVehicleFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a vehicle in your garage first.'**
+  String get addVehicleFirst;
+
+  /// No description provided for @enterPositiveNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a positive number'**
+  String get enterPositiveNumber;
+
+  /// No description provided for @odometerMustIncrease.
+  ///
+  /// In en, this message translates to:
+  /// **'Must be above the previous reading ({value} km)'**
+  String odometerMustIncrease(String value);
+
+  /// No description provided for @couldNotSaveFillUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save fill-up'**
+  String get couldNotSaveFillUp;
+
+  /// No description provided for @addChargingSession.
+  ///
+  /// In en, this message translates to:
+  /// **'Add charging session'**
+  String get addChargingSession;
+
+  /// No description provided for @energyCharged.
+  ///
+  /// In en, this message translates to:
+  /// **'Energy charged'**
+  String get energyCharged;
+
+  /// No description provided for @fuelAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'Fuel added'**
+  String get fuelAdded;
+
+  /// No description provided for @totalPaid.
+  ///
+  /// In en, this message translates to:
+  /// **'Total paid'**
+  String get totalPaid;
+
+  /// No description provided for @currency.
+  ///
+  /// In en, this message translates to:
+  /// **'Currency'**
+  String get currency;
+
+  /// No description provided for @currencyCodeError.
+  ///
+  /// In en, this message translates to:
+  /// **'3-letter code'**
+  String get currencyCodeError;
+
+  /// No description provided for @unitPriceLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Unit price: {price}/{unit}'**
+  String unitPriceLine(String price, String unit);
+
+  /// No description provided for @odometerOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Odometer (optional)'**
+  String get odometerOptional;
+
+  /// No description provided for @odometerHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'Needed to measure real consumption and cost per km.'**
+  String get odometerHelper;
+
+  /// No description provided for @chargedToTarget.
+  ///
+  /// In en, this message translates to:
+  /// **'Charged to my usual target'**
+  String get chargedToTarget;
+
+  /// No description provided for @filledTank.
+  ///
+  /// In en, this message translates to:
+  /// **'Filled the tank'**
+  String get filledTank;
+
+  /// No description provided for @partialFillHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Partial fills are added to the next full one.'**
+  String get partialFillHelp;
+
+  /// No description provided for @stationOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Station (optional)'**
+  String get stationOptional;
+
+  /// No description provided for @couldNotSaveVehicle.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save vehicle'**
+  String get couldNotSaveVehicle;
+
+  /// No description provided for @editVehicle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit vehicle'**
+  String get editVehicle;
+
+  /// No description provided for @vehicleName.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get vehicleName;
+
+  /// No description provided for @vehicleNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Toyota Corolla'**
+  String get vehicleNameHint;
+
+  /// No description provided for @enterName.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a name'**
+  String get enterName;
+
+  /// No description provided for @energyFuel.
+  ///
+  /// In en, this message translates to:
+  /// **'Fuel'**
+  String get energyFuel;
+
+  /// No description provided for @energyElectric.
+  ///
+  /// In en, this message translates to:
+  /// **'Electric'**
+  String get energyElectric;
+
+  /// No description provided for @consumption.
+  ///
+  /// In en, this message translates to:
+  /// **'Consumption'**
+  String get consumption;
+
+  /// No description provided for @usableBatteryCapacity.
+  ///
+  /// In en, this message translates to:
+  /// **'Usable battery capacity'**
+  String get usableBatteryCapacity;
+
+  /// No description provided for @tankCapacityLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Tank capacity'**
+  String get tankCapacityLabel;
+
+  /// No description provided for @fuelTypeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Fuel type'**
+  String get fuelTypeLabel;
+
+  /// No description provided for @chargingEfficiency.
+  ///
+  /// In en, this message translates to:
+  /// **'Charging efficiency'**
+  String get chargingEfficiency;
+
+  /// No description provided for @chargingEfficiencyHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'Share of bought energy that reaches the battery. Leave 100 if unsure.'**
+  String get chargingEfficiencyHelper;
+
+  /// No description provided for @efficiencyRangeError.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a value between 1 and 100'**
+  String get efficiencyRangeError;
+
+  /// No description provided for @saveVehicle.
+  ///
+  /// In en, this message translates to:
+  /// **'Save vehicle'**
+  String get saveVehicle;
+
+  /// No description provided for @fuelDiesel.
+  ///
+  /// In en, this message translates to:
+  /// **'Diesel'**
+  String get fuelDiesel;
+
+  /// No description provided for @fuelDieselPlus.
+  ///
+  /// In en, this message translates to:
+  /// **'Diesel+'**
+  String get fuelDieselPlus;
+
+  /// No description provided for @fuelTruckDiesel.
+  ///
+  /// In en, this message translates to:
+  /// **'Truck diesel'**
+  String get fuelTruckDiesel;
+
+  /// No description provided for @fuelBioDiesel.
+  ///
+  /// In en, this message translates to:
+  /// **'Biodiesel'**
+  String get fuelBioDiesel;
+
+  /// No description provided for @fuelRegular.
+  ///
+  /// In en, this message translates to:
+  /// **'Regular'**
+  String get fuelRegular;
+
+  /// No description provided for @fuelMidgrade.
+  ///
+  /// In en, this message translates to:
+  /// **'Midgrade'**
+  String get fuelMidgrade;
+
+  /// No description provided for @fuelPremium.
+  ///
+  /// In en, this message translates to:
+  /// **'Premium'**
+  String get fuelPremium;
+
+  /// No description provided for @fuelMethane.
+  ///
+  /// In en, this message translates to:
+  /// **'CNG / Methane'**
+  String get fuelMethane;
+
+  /// No description provided for @fuelEvCharging.
+  ///
+  /// In en, this message translates to:
+  /// **'EV charging'**
+  String get fuelEvCharging;
+
+  /// No description provided for @connectorWallOutlet.
+  ///
+  /// In en, this message translates to:
+  /// **'Wall outlet'**
+  String get connectorWallOutlet;
+
+  /// No description provided for @connectorOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get connectorOther;
+
+  /// No description provided for @communityPrices.
+  ///
+  /// In en, this message translates to:
+  /// **'Community prices'**
+  String get communityPrices;
+
+  /// No description provided for @reportPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Report price'**
+  String get reportPrice;
+
+  /// No description provided for @communityOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Community prices are turned off in this build.'**
+  String get communityOff;
+
+  /// No description provided for @noCommunityReports.
+  ///
+  /// In en, this message translates to:
+  /// **'No community reports yet. Be the first to report a price.'**
+  String get noCommunityReports;
+
+  /// No description provided for @couldNotLoadCommunityPrices.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load community prices.'**
+  String get couldNotLoadCommunityPrices;
+
+  /// No description provided for @reportCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 report} other{{count} reports}}'**
+  String reportCount(int count);
+
+  /// No description provided for @communityReports.
+  ///
+  /// In en, this message translates to:
+  /// **'Community · {reports}'**
+  String communityReports(String reports);
+
+  /// No description provided for @updatedAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'updated {time}'**
+  String updatedAgo(String time);
+
+  /// No description provided for @outdated.
+  ///
+  /// In en, this message translates to:
+  /// **'outdated'**
+  String get outdated;
+
+  /// No description provided for @priceHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Price history'**
+  String get priceHistory;
+
+  /// No description provided for @fuelHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'{fuel} history'**
+  String fuelHistory(String fuel);
+
+  /// No description provided for @days7.
+  ///
+  /// In en, this message translates to:
+  /// **'7 days'**
+  String get days7;
+
+  /// No description provided for @days30.
+  ///
+  /// In en, this message translates to:
+  /// **'30 days'**
+  String get days30;
+
+  /// No description provided for @noHistoryForPeriod.
+  ///
+  /// In en, this message translates to:
+  /// **'No history for this period yet.'**
+  String get noHistoryForPeriod;
+
+  /// No description provided for @couldNotLoadPriceHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load history.'**
+  String get couldNotLoadPriceHistory;
+
+  /// No description provided for @priceHistorySemantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Community price history in {currency}: {summary}'**
+  String priceHistorySemantics(String currency, String summary);
+
+  /// No description provided for @thanksForConfirming.
+  ///
+  /// In en, this message translates to:
+  /// **'Thanks for confirming!'**
+  String get thanksForConfirming;
+
+  /// No description provided for @reliabilitySemantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Data reliability {percent} percent'**
+  String reliabilitySemantics(int percent);
+
+  /// No description provided for @votesOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} said open'**
+  String votesOpen(int count);
+
+  /// No description provided for @votesClosed.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} said closed'**
+  String votesClosed(int count);
+
+  /// No description provided for @votesOutOfFuel.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} said out of fuel'**
+  String votesOutOfFuel(int count);
+
+  /// No description provided for @reliabilityDisclaimer.
+  ///
+  /// In en, this message translates to:
+  /// **'Based on recent community reports and votes — not an official check.'**
+  String get reliabilityDisclaimer;
+
+  /// No description provided for @isItOpenNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Is it open right now?'**
+  String get isItOpenNow;
+
+  /// No description provided for @voteOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get voteOpen;
+
+  /// No description provided for @voteClosed.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed'**
+  String get voteClosed;
+
+  /// No description provided for @voteOutOfFuel.
+  ///
+  /// In en, this message translates to:
+  /// **'Out of fuel'**
+  String get voteOutOfFuel;
+
+  /// No description provided for @reliabilityNone.
+  ///
+  /// In en, this message translates to:
+  /// **'Not enough community data'**
+  String get reliabilityNone;
+
+  /// No description provided for @reliabilityHigh.
+  ///
+  /// In en, this message translates to:
+  /// **'Recently confirmed by the community'**
+  String get reliabilityHigh;
+
+  /// No description provided for @reliabilityMedium.
+  ///
+  /// In en, this message translates to:
+  /// **'Some community reports'**
+  String get reliabilityMedium;
+
+  /// No description provided for @reliabilityLow.
+  ///
+  /// In en, this message translates to:
+  /// **'Community reports are old or disagree'**
+  String get reliabilityLow;
+
+  /// No description provided for @reportAccepted.
+  ///
+  /// In en, this message translates to:
+  /// **'Thanks! Your price is now part of the community price.'**
+  String get reportAccepted;
+
+  /// No description provided for @reportMinorityCurrency.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved, but most reports here use another currency.'**
+  String get reportMinorityCurrency;
+
+  /// No description provided for @reportOutlier.
+  ///
+  /// In en, this message translates to:
+  /// **'This price is far from other recent reports, so it was not used.'**
+  String get reportOutlier;
+
+  /// No description provided for @reportDuplicate.
+  ///
+  /// In en, this message translates to:
+  /// **'You already reported this fuel here a few minutes ago.'**
+  String get reportDuplicate;
+
+  /// No description provided for @reportTooMany.
+  ///
+  /// In en, this message translates to:
+  /// **'Too many reports in the last hour. Please try later.'**
+  String get reportTooMany;
+
+  /// No description provided for @reportRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'This report was not accepted.'**
+  String get reportRejected;
+
+  /// No description provided for @reportSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Report sent. It will be checked in a moment.'**
+  String get reportSent;
+
+  /// No description provided for @enterPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a price'**
+  String get enterPrice;
+
+  /// No description provided for @enterPriceRange.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a price between 0.01 and 1000'**
+  String get enterPriceRange;
+
+  /// No description provided for @reportAPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Report a price'**
+  String get reportAPrice;
+
+  /// No description provided for @fuel.
+  ///
+  /// In en, this message translates to:
+  /// **'Fuel'**
+  String get fuel;
+
+  /// No description provided for @pricePerUnit.
+  ///
+  /// In en, this message translates to:
+  /// **'Price per {unit}'**
+  String pricePerUnit(String unit);
+
+  /// No description provided for @reportPriceHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Report the price shown at the pump right now. Reports are combined with others; prices far from recent reports are not used.'**
+  String get reportPriceHelp;
+
+  /// No description provided for @sending.
+  ///
+  /// In en, this message translates to:
+  /// **'Sending…'**
+  String get sending;
+
+  /// No description provided for @sendReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Send report'**
+  String get sendReport;
+
+  /// No description provided for @done.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get done;
+
+  /// No description provided for @priceAlerts.
+  ///
+  /// In en, this message translates to:
+  /// **'Price alerts'**
+  String get priceAlerts;
+
+  /// No description provided for @newAlert.
+  ///
+  /// In en, this message translates to:
+  /// **'New alert'**
+  String get newAlert;
+
+  /// No description provided for @alertsUnavailableTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Alerts are not available'**
+  String get alertsUnavailableTitle;
+
+  /// No description provided for @alertsUnavailableMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Price alerts need the FuelWise community backend, which is not set up in this build.'**
+  String get alertsUnavailableMessage;
+
+  /// No description provided for @noAlertsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No price alerts yet'**
+  String get noAlertsTitle;
+
+  /// No description provided for @noAlertsMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Create an alert to hear when a community price near you drops below your limit.'**
+  String get noAlertsMessage;
+
+  /// No description provided for @alertsServerNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Alerts are checked by the server when a new community price is accepted. Push notifications are not enabled in this build yet.'**
+  String get alertsServerNote;
+
+  /// No description provided for @alertOnlyAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Only at {station}'**
+  String alertOnlyAt(String station);
+
+  /// No description provided for @alertWithinKm.
+  ///
+  /// In en, this message translates to:
+  /// **'Within {km} km of the saved location'**
+  String alertWithinKm(String km);
+
+  /// No description provided for @alertOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Alert on'**
+  String get alertOn;
+
+  /// No description provided for @alertPaused.
+  ///
+  /// In en, this message translates to:
+  /// **'Alert paused'**
+  String get alertPaused;
+
+  /// No description provided for @deleteAlert.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete alert'**
+  String get deleteAlert;
+
+  /// No description provided for @alertDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Alert deleted'**
+  String get alertDeleted;
+
+  /// No description provided for @couldNotLoadAlerts.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load alerts.'**
+  String get couldNotLoadAlerts;
+
+  /// No description provided for @alertSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Alert saved'**
+  String get alertSaved;
+
+  /// No description provided for @newPriceAlert.
+  ///
+  /// In en, this message translates to:
+  /// **'New price alert'**
+  String get newPriceAlert;
+
+  /// No description provided for @alertAtOrBelow.
+  ///
+  /// In en, this message translates to:
+  /// **'Alert at or below'**
+  String get alertAtOrBelow;
+
+  /// No description provided for @alertRadius.
+  ///
+  /// In en, this message translates to:
+  /// **'Within {km} km of my current location'**
+  String alertRadius(int km);
+
+  /// No description provided for @saveAlert.
+  ///
+  /// In en, this message translates to:
+  /// **'Save alert'**
+  String get saveAlert;
+
+  /// No description provided for @badgeCheapest.
+  ///
+  /// In en, this message translates to:
+  /// **'Cheapest'**
+  String get badgeCheapest;
+
+  /// No description provided for @badgeBestValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Best value'**
+  String get badgeBestValue;
+
+  /// No description provided for @badgeLeastDetour.
+  ///
+  /// In en, this message translates to:
+  /// **'Least detour'**
+  String get badgeLeastDetour;
+
+  /// No description provided for @badgeMostReliable.
+  ///
+  /// In en, this message translates to:
+  /// **'Most reliable'**
+  String get badgeMostReliable;
+
+  /// No description provided for @caveatClosed.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed now'**
+  String get caveatClosed;
+
+  /// No description provided for @caveatUnreachable.
+  ///
+  /// In en, this message translates to:
+  /// **'May be out of range'**
+  String get caveatUnreachable;
+
+  /// No description provided for @caveatOtherCurrency.
+  ///
+  /// In en, this message translates to:
+  /// **'Other currency (not converted)'**
+  String get caveatOtherCurrency;
+
+  /// No description provided for @caveatPriceUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'No price available'**
+  String get caveatPriceUnknown;
+
+  /// No description provided for @caveatStalePrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Price older than 3 days'**
+  String get caveatStalePrice;
+
+  /// No description provided for @onRoute.
+  ///
+  /// In en, this message translates to:
+  /// **'on route'**
+  String get onRoute;
+
+  /// No description provided for @explainNoPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'No price is available for this station, so its cost cannot be compared.'**
+  String get explainNoPrice;
+
+  /// No description provided for @explainUnitOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'{price} per {unit}. Add a vehicle in your garage to compare the total trip cost.'**
+  String explainUnitOnly(String price, String unit);
+
+  /// No description provided for @explainBuy.
+  ///
+  /// In en, this message translates to:
+  /// **'Buy {amount} {unit} × {price} = {cost}'**
+  String explainBuy(String amount, String unit, String price, String cost);
+
+  /// No description provided for @explainDetour.
+  ///
+  /// In en, this message translates to:
+  /// **'Detour {distance} uses {amount} {unit} = {cost}'**
+  String explainDetour(
+    String distance,
+    String amount,
+    String unit,
+    String cost,
+  );
+
+  /// No description provided for @explainSaves.
+  ///
+  /// In en, this message translates to:
+  /// **' · saves {amount} vs the nearest station'**
+  String explainSaves(String amount);
+
+  /// No description provided for @explainMore.
+  ///
+  /// In en, this message translates to:
+  /// **' · {amount} more than the nearest station'**
+  String explainMore(String amount);
+
+  /// No description provided for @explainTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Total {cost}{comparison}'**
+  String explainTotal(String cost, String comparison);
+
+  /// No description provided for @explainSourceGoogle.
+  ///
+  /// In en, this message translates to:
+  /// **'Price source: Google'**
+  String get explainSourceGoogle;
+
+  /// No description provided for @explainSourceCommunity.
+  ///
+  /// In en, this message translates to:
+  /// **'Price source: community'**
+  String get explainSourceCommunity;
+
+  /// No description provided for @explainUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **', updated {time}'**
+  String explainUpdated(String time);
+
+  /// No description provided for @trip.
+  ///
+  /// In en, this message translates to:
+  /// **'Trip'**
+  String get trip;
+
+  /// No description provided for @tripTo.
+  ///
+  /// In en, this message translates to:
+  /// **'To {destination}'**
+  String tripTo(String destination);
+
+  /// No description provided for @changeDestination.
+  ///
+  /// In en, this message translates to:
+  /// **'Change destination'**
+  String get changeDestination;
+
+  /// No description provided for @couldNotPlanTrip.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not plan this trip.'**
+  String get couldNotPlanTrip;
+
+  /// No description provided for @noTripYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No trip yet'**
+  String get noTripYet;
+
+  /// No description provided for @noTripMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a destination to find stations along the way.'**
+  String get noTripMessage;
+
+  /// No description provided for @chooseDestination.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose destination'**
+  String get chooseDestination;
+
+  /// No description provided for @findingAlongRoute.
+  ///
+  /// In en, this message translates to:
+  /// **'Finding stations along your route…'**
+  String get findingAlongRoute;
+
+  /// No description provided for @stationsOnTheWay.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 station on the way} other{{count} stations on the way}}'**
+  String stationsOnTheWay(int count);
+
+  /// No description provided for @comparingFuelPrices.
+  ///
+  /// In en, this message translates to:
+  /// **'Comparing {fuel} prices'**
+  String comparingFuelPrices(String fuel);
+
+  /// No description provided for @detoursApproximate.
+  ///
+  /// In en, this message translates to:
+  /// **'Routing service unavailable — detours are straight-line estimates.'**
+  String get detoursApproximate;
+
+  /// No description provided for @skippedForDetour.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 more station farther from the route was not compared.} other{{count} more stations farther from the route were not compared.}}'**
+  String skippedForDetour(int count);
+
+  /// No description provided for @noStationsAlongRoute.
+  ///
+  /// In en, this message translates to:
+  /// **'No stations along this route'**
+  String get noStationsAlongRoute;
+
+  /// No description provided for @nothingWithin5km.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing found within 5 km of the route.'**
+  String get nothingWithin5km;
+
+  /// No description provided for @withoutComparablePrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Without a comparable price ({count})'**
+  String withoutComparablePrice(int count);
+
+  /// No description provided for @comparingPricePerLitre.
+  ///
+  /// In en, this message translates to:
+  /// **'Comparing price per litre only'**
+  String get comparingPricePerLitre;
+
+  /// No description provided for @addVehicleForTrueCost.
+  ///
+  /// In en, this message translates to:
+  /// **'Add your vehicle to rank by true trip cost.'**
+  String get addVehicleForTrueCost;
+
+  /// No description provided for @add.
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get add;
+
+  /// No description provided for @batteryNowToFull.
+  ///
+  /// In en, this message translates to:
+  /// **'{vehicle} · battery now {percent}% → full ({amount} {unit})'**
+  String batteryNowToFull(
+    String vehicle,
+    int percent,
+    String amount,
+    String unit,
+  );
+
+  /// No description provided for @tankNowToFull.
+  ///
+  /// In en, this message translates to:
+  /// **'{vehicle} · tank now {percent}% → full ({amount} {unit})'**
+  String tankNowToFull(String vehicle, int percent, String amount, String unit);
+
+  /// No description provided for @percentCharge.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent} percent charge'**
+  String percentCharge(int percent);
+
+  /// No description provided for @percentFuel.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent} percent fuel'**
+  String percentFuel(int percent);
+
+  /// No description provided for @intoTheTrip.
+  ///
+  /// In en, this message translates to:
+  /// **'{detour} · {distance} into the trip'**
+  String intoTheTrip(String detour, String distance);
+
+  /// No description provided for @showOnMap.
+  ///
+  /// In en, this message translates to:
+  /// **'Show on map'**
+  String get showOnMap;
+
+  /// No description provided for @whereTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Where to?'**
+  String get whereTo;
+
+  /// No description provided for @searchFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Search failed.'**
+  String get searchFailed;
+
+  /// No description provided for @searching.
+  ///
+  /// In en, this message translates to:
+  /// **'Searching…'**
+  String get searching;
+
+  /// No description provided for @noPlacesFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No places found'**
+  String get noPlacesFound;
+
+  /// No description provided for @tryAnotherName.
+  ///
+  /// In en, this message translates to:
+  /// **'Try another name or address.'**
+  String get tryAnotherName;
+
+  /// No description provided for @destinationSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search a destination. FuelWise finds stations along your route and ranks them by the true cost of stopping — price plus the fuel used by the detour.'**
+  String get destinationSearchHint;
+
+  /// No description provided for @powerAny.
+  ///
+  /// In en, this message translates to:
+  /// **'Any'**
+  String get powerAny;
+
+  /// No description provided for @reset.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset'**
+  String get reset;
+
+  /// No description provided for @minimumPower.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimum power'**
+  String get minimumPower;
+
+  /// No description provided for @connector.
+  ///
+  /// In en, this message translates to:
+  /// **'Connector'**
+  String get connector;
+
+  /// No description provided for @noConnectorDataNearby.
+  ///
+  /// In en, this message translates to:
+  /// **'No connector data nearby.'**
+  String get noConnectorDataNearby;
+
+  /// No description provided for @onlyOperational.
+  ///
+  /// In en, this message translates to:
+  /// **'Only operational'**
+  String get onlyOperational;
+
+  /// No description provided for @onlyOperationalHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide chargers reported as not working or with unknown status.'**
+  String get onlyOperationalHelp;
+
+  /// No description provided for @statusOperational.
+  ///
+  /// In en, this message translates to:
+  /// **'Operational'**
+  String get statusOperational;
+
+  /// No description provided for @statusNotOperational.
+  ///
+  /// In en, this message translates to:
+  /// **'Not operational'**
+  String get statusNotOperational;
+
+  /// No description provided for @statusUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Status unknown'**
+  String get statusUnknown;
+
+  /// No description provided for @upToPower.
+  ///
+  /// In en, this message translates to:
+  /// **'Up to {power}'**
+  String upToPower(String power);
+
+  /// No description provided for @fastSuffix.
+  ///
+  /// In en, this message translates to:
+  /// **' · fast'**
+  String get fastSuffix;
+
+  /// No description provided for @chargingPoints.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 charging point} other{{count} charging points}}'**
+  String chargingPoints(int count);
+
+  /// No description provided for @connectors.
+  ///
+  /// In en, this message translates to:
+  /// **'Connectors'**
+  String get connectors;
+
+  /// No description provided for @noConnectorDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'No connector details reported.'**
+  String get noConnectorDetails;
+
+  /// No description provided for @notOperationalLower.
+  ///
+  /// In en, this message translates to:
+  /// **'not operational'**
+  String get notOperationalLower;
+
+  /// No description provided for @cost.
+  ///
+  /// In en, this message translates to:
+  /// **'Cost'**
+  String get cost;
+
+  /// No description provided for @noCostInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'No cost information reported. Check the operator app or the charger display.'**
+  String get noCostInfo;
+
+  /// No description provided for @costAsListed.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{cost}\" — as listed by the community; not verified by FuelWise.'**
+  String costAsListed(String cost);
+
+  /// No description provided for @lastVerified.
+  ///
+  /// In en, this message translates to:
+  /// **'Last verified {time}'**
+  String lastVerified(String time);
+
+  /// No description provided for @statusUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'status updated {time}'**
+  String statusUpdated(String time);
+
+  /// No description provided for @monthsShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec'**
+  String get monthsShort;
 }
 
 class _AppLocalizationsDelegate

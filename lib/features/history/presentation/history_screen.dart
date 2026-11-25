@@ -11,6 +11,8 @@ import '../../garage/domain/vehicle_profile.dart';
 import '../../garage/presentation/garage_providers.dart';
 import '../domain/fill_up.dart';
 import '../domain/history_analytics.dart';
+import '../../../l10n/failure_text.dart';
+import '../../../l10n/l10n.dart';
 import 'history_providers.dart';
 
 class HistoryScreen extends ConsumerWidget {
@@ -24,29 +26,30 @@ class HistoryScreen extends ConsumerWidget {
     final vehicle = ref.watch(activeVehicleProvider);
     final v = vehicle.value;
     final fillUps = v == null ? null : ref.watch(fillUpsProvider(v.id));
+    final l = context.l10n;
 
     return Scaffold(
-      appBar: AppBar(title: Text(v == null ? 'History' : 'History · ${v.name}')),
+      appBar: AppBar(title: Text(v == null ? l.historyTitle : l.historyTitleFor(v.name))),
       floatingActionButton: v == null
           ? null
           : FloatingActionButton.extended(
               onPressed: () => context.push(AppRoutes.fillUpNew),
               icon: const Icon(Icons.add_rounded),
-              label: Text(v.isElectric ? 'Add charge' : 'Add fill-up'),
+              label: Text(v.isElectric ? l.addCharge : l.addFillUp),
             ),
       body: switch ((vehicle, fillUps)) {
-        (AsyncError(), _) || (_, AsyncError()) => const AppErrorView(message: 'Could not load your history.'),
+        (AsyncError(), _) || (_, AsyncError()) => AppErrorView(message: l.couldNotLoadHistory),
         (AsyncData(value: null), _) => AppMessageView(
             icon: Icons.directions_car_filled_outlined,
-            title: 'No active vehicle',
-            message: 'Add a vehicle in your garage to track fill-ups, spending and consumption.',
-            primaryLabel: 'Open garage',
+            title: l.noActiveVehicle,
+            message: l.noActiveVehicleMessage,
+            primaryLabel: l.openGarage,
             onPrimary: () => context.go(AppRoutes.garage),
           ),
         (_, AsyncData(value: final list)) when list.isEmpty => AppMessageView(
             icon: Icons.receipt_long_outlined,
-            title: v!.isElectric ? 'No charging sessions yet' : 'No fill-ups yet',
-            message: 'Log each ${v.isElectric ? 'charge' : 'fill-up'} to see your spending and real consumption.',
+            title: v!.isElectric ? l.noChargesYet : l.noFillUpsYet,
+            message: v.isElectric ? l.logChargesHint : l.logFillUpsHint,
           ),
         (_, AsyncData(value: final list)) => _HistoryBody(vehicle: v!, fillUps: list, now: now ?? DateTime.now()),
         _ => const AppLoading(),
@@ -74,46 +77,46 @@ class _HistoryBody extends ConsumerWidget {
     final spend = HistoryAnalytics.spendByMonth(fillUps, currency, now: now);
     final otherCurrency = fillUps.where((f) => f.currencyCode != currency).length;
     final unit = vehicle.unit;
+    final l = context.l10n;
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.md, AppSpacing.md, 96),
       children: [
         Row(children: [
-          Expanded(child: _Stat(label: 'This month', value: Fmt.money(spend.last.$2, currency))),
+          Expanded(child: _Stat(label: l.statThisMonth, value: Fmt.money(spend.last.$2, currency))),
           const SizedBox(width: AppSpacing.sm),
           Expanded(
             child: _Stat(
-              label: 'Avg consumption',
+              label: l.statAvgConsumption,
               value: avg == null ? '—' : '${avg.toStringAsFixed(1)} $unit/100 km',
             ),
           ),
           const SizedBox(width: AppSpacing.sm),
           Expanded(
             child: _Stat(
-              label: 'Cost per km',
+              label: l.statCostPerKm,
               value: costPerKm == null ? '—' : Fmt.price(costPerKm, currency),
             ),
           ),
         ]),
         const SizedBox(height: AppSpacing.md),
         _ChartCard(
-          title: 'Spending · last 6 months ($currency)',
+          title: l.spendingChartTitle(currency),
           caption: otherCurrency > 0
-              ? '$otherCurrency ${otherCurrency == 1 ? 'entry' : 'entries'} in other currencies not shown (no conversion).'
+              ? l.otherCurrencyEntries(otherCurrency)
               : null,
           child: _SpendChart(spend: spend),
         ),
         const SizedBox(height: AppSpacing.md),
         _ChartCard(
-          title: 'Consumption trend ($unit/100 km)',
+          title: l.consumptionChartTitle(unit),
           caption: points.length < 2
-              ? 'Log at least three full ${vehicle.isElectric ? 'charges' : 'fill-ups'} with odometer readings to see a trend.'
-              : 'Measured full-to-full; compare with your garage value '
-                  '${vehicle.consumptionPer100Km.toStringAsFixed(1)} $unit/100 km.',
+              ? (vehicle.isElectric ? l.needMoreCharges : l.needMoreFillUps)
+              : l.measuredFullToFull(vehicle.consumptionPer100Km.toStringAsFixed(1), unit),
           child: points.length < 2 ? null : _ConsumptionChart(points: points, reference: vehicle.consumptionPer100Km),
         ),
         const SizedBox(height: AppSpacing.md),
-        Text('Entries', style: Theme.of(context).textTheme.titleMedium),
+        Text(l.entries, style: Theme.of(context).textTheme.titleMedium),
         const SizedBox(height: AppSpacing.xs),
         for (final f in fillUps) FillUpTile(fillUp: f, unit: unit),
       ],
@@ -191,7 +194,8 @@ class _SpendChart extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     final label = Theme.of(context).textTheme.labelSmall;
     return Semantics(
-      label: 'Monthly spending: ${spend.map((e) => '${Fmt.monthShort(e.$1.month)} ${Fmt.number(e.$2)}').join(', ')}',
+      label: context.l10n.monthlySpendingSemantics(
+          spend.map((e) => '${monthShort(e.$1.month, context.l10n)} ${Fmt.number(e.$2)}').join(', ')),
       child: ExcludeSemantics(
         child: BarChart(BarChartData(
           gridData: const FlGridData(show: false),
@@ -210,7 +214,7 @@ class _SpendChart extends StatelessWidget {
                 showTitles: true,
                 getTitlesWidget: (value, meta) => SideTitleWidget(
                   meta: meta,
-                  child: Text(Fmt.monthShort(spend[value.toInt()].$1.month), style: label),
+                  child: Text(monthShort(spend[value.toInt()].$1.month, context.l10n), style: label),
                 ),
               ),
             ),
@@ -243,7 +247,7 @@ class _ConsumptionChart extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     final label = Theme.of(context).textTheme.labelSmall;
     return Semantics(
-      label: 'Consumption trend: ${points.map((p) => p.per100Km.toStringAsFixed(1)).join(', ')}',
+      label: context.l10n.consumptionTrendSemantics(points.map((p) => p.per100Km.toStringAsFixed(1)).join(', ')),
       child: ExcludeSemantics(
         child: LineChart(LineChartData(
           borderData: FlBorderData(show: false),
@@ -290,9 +294,10 @@ class FillUpTile extends ConsumerWidget {
     final controller = ref.read(historyControllerProvider);
     final result = await controller.delete(fillUp.id);
     if (!context.mounted) return;
+    final l = context.l10n;
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text(result.isOk ? 'Entry deleted' : 'Could not delete entry'),
-      action: result.isOk ? SnackBarAction(label: 'Undo', onPressed: () => controller.save(fillUp)) : null,
+      content: Text(result.isOk ? l.entryDeleted : l.couldNotDeleteEntry),
+      action: result.isOk ? SnackBarAction(label: l.undo, onPressed: () => controller.save(fillUp)) : null,
     ));
   }
 
@@ -303,7 +308,7 @@ class FillUpTile extends ConsumerWidget {
       Fmt.date(f.date),
       '${Fmt.price(f.unitPrice, f.currencyCode)}/$unit',
       if (f.odometerKm != null) '${Fmt.number(f.odometerKm!, maxDecimals: 0)} km',
-      if (!f.isFull) 'partial',
+      if (!f.isFull) context.l10n.partialFill,
       if (f.stationName != null) f.stationName!,
     ].join(' · ');
     return ListTile(
@@ -312,7 +317,7 @@ class FillUpTile extends ConsumerWidget {
       title: Text('${Fmt.number(f.amount)} $unit · ${Fmt.money(f.totalCost, f.currencyCode)}'),
       subtitle: Text(details),
       trailing: IconButton(
-        tooltip: 'Delete entry',
+        tooltip: context.l10n.deleteEntry,
         icon: const Icon(Icons.delete_outline_rounded),
         onPressed: () => _delete(context, ref),
       ),

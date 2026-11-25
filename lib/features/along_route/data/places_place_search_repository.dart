@@ -21,6 +21,7 @@ class PlacesPlaceSearchRepository implements PlaceSearchRepository {
 
   static const _missingKey = ConfigFailure(
     'Google Maps API key is not configured. Run with --dart-define-from-file=config/dev.json.',
+    code: FailureCode.missingGoogleKey,
   );
 
   @override

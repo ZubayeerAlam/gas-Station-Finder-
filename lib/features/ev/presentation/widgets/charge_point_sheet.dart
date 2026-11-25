@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '../../../../core/location/geo_point.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/utils/formatters.dart';
+import '../../../../l10n/failure_text.dart';
+import '../../../../l10n/l10n.dart';
 import '../../domain/charge_point.dart';
 
 const kOcmAttribution = 'Charging data © Open Charge Map contributors (CC BY-SA 4.0)';
@@ -48,11 +50,12 @@ class ChargePointSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final p = point;
+    final l = context.l10n;
     final muted = theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant);
     final (statusText, statusColor, statusIcon) = switch (p.isOperational) {
-      true => (p.statusLabel ?? 'Operational', theme.colorScheme.primaryContainer, Icons.check_circle_outline_rounded),
-      false => (p.statusLabel ?? 'Not operational', theme.colorScheme.errorContainer, Icons.cancel_outlined),
-      null => ('Status unknown', theme.colorScheme.surfaceContainerHighest, Icons.help_outline_rounded),
+      true => (p.statusLabel ?? l.statusOperational, theme.colorScheme.primaryContainer, Icons.check_circle_outline_rounded),
+      false => (p.statusLabel ?? l.statusNotOperational, theme.colorScheme.errorContainer, Icons.cancel_outlined),
+      null => (l.statusUnknown, theme.colorScheme.surfaceContainerHighest, Icons.help_outline_rounded),
     };
 
     return ListView(
@@ -78,17 +81,17 @@ class ChargePointSheet extends StatelessWidget {
             if (p.maxPowerKw != null)
               Chip(
                 avatar: const Icon(Icons.bolt_rounded, size: 18),
-                label: Text('Up to ${chargeMarkerLabel(p)}${p.isFast ? ' · fast' : ''}'),
+                label: Text('${l.upToPower(chargeMarkerLabel(p))}${p.isFast ? l.fastSuffix : ''}'),
               ),
-            if (p.numberOfPoints != null) Chip(label: Text('${p.numberOfPoints} charging points')),
+            if (p.numberOfPoints != null) Chip(label: Text(l.chargingPoints(p.numberOfPoints!))),
           ],
         ),
         const SizedBox(height: AppSpacing.md),
-        Text('Connectors', style: theme.textTheme.titleMedium),
+        Text(l.connectors, style: theme.textTheme.titleMedium),
         if (p.connectors.isEmpty)
           Padding(
             padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
-            child: Text('No connector details reported.', style: muted),
+            child: Text(l.noConnectorDetails, style: muted),
           )
         else
           for (final c in p.connectors)
@@ -102,26 +105,26 @@ class ChargePointSheet extends StatelessWidget {
                   if (c.powerKw != null) '${Fmt.number(c.powerKw!, maxDecimals: 1)} kW',
                   if (c.isDc != null) c.isDc! ? 'DC' : 'AC',
                   if (c.quantity != null) '×${c.quantity}',
-                  if (c.isOperational == false) 'not operational',
+                  if (c.isOperational == false) l.notOperationalLower,
                 ].join(' · '),
               ),
             ),
         const SizedBox(height: AppSpacing.sm),
-        Text('Cost', style: theme.textTheme.titleMedium),
+        Text(l.cost, style: theme.textTheme.titleMedium),
         Padding(
           padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
           child: Text(
             p.usageCost == null
-                ? 'No cost information reported. Check the operator app or the charger display.'
-                : '"${p.usageCost}" — as listed by the community; not verified by FuelWise.',
+                ? l.noCostInfo
+                : l.costAsListed(p.usageCost!),
           ),
         ),
         const SizedBox(height: AppSpacing.sm),
         if (p.lastVerified != null || p.lastStatusUpdate != null)
           Text(
             [
-              if (p.lastVerified != null) 'Last verified ${Fmt.relativeTime(p.lastVerified!, now: now)}',
-              if (p.lastStatusUpdate != null) 'status updated ${Fmt.relativeTime(p.lastStatusUpdate!, now: now)}',
+              if (p.lastVerified != null) l.lastVerified(relativeTime(p.lastVerified!, l, now: now)),
+              if (p.lastStatusUpdate != null) l.statusUpdated(relativeTime(p.lastStatusUpdate!, l, now: now)),
             ].join(' · '),
             style: muted,
           ),
@@ -129,7 +132,7 @@ class ChargePointSheet extends StatelessWidget {
         FilledButton.icon(
           onPressed: onDirections,
           icon: const Icon(Icons.directions_rounded),
-          label: const Text('Directions'),
+          label: Text(l.directions),
         ),
         const SizedBox(height: AppSpacing.md),
         Text(kOcmAttribution, style: muted),

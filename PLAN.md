@@ -214,16 +214,16 @@ Implementation history and evidence live in [BUILD.md](BUILD.md). Rule: work one
 - [x] No automatic production deploys (CI has no deploy step and no secrets)
 
 ### 3.4 Accessibility & Localization
-- [-] Semantics, text scaling, contrast, focus — automated guideline tests (tap targets, labelled targets, text contrast) + 200 % text on Garage and Assistant (EN + BN); other screens and keyboard focus order not audited yet
-- [-] English + Bengali; extensible l10n — `flutter gen-l10n` (ARB) + language menu (Garage) persisted in drift; translated: navigation, Map, station sheet, Garage list, Assistant, shared states. **Not yet:** History, Alerts, Community section, Report price, trip planning, EV sheets, vehicle/fill-up forms, domain labels (fuel types, badges, explanations) and failure messages; units/relative times still English
+- [-] Semantics, text scaling, contrast, focus — automated guideline tests (tap targets, labelled targets, text contrast) at 200 % text on Garage, Assistant (EN + BN), History, fill-up form, vehicle form, Alerts (BN); found + fixed dropdown overflow at large text. Map/route/EV sheets (need live data) and keyboard focus order not audited yet
+- [x] English + Bengali; extensible l10n — `flutter gen-l10n` (327 keys each, parity test-enforced) + language menu persisted in drift; every screen, error messages (via `FailureCode`), fuel/connector labels, ranking badges and explanations, relative times and month names. Units (km, L, kWh) and digits stay Latin by choice. Bengali wording drafted by Claude — native review pending
 
 ### 3.5 Monitoring
 - [ ] Crashlytics, Analytics, Performance (privacy/consent respected)
 
 ### 3.6 Release
-- [ ] Icon, splash, screenshots, store listing
-- [ ] Privacy policy, Data Safety form
-- [ ] Release build config + signing
+- [-] Icon, splash, screenshots, store listing — icon (flutter_launcher_icons) + native splash (flutter_native_splash, Android 12+/iOS/web) done; screenshots + listing need a working Google key and store accounts
+- [-] Privacy policy, Data Safety form — draft `docs/privacy-policy.md` based on what the code actually sends; contact, retention and hosting are yours to fill; store forms not filled
+- [-] Release build config + signing — Gradle reads gitignored `android/key.properties` (falls back to debug key); steps in `docs/RELEASE.md`; no keystore created, no release build signed
 - [-] README with architecture diagram, GIFs, badges — README rewritten (features + honest status, Mermaid architecture, setup, tests, privacy, CI badge); screenshots/GIFs wait for a working Google key
 - [ ] Play Store internal/closed test; iOS prep after
 

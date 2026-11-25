@@ -20,6 +20,7 @@ class OpenChargeMapRepository implements ChargePointsRepository {
 
   static const _missingKey = ConfigFailure(
     'Open Charge Map API key is not configured. Add OCM_API_KEY to config/dev.json.',
+    code: FailureCode.missingOcmKey,
   );
 
   @override

@@ -333,4 +333,903 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get assistantTooManySteps =>
       'That took too many steps. Please try a simpler question.';
+
+  @override
+  String get errorNetwork =>
+      'No internet connection. Check your network and try again.';
+
+  @override
+  String get errorTimeout =>
+      'The server took too long to respond. Please try again.';
+
+  @override
+  String get errorNotFound => 'Nothing was found.';
+
+  @override
+  String get errorUnknown => 'Something went wrong. Please try again.';
+
+  @override
+  String get errorCancelled => 'The request was cancelled.';
+
+  @override
+  String get errorBadResponse =>
+      'Received an unexpected response from the server.';
+
+  @override
+  String get errorRequestRejected =>
+      'The map service rejected the request. Check the API key and its restrictions.';
+
+  @override
+  String get errorTooManyRequests => 'Too many requests. Please wait a moment.';
+
+  @override
+  String errorServer(String status) {
+    return 'Server error ($status). Please try again.';
+  }
+
+  @override
+  String get errorMissingGoogleKey =>
+      'Google Maps API key is not configured in this build.';
+
+  @override
+  String get errorMissingOcmKey =>
+      'Open Charge Map API key is not configured in this build.';
+
+  @override
+  String get errorCommunityUnavailable =>
+      'Community prices are not set up in this build.';
+
+  @override
+  String get errorCommunityNeedsSignIn =>
+      'Community features need anonymous sign-in enabled in Firebase.';
+
+  @override
+  String get errorNotAllowed =>
+      'That change was not allowed. Check the values and try again.';
+
+  @override
+  String get errorSignInFailed => 'Could not sign in.';
+
+  @override
+  String get errorAssistantFailed =>
+      'The assistant could not answer. Please try again.';
+
+  @override
+  String get errorNoDetours => 'Could not compute detours.';
+
+  @override
+  String get errorNoRouteToDestination => 'No route to the destination.';
+
+  @override
+  String get errorNoRouteToStation => 'No driving route found to this station.';
+
+  @override
+  String get errorHistorySave =>
+      'Could not update your history. Please try again.';
+
+  @override
+  String get errorGarageSave =>
+      'Could not save to the local garage. Please try again.';
+
+  @override
+  String get errorLocationServiceDisabled =>
+      'Location services are turned off. Turn them on to find stations near you.';
+
+  @override
+  String get errorLocationDenied =>
+      'FuelWise needs location permission to find stations near you.';
+
+  @override
+  String get errorLocationDeniedForever =>
+      'Location permission is blocked. Enable it in Settings to find stations near you.';
+
+  @override
+  String get errorLocationUnavailable =>
+      'Could not determine your location. Please try again.';
+
+  @override
+  String get timeJustNow => 'just now';
+
+  @override
+  String timeMinutesAgo(int count) {
+    return '$count min ago';
+  }
+
+  @override
+  String timeHoursAgo(int count) {
+    return '$count h ago';
+  }
+
+  @override
+  String timeDaysAgo(int count) {
+    return '$count d ago';
+  }
+
+  @override
+  String get save => 'Save';
+
+  @override
+  String get saving => 'Saving…';
+
+  @override
+  String get historyTitle => 'History';
+
+  @override
+  String historyTitleFor(String vehicle) {
+    return 'History · $vehicle';
+  }
+
+  @override
+  String get addCharge => 'Add charge';
+
+  @override
+  String get addFillUp => 'Add fill-up';
+
+  @override
+  String get couldNotLoadHistory => 'Could not load your history.';
+
+  @override
+  String get noActiveVehicle => 'No active vehicle';
+
+  @override
+  String get noActiveVehicleMessage =>
+      'Add a vehicle in your garage to track fill-ups, spending and consumption.';
+
+  @override
+  String get openGarage => 'Open garage';
+
+  @override
+  String get noChargesYet => 'No charging sessions yet';
+
+  @override
+  String get noFillUpsYet => 'No fill-ups yet';
+
+  @override
+  String get logChargesHint =>
+      'Log each charge to see your spending and real consumption.';
+
+  @override
+  String get logFillUpsHint =>
+      'Log each fill-up to see your spending and real consumption.';
+
+  @override
+  String get statThisMonth => 'This month';
+
+  @override
+  String get statAvgConsumption => 'Avg consumption';
+
+  @override
+  String get statCostPerKm => 'Cost per km';
+
+  @override
+  String spendingChartTitle(String currency) {
+    return 'Spending · last 6 months ($currency)';
+  }
+
+  @override
+  String otherCurrencyEntries(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count entries in other currencies not shown (no conversion).',
+      one: '1 entry in another currency not shown (no conversion).',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String consumptionChartTitle(String unit) {
+    return 'Consumption trend ($unit/100 km)';
+  }
+
+  @override
+  String get needMoreCharges =>
+      'Log at least three full charges with odometer readings to see a trend.';
+
+  @override
+  String get needMoreFillUps =>
+      'Log at least three full fill-ups with odometer readings to see a trend.';
+
+  @override
+  String measuredFullToFull(String value, String unit) {
+    return 'Measured full-to-full; compare with your garage value $value $unit/100 km.';
+  }
+
+  @override
+  String get entries => 'Entries';
+
+  @override
+  String monthlySpendingSemantics(String values) {
+    return 'Monthly spending: $values';
+  }
+
+  @override
+  String consumptionTrendSemantics(String values) {
+    return 'Consumption trend: $values';
+  }
+
+  @override
+  String get entryDeleted => 'Entry deleted';
+
+  @override
+  String get couldNotDeleteEntry => 'Could not delete entry';
+
+  @override
+  String get deleteEntry => 'Delete entry';
+
+  @override
+  String get partialFill => 'partial';
+
+  @override
+  String get addVehicleFirst => 'Add a vehicle in your garage first.';
+
+  @override
+  String get enterPositiveNumber => 'Enter a positive number';
+
+  @override
+  String odometerMustIncrease(String value) {
+    return 'Must be above the previous reading ($value km)';
+  }
+
+  @override
+  String get couldNotSaveFillUp => 'Could not save fill-up';
+
+  @override
+  String get addChargingSession => 'Add charging session';
+
+  @override
+  String get energyCharged => 'Energy charged';
+
+  @override
+  String get fuelAdded => 'Fuel added';
+
+  @override
+  String get totalPaid => 'Total paid';
+
+  @override
+  String get currency => 'Currency';
+
+  @override
+  String get currencyCodeError => '3-letter code';
+
+  @override
+  String unitPriceLine(String price, String unit) {
+    return 'Unit price: $price/$unit';
+  }
+
+  @override
+  String get odometerOptional => 'Odometer (optional)';
+
+  @override
+  String get odometerHelper =>
+      'Needed to measure real consumption and cost per km.';
+
+  @override
+  String get chargedToTarget => 'Charged to my usual target';
+
+  @override
+  String get filledTank => 'Filled the tank';
+
+  @override
+  String get partialFillHelp => 'Partial fills are added to the next full one.';
+
+  @override
+  String get stationOptional => 'Station (optional)';
+
+  @override
+  String get couldNotSaveVehicle => 'Could not save vehicle';
+
+  @override
+  String get editVehicle => 'Edit vehicle';
+
+  @override
+  String get vehicleName => 'Name';
+
+  @override
+  String get vehicleNameHint => 'e.g. Toyota Corolla';
+
+  @override
+  String get enterName => 'Enter a name';
+
+  @override
+  String get energyFuel => 'Fuel';
+
+  @override
+  String get energyElectric => 'Electric';
+
+  @override
+  String get consumption => 'Consumption';
+
+  @override
+  String get usableBatteryCapacity => 'Usable battery capacity';
+
+  @override
+  String get tankCapacityLabel => 'Tank capacity';
+
+  @override
+  String get fuelTypeLabel => 'Fuel type';
+
+  @override
+  String get chargingEfficiency => 'Charging efficiency';
+
+  @override
+  String get chargingEfficiencyHelper =>
+      'Share of bought energy that reaches the battery. Leave 100 if unsure.';
+
+  @override
+  String get efficiencyRangeError => 'Enter a value between 1 and 100';
+
+  @override
+  String get saveVehicle => 'Save vehicle';
+
+  @override
+  String get fuelDiesel => 'Diesel';
+
+  @override
+  String get fuelDieselPlus => 'Diesel+';
+
+  @override
+  String get fuelTruckDiesel => 'Truck diesel';
+
+  @override
+  String get fuelBioDiesel => 'Biodiesel';
+
+  @override
+  String get fuelRegular => 'Regular';
+
+  @override
+  String get fuelMidgrade => 'Midgrade';
+
+  @override
+  String get fuelPremium => 'Premium';
+
+  @override
+  String get fuelMethane => 'CNG / Methane';
+
+  @override
+  String get fuelEvCharging => 'EV charging';
+
+  @override
+  String get connectorWallOutlet => 'Wall outlet';
+
+  @override
+  String get connectorOther => 'Other';
+
+  @override
+  String get communityPrices => 'Community prices';
+
+  @override
+  String get reportPrice => 'Report price';
+
+  @override
+  String get communityOff => 'Community prices are turned off in this build.';
+
+  @override
+  String get noCommunityReports =>
+      'No community reports yet. Be the first to report a price.';
+
+  @override
+  String get couldNotLoadCommunityPrices => 'Could not load community prices.';
+
+  @override
+  String reportCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count reports',
+      one: '1 report',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String communityReports(String reports) {
+    return 'Community · $reports';
+  }
+
+  @override
+  String updatedAgo(String time) {
+    return 'updated $time';
+  }
+
+  @override
+  String get outdated => 'outdated';
+
+  @override
+  String get priceHistory => 'Price history';
+
+  @override
+  String fuelHistory(String fuel) {
+    return '$fuel history';
+  }
+
+  @override
+  String get days7 => '7 days';
+
+  @override
+  String get days30 => '30 days';
+
+  @override
+  String get noHistoryForPeriod => 'No history for this period yet.';
+
+  @override
+  String get couldNotLoadPriceHistory => 'Could not load history.';
+
+  @override
+  String priceHistorySemantics(String currency, String summary) {
+    return 'Community price history in $currency: $summary';
+  }
+
+  @override
+  String get thanksForConfirming => 'Thanks for confirming!';
+
+  @override
+  String reliabilitySemantics(int percent) {
+    return 'Data reliability $percent percent';
+  }
+
+  @override
+  String votesOpen(int count) {
+    return '$count said open';
+  }
+
+  @override
+  String votesClosed(int count) {
+    return '$count said closed';
+  }
+
+  @override
+  String votesOutOfFuel(int count) {
+    return '$count said out of fuel';
+  }
+
+  @override
+  String get reliabilityDisclaimer =>
+      'Based on recent community reports and votes — not an official check.';
+
+  @override
+  String get isItOpenNow => 'Is it open right now?';
+
+  @override
+  String get voteOpen => 'Open';
+
+  @override
+  String get voteClosed => 'Closed';
+
+  @override
+  String get voteOutOfFuel => 'Out of fuel';
+
+  @override
+  String get reliabilityNone => 'Not enough community data';
+
+  @override
+  String get reliabilityHigh => 'Recently confirmed by the community';
+
+  @override
+  String get reliabilityMedium => 'Some community reports';
+
+  @override
+  String get reliabilityLow => 'Community reports are old or disagree';
+
+  @override
+  String get reportAccepted =>
+      'Thanks! Your price is now part of the community price.';
+
+  @override
+  String get reportMinorityCurrency =>
+      'Saved, but most reports here use another currency.';
+
+  @override
+  String get reportOutlier =>
+      'This price is far from other recent reports, so it was not used.';
+
+  @override
+  String get reportDuplicate =>
+      'You already reported this fuel here a few minutes ago.';
+
+  @override
+  String get reportTooMany =>
+      'Too many reports in the last hour. Please try later.';
+
+  @override
+  String get reportRejected => 'This report was not accepted.';
+
+  @override
+  String get reportSent => 'Report sent. It will be checked in a moment.';
+
+  @override
+  String get enterPrice => 'Enter a price';
+
+  @override
+  String get enterPriceRange => 'Enter a price between 0.01 and 1000';
+
+  @override
+  String get reportAPrice => 'Report a price';
+
+  @override
+  String get fuel => 'Fuel';
+
+  @override
+  String pricePerUnit(String unit) {
+    return 'Price per $unit';
+  }
+
+  @override
+  String get reportPriceHelp =>
+      'Report the price shown at the pump right now. Reports are combined with others; prices far from recent reports are not used.';
+
+  @override
+  String get sending => 'Sending…';
+
+  @override
+  String get sendReport => 'Send report';
+
+  @override
+  String get done => 'Done';
+
+  @override
+  String get priceAlerts => 'Price alerts';
+
+  @override
+  String get newAlert => 'New alert';
+
+  @override
+  String get alertsUnavailableTitle => 'Alerts are not available';
+
+  @override
+  String get alertsUnavailableMessage =>
+      'Price alerts need the FuelWise community backend, which is not set up in this build.';
+
+  @override
+  String get noAlertsTitle => 'No price alerts yet';
+
+  @override
+  String get noAlertsMessage =>
+      'Create an alert to hear when a community price near you drops below your limit.';
+
+  @override
+  String get alertsServerNote =>
+      'Alerts are checked by the server when a new community price is accepted. Push notifications are not enabled in this build yet.';
+
+  @override
+  String alertOnlyAt(String station) {
+    return 'Only at $station';
+  }
+
+  @override
+  String alertWithinKm(String km) {
+    return 'Within $km km of the saved location';
+  }
+
+  @override
+  String get alertOn => 'Alert on';
+
+  @override
+  String get alertPaused => 'Alert paused';
+
+  @override
+  String get deleteAlert => 'Delete alert';
+
+  @override
+  String get alertDeleted => 'Alert deleted';
+
+  @override
+  String get couldNotLoadAlerts => 'Could not load alerts.';
+
+  @override
+  String get alertSaved => 'Alert saved';
+
+  @override
+  String get newPriceAlert => 'New price alert';
+
+  @override
+  String get alertAtOrBelow => 'Alert at or below';
+
+  @override
+  String alertRadius(int km) {
+    return 'Within $km km of my current location';
+  }
+
+  @override
+  String get saveAlert => 'Save alert';
+
+  @override
+  String get badgeCheapest => 'Cheapest';
+
+  @override
+  String get badgeBestValue => 'Best value';
+
+  @override
+  String get badgeLeastDetour => 'Least detour';
+
+  @override
+  String get badgeMostReliable => 'Most reliable';
+
+  @override
+  String get caveatClosed => 'Closed now';
+
+  @override
+  String get caveatUnreachable => 'May be out of range';
+
+  @override
+  String get caveatOtherCurrency => 'Other currency (not converted)';
+
+  @override
+  String get caveatPriceUnknown => 'No price available';
+
+  @override
+  String get caveatStalePrice => 'Price older than 3 days';
+
+  @override
+  String get onRoute => 'on route';
+
+  @override
+  String get explainNoPrice =>
+      'No price is available for this station, so its cost cannot be compared.';
+
+  @override
+  String explainUnitOnly(String price, String unit) {
+    return '$price per $unit. Add a vehicle in your garage to compare the total trip cost.';
+  }
+
+  @override
+  String explainBuy(String amount, String unit, String price, String cost) {
+    return 'Buy $amount $unit × $price = $cost';
+  }
+
+  @override
+  String explainDetour(
+    String distance,
+    String amount,
+    String unit,
+    String cost,
+  ) {
+    return 'Detour $distance uses $amount $unit = $cost';
+  }
+
+  @override
+  String explainSaves(String amount) {
+    return ' · saves $amount vs the nearest station';
+  }
+
+  @override
+  String explainMore(String amount) {
+    return ' · $amount more than the nearest station';
+  }
+
+  @override
+  String explainTotal(String cost, String comparison) {
+    return 'Total $cost$comparison';
+  }
+
+  @override
+  String get explainSourceGoogle => 'Price source: Google';
+
+  @override
+  String get explainSourceCommunity => 'Price source: community';
+
+  @override
+  String explainUpdated(String time) {
+    return ', updated $time';
+  }
+
+  @override
+  String get trip => 'Trip';
+
+  @override
+  String tripTo(String destination) {
+    return 'To $destination';
+  }
+
+  @override
+  String get changeDestination => 'Change destination';
+
+  @override
+  String get couldNotPlanTrip => 'Could not plan this trip.';
+
+  @override
+  String get noTripYet => 'No trip yet';
+
+  @override
+  String get noTripMessage =>
+      'Choose a destination to find stations along the way.';
+
+  @override
+  String get chooseDestination => 'Choose destination';
+
+  @override
+  String get findingAlongRoute => 'Finding stations along your route…';
+
+  @override
+  String stationsOnTheWay(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count stations on the way',
+      one: '1 station on the way',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String comparingFuelPrices(String fuel) {
+    return 'Comparing $fuel prices';
+  }
+
+  @override
+  String get detoursApproximate =>
+      'Routing service unavailable — detours are straight-line estimates.';
+
+  @override
+  String skippedForDetour(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count more stations farther from the route were not compared.',
+      one: '1 more station farther from the route was not compared.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get noStationsAlongRoute => 'No stations along this route';
+
+  @override
+  String get nothingWithin5km => 'Nothing found within 5 km of the route.';
+
+  @override
+  String withoutComparablePrice(int count) {
+    return 'Without a comparable price ($count)';
+  }
+
+  @override
+  String get comparingPricePerLitre => 'Comparing price per litre only';
+
+  @override
+  String get addVehicleForTrueCost =>
+      'Add your vehicle to rank by true trip cost.';
+
+  @override
+  String get add => 'Add';
+
+  @override
+  String batteryNowToFull(
+    String vehicle,
+    int percent,
+    String amount,
+    String unit,
+  ) {
+    return '$vehicle · battery now $percent% → full ($amount $unit)';
+  }
+
+  @override
+  String tankNowToFull(
+    String vehicle,
+    int percent,
+    String amount,
+    String unit,
+  ) {
+    return '$vehicle · tank now $percent% → full ($amount $unit)';
+  }
+
+  @override
+  String percentCharge(int percent) {
+    return '$percent percent charge';
+  }
+
+  @override
+  String percentFuel(int percent) {
+    return '$percent percent fuel';
+  }
+
+  @override
+  String intoTheTrip(String detour, String distance) {
+    return '$detour · $distance into the trip';
+  }
+
+  @override
+  String get showOnMap => 'Show on map';
+
+  @override
+  String get whereTo => 'Where to?';
+
+  @override
+  String get searchFailed => 'Search failed.';
+
+  @override
+  String get searching => 'Searching…';
+
+  @override
+  String get noPlacesFound => 'No places found';
+
+  @override
+  String get tryAnotherName => 'Try another name or address.';
+
+  @override
+  String get destinationSearchHint =>
+      'Search a destination. FuelWise finds stations along your route and ranks them by the true cost of stopping — price plus the fuel used by the detour.';
+
+  @override
+  String get powerAny => 'Any';
+
+  @override
+  String get reset => 'Reset';
+
+  @override
+  String get minimumPower => 'Minimum power';
+
+  @override
+  String get connector => 'Connector';
+
+  @override
+  String get noConnectorDataNearby => 'No connector data nearby.';
+
+  @override
+  String get onlyOperational => 'Only operational';
+
+  @override
+  String get onlyOperationalHelp =>
+      'Hide chargers reported as not working or with unknown status.';
+
+  @override
+  String get statusOperational => 'Operational';
+
+  @override
+  String get statusNotOperational => 'Not operational';
+
+  @override
+  String get statusUnknown => 'Status unknown';
+
+  @override
+  String upToPower(String power) {
+    return 'Up to $power';
+  }
+
+  @override
+  String get fastSuffix => ' · fast';
+
+  @override
+  String chargingPoints(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count charging points',
+      one: '1 charging point',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get connectors => 'Connectors';
+
+  @override
+  String get noConnectorDetails => 'No connector details reported.';
+
+  @override
+  String get notOperationalLower => 'not operational';
+
+  @override
+  String get cost => 'Cost';
+
+  @override
+  String get noCostInfo =>
+      'No cost information reported. Check the operator app or the charger display.';
+
+  @override
+  String costAsListed(String cost) {
+    return '\"$cost\" — as listed by the community; not verified by FuelWise.';
+  }
+
+  @override
+  String lastVerified(String time) {
+    return 'Last verified $time';
+  }
+
+  @override
+  String statusUpdated(String time) {
+    return 'status updated $time';
+  }
+
+  @override
+  String get monthsShort => 'Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec';
 }

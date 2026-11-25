@@ -52,7 +52,7 @@ class FirebaseAssistantApi implements AssistantApi {
       debugPrint('assistantChat failed: ${e.code} ${e.message}');
       return Err(mapFunctionsError(e.code, e.message));
     } on FirebaseAuthException catch (e) {
-      return Err(e.code == 'network-request-failed' ? const NetworkFailure() : const ServerFailure('Could not sign in.'));
+      return Err(e.code == 'network-request-failed' ? const NetworkFailure() : const ServerFailure('Could not sign in.', code: FailureCode.signInFailed));
     } on FormatException {
       return const Err(UnknownFailure());
     }
@@ -67,5 +67,5 @@ AppFailure mapFunctionsError(String code, String? message) => switch (code) {
       'invalid-argument' || 'resource-exhausted' || 'failed-precondition' || 'not-found' || 'unavailable' ||
       'unauthenticated' =>
         ServerFailure(message ?? 'The assistant could not answer.'),
-      _ => const ServerFailure('The assistant could not answer. Please try again.'),
+      _ => const ServerFailure('The assistant could not answer. Please try again.', code: FailureCode.assistantFailed),
     };

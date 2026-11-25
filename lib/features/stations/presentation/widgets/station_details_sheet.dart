@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../core/error/app_failure.dart';
 import '../../../../core/location/geo_point.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/utils/formatters.dart';
 import '../../../prices/presentation/community_section.dart';
 import '../../domain/entities/station.dart';
 import '../stations_controllers.dart';
+import '../../../../l10n/domain_labels.dart';
+import '../../../../l10n/failure_text.dart';
 import '../../../../l10n/l10n.dart';
 
 /// Opens the station details bottom sheet.
@@ -80,7 +81,7 @@ class StationDetailsSheet extends ConsumerWidget {
         switch (details) {
           AsyncData(:final value) => _DetailsBody(details: value),
           AsyncError(:final error) => _DetailsError(
-              message: error is AppFailure ? error.message : context.l10n.couldNotLoadStationDetails,
+              message: describeFailure(error, context.l10n, fallback: context.l10n.couldNotLoadStationDetails),
               onRetry: () => ref.invalidate(stationDetailsProvider(station.id)),
             ),
           _ => Padding(
@@ -167,7 +168,7 @@ class _DetailsBody extends StatelessWidget {
             (c) => ListTile(
               contentPadding: EdgeInsets.zero,
               leading: const Icon(Icons.ev_station_rounded),
-              title: Text(evConnectorLabel(c.type)),
+              title: Text(localizedConnector(c.type, context.l10n)),
               subtitle: Text([
                 if (c.maxChargeRateKw != null) '${c.maxChargeRateKw!.toStringAsFixed(0)} kW',
                 if (c.count != null) context.l10n.connectorCount(c.count!),
@@ -215,10 +216,10 @@ class _FuelPriceTile extends StatelessWidget {
     return ListTile(
       contentPadding: EdgeInsets.zero,
       leading: const Icon(Icons.local_gas_station_rounded),
-      title: Text(price.fuelLabel),
+      title: Text(localizedFuelType(price.fuelType, context.l10n)),
       subtitle: price.updatedAt == null
           ? Text(context.l10n.sourceGoogle)
-          : Text(context.l10n.sourceGoogleUpdated(Fmt.relativeTime(price.updatedAt!))),
+          : Text(context.l10n.sourceGoogleUpdated(relativeTime(price.updatedAt!, context.l10n))),
       trailing: Text(
         Fmt.price(price.amount, price.currencyCode),
         style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),

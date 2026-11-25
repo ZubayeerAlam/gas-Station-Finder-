@@ -246,7 +246,7 @@ void main() {
       expect(find.text('EUR 63.00'), findsAtLeastNWidgets(1)); // this month (EUR only)
       expect(find.text('6.5 L/100 km'), findsOneWidget); // 65 L / 1000 km
       expect(find.text('EUR 0.117'), findsOneWidget); // 117 / 1000 km
-      expect(find.textContaining('1 entry in other currencies not shown'), findsOneWidget);
+      expect(find.textContaining('1 entry in another currency not shown'), findsOneWidget);
       expect(find.bySemanticsLabel(RegExp('Consumption trend: 6.0, 7.0')), findsOneWidget);
 
       await tester.scrollUntilVisible(find.text('5 L · CHF 9.00'), 200);

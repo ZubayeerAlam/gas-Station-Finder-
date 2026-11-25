@@ -13,7 +13,7 @@ class UnavailableCommunityRepository implements CommunityRepository {
   @override
   bool get isAvailable => false;
 
-  Err<T> _err<T>() => Err<T>(ConfigFailure(reason));
+  Err<T> _err<T>() => Err<T>(ConfigFailure(reason, code: FailureCode.communityUnavailable));
 
   @override
   Stream<List<CommunityPrice>> watchPrices(String stationId) => Stream.value(const []);

@@ -5,12 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../core/error/app_failure.dart';
 import '../../../core/error/result.dart';
 import '../../../core/location/location_controller.dart';
 import '../../../core/router/app_routes.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/state_views.dart';
+import '../../../l10n/failure_text.dart';
+import '../../../l10n/l10n.dart';
 import '../data/places_place_search_repository.dart';
 import '../domain/along_route_models.dart';
 import 'along_route_providers.dart';
@@ -73,7 +74,7 @@ class _DestinationSearchScreenState extends ConsumerState<DestinationSearchScree
       case Ok(:final value):
         _start(value);
       case Err(:final failure):
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(failure.message)));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(describeFailure(failure, context.l10n))));
     }
   }
 
@@ -84,6 +85,7 @@ class _DestinationSearchScreenState extends ConsumerState<DestinationSearchScree
 
   @override
   Widget build(BuildContext context) {
+    final l = context.l10n;
     return Scaffold(
       appBar: AppBar(
         titleSpacing: 0,
@@ -92,7 +94,7 @@ class _DestinationSearchScreenState extends ConsumerState<DestinationSearchScree
           controller: _query,
           autofocus: true,
           textInputAction: TextInputAction.search,
-          decoration: const InputDecoration(hintText: 'Where to?', border: InputBorder.none, filled: false),
+          decoration: InputDecoration(hintText: l.whereTo, border: InputBorder.none, filled: false),
           onChanged: _onChanged,
           onSubmitted: (t) {
             _timer?.cancel();
@@ -105,13 +107,13 @@ class _DestinationSearchScreenState extends ConsumerState<DestinationSearchScree
       ),
       body: switch (_results) {
         AsyncError(:final error) => AppErrorView(
-          message: error is AppFailure ? error.message : 'Search failed.',
+          message: describeFailure(error, l, fallback: l.searchFailed),
           onRetry: () => _search(_query.text),
         ),
-        AsyncLoading() => const AppLoading(label: 'Searching…'),
-        AsyncData(:final value) when value.isEmpty && _query.text.trim().length >= 2 => const AppEmptyView(
-          title: 'No places found',
-          message: 'Try another name or address.',
+        AsyncLoading() => AppLoading(label: l.searching),
+        AsyncData(:final value) when value.isEmpty && _query.text.trim().length >= 2 => AppEmptyView(
+          title: l.noPlacesFound,
+          message: l.tryAnotherName,
         ),
         AsyncData(:final value) when value.isEmpty => const _SearchHint(),
         AsyncData(:final value) => ListView.separated(
@@ -142,8 +144,7 @@ class _SearchHint extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(AppSpacing.lg),
       child: Text(
-        'Search a destination. FuelWise finds stations along your route and ranks them by the true cost '
-        'of stopping — price plus the fuel used by the detour.',
+        context.l10n.destinationSearchHint,
         style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
       ),
     );

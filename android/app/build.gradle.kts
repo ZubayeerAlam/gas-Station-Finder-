@@ -1,4 +1,5 @@
 import java.util.Base64
+import java.util.Properties
 
 // Values passed with `flutter build/run --dart-define-from-file=config/dev.json`
 // reach Gradle as a comma-separated list of base64 "KEY=VALUE" entries.
@@ -14,6 +15,16 @@ val dartDefines: Map<String, String> =
         }
         ?.toMap()
         ?: emptyMap()
+
+// Release signing: android/key.properties (gitignored, never committed) with
+// storeFile, storePassword, keyAlias, keyPassword. See docs/RELEASE.md.
+// Without it, release builds fall back to the debug key (fine for local
+// testing, rejected by Google Play).
+val keystoreProperties = Properties().apply {
+    val f = rootProject.file("key.properties")
+    if (f.exists()) f.inputStream().use { load(it) }
+}
+val hasReleaseKey = keystoreProperties.getProperty("storeFile") != null
 
 plugins {
     id("com.android.application")
@@ -47,11 +58,20 @@ android {
         manifestPlaceholders["MAPS_API_KEY"] = dartDefines["GOOGLE_MAPS_API_KEY"] ?: ""
     }
 
+    signingConfigs {
+        if (hasReleaseKey) {
+            create("release") {
+                storeFile = file(keystoreProperties.getProperty("storeFile"))
+                storePassword = keystoreProperties.getProperty("storePassword")
+                keyAlias = keystoreProperties.getProperty("keyAlias")
+                keyPassword = keystoreProperties.getProperty("keyPassword")
+            }
+        }
+    }
+
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName(if (hasReleaseKey) "release" else "debug")
         }
     }
 }

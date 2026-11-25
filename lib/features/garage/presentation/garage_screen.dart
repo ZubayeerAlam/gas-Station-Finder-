@@ -6,9 +6,9 @@ import '../../../core/router/app_routes.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/state_views.dart';
-import '../../stations/domain/entities/station.dart';
 import '../domain/vehicle_profile.dart';
 import 'garage_providers.dart';
+import '../../../l10n/domain_labels.dart';
 import '../../../l10n/l10n.dart';
 import '../../../l10n/language_menu.dart';
 
@@ -87,7 +87,7 @@ class VehicleCard extends ConsumerWidget {
       ev
           ? context.l10n.batteryCapacity('${vehicle.capacity.toStringAsFixed(0)} ${vehicle.unit}')
           : context.l10n.tankCapacity('${vehicle.capacity.toStringAsFixed(0)} ${vehicle.unit}'),
-      if (vehicle.preferredFuelType != null) fuelTypeLabel(vehicle.preferredFuelType!),
+      if (vehicle.preferredFuelType != null) localizedFuelType(vehicle.preferredFuelType!, context.l10n),
     ].join(' · ');
 
     return Card(

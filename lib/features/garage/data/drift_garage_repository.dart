@@ -74,7 +74,7 @@ class DriftGarageRepository implements GarageRepository {
       await body();
       return const Ok(null);
     } catch (_) {
-      return const Err(UnknownFailure('Could not save to the local garage. Please try again.'));
+      return const Err(UnknownFailure('Could not save to the local garage. Please try again.', FailureCode.garageSaveFailed));
     }
   }
 }

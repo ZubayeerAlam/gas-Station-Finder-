@@ -9,6 +9,7 @@ import '../../../core/location/location_controller.dart';
 import '../../../core/location/location_service.dart';
 import '../../../core/router/app_routes.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../l10n/failure_text.dart';
 import '../../../l10n/l10n.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/state_views.dart';
@@ -86,7 +87,7 @@ class LocationProblemView extends ConsumerWidget {
     return AppMessageView(
       icon: Icons.location_off_rounded,
       title: context.l10n.locationNeeded,
-      message: failure?.message ?? context.l10n.couldNotDetermineLocation,
+      message: describeFailure(failure, context.l10n, fallback: context.l10n.couldNotDetermineLocation),
       primaryLabel: context.l10n.tryAgain,
       onPrimary: retry,
       secondaryLabel: settingsLabel,
@@ -216,7 +217,7 @@ class _StationsMapState extends ConsumerState<_StationsMap> {
           _fitRoute(value);
         case AsyncError(:final error):
           ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text(error is AppFailure ? error.message : context.l10n.couldNotGetDirections)));
+              .showSnackBar(SnackBar(content: Text(describeFailure(error, context.l10n, fallback: context.l10n.couldNotGetDirections))));
         default:
       }
     });
@@ -323,7 +324,7 @@ MapStatus fuelStatus(AsyncValue<List<Station>> stations, {DateTime? now, AppLoca
   AsyncLoading() => (icon: Icons.search_rounded, text: t.searchingStations, showRetry: false),
   AsyncError(:final error) => (
     icon: Icons.error_outline_rounded,
-    text: error is AppFailure ? error.message : t.couldNotLoadStations,
+    text: describeFailure(error, t, fallback: t.couldNotLoadStations),
     showRetry: error is! ConfigFailure, // retrying cannot fix missing config
   ),
   AsyncData(:final value) when value.isEmpty => (
@@ -333,7 +334,7 @@ MapStatus fuelStatus(AsyncValue<List<Station>> stations, {DateTime? now, AppLoca
   ),
   AsyncData(:final value) when value.first.offlineSavedAt != null => (
     icon: Icons.cloud_off_rounded,
-    text: t.offlineSavedStations(value.length, Fmt.relativeTime(value.first.offlineSavedAt!, now: now)),
+    text: t.offlineSavedStations(value.length, relativeTime(value.first.offlineSavedAt!, t, now: now)),
     showRetry: true,
   ),
   AsyncData(:final value) => (
@@ -350,7 +351,7 @@ MapStatus evStatus(AsyncValue<List<ChargePoint>> chargers, {required bool filter
   AsyncLoading() => (icon: Icons.search_rounded, text: t.searchingChargers, showRetry: false),
   AsyncError(:final error) => (
     icon: Icons.error_outline_rounded,
-    text: error is AppFailure ? error.message : t.couldNotLoadChargers,
+    text: describeFailure(error, t, fallback: t.couldNotLoadChargers),
     showRetry: error is! ConfigFailure,
   ),
   AsyncData(:final value) when value.isEmpty => (

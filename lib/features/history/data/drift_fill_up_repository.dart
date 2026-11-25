@@ -56,7 +56,7 @@ class DriftFillUpRepository implements FillUpRepository {
       await body();
       return const Ok(null);
     } catch (_) {
-      return const Err(UnknownFailure('Could not update your history. Please try again.'));
+      return const Err(UnknownFailure('Could not update your history. Please try again.', FailureCode.historySaveFailed));
     }
   }
 }

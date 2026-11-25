@@ -5,8 +5,8 @@
 
 ## Current status
 - **Mode (2026‑11‑25):** user authorized **autonomous development** — commit + push each verified batch to `origin/main`, no approval stops. No Firebase deploy / billing / paid APIs. Never force-push or commit secrets.
-- **Done:** Phase 0 (except items awaiting keys / a Firebase project), Phase 1 (1.A–1.F), Phase 2 (AI trip assistant), Phase 3 batch 3.A (offline positions cache, CI, coverage gate, l10n EN+BN foundation, accessibility tests, README).
-- **Next:** Phase 3 batch 3.B — translate the remaining screens + domain labels/failure messages, accessibility audit of remaining screens, release prep that needs no paid service.
+- **Done:** Phase 0 (except items awaiting keys / a Firebase project), Phase 1 (1.A–1.F), Phase 2 (AI trip assistant), Phase 3 batches 3.A (offline positions cache, CI, coverage gate, l10n foundation, a11y tests, README) and 3.B (full EN+BN, translated errors, splash, signing wiring, privacy policy draft, release guide).
+- **Next:** everything left needs you: keys, a Firebase project (monitoring, push, deploy), signing keystore, store accounts, Bengali wording review.
 - **Blocked on the user:** working Google Maps key · Open Charge Map key · Anthropic key · Firebase project (monitoring, push, deploy) · release signing + store accounts.
 
 ## Awaiting the new Google Maps API key (user will supply later)
@@ -316,3 +316,21 @@ flutter run --dart-define-from-file=config/dev.json --dart-define=FIREBASE_MODE=
 - **iOS simulator (iPhone 17e):** Garage → translate menu → বাংলা: title, empty state, buttons and navigation switch to Bengali; choice survives an app restart (Map app bar, Fuel/EV toggle, Retry in Bengali). Visible gap: failure messages from the data layer are still English.
 - **CI on GitHub:** run 45639465141 for commit 9ba7cfb — **both jobs passed** (Functions 1m36s, Flutter 9m21s; artifacts `coverage` + `app-debug-apk`). Warnings only: actions v4 run on Node 20 (deprecated) and setup-java v4 is deprecated → bump to v5 in a later batch.
 - **Not verified:** offline fallback on a device (cache can't fill while Places returns 403).
+
+## Phase 3 — Batch 3.B: full Bengali, translated errors, release prep (2026‑11‑25)
+*(implemented, unit/widget-tested, iOS-simulator-checked; CI result recorded below)*
+- **Errors translated without losing detail:** `AppFailure` gained a nullable `FailureCode` (25 codes). Data sources tag their failures (network, timeout, 403 key rejected, 429, 5xx, missing keys, no route, location reasons, community/assistant). `describeFailure(error, l10n, fallback:)` turns a code into text; a failure **without** a code (e.g. a specific message from the server) is shown as-is. The English `message` stays for logs and for the AI's tool results.
+- **Every screen translated:** History (stats, charts, semantics labels), fill-up form, vehicle form, Alerts + alert form, community prices/history/votes, Report price + server verdicts, trip planning (destination search, route results, vehicle controls), ranking badges/caveats/strategies and the "why" explanation, EV filter + charger sheet, assistant errors. Domain stays English: `lib/l10n/domain_labels.dart` maps fuel types, connectors, reliability bands, report verdicts and price validation to translations (codes like E10/CCS2 stay as-is). Relative times and month names come from ARB (`monthsShort`), because intl's `DateFormat` needs locale data that isn't loaded in tests. 327 keys in each language.
+- **A11y bug found by the new tests and fixed:** at 200 % text the fuel-type dropdowns (vehicle form, alert form, report form) and the consumption unit dropdown overflowed horizontally → `isExpanded` + ellipsis.
+- **iOS:** `CFBundleLocalizations` = en, bn (so iOS treats Bengali as supported).
+- **Splash:** `flutter_native_splash` (dev dependency) with brand green `#0B8A6F` + the icon foreground; generated Android (incl. Android 12 splash API, night variants), iOS LaunchScreen and web. The generator also rewrote Info.plist formatting → reverted, only the localization key added by hand.
+- **Signing wiring:** `android/app/build.gradle.kts` reads `android/key.properties` (already gitignored with `*.jks`/`*.keystore`); without it release falls back to the debug key. Not exercised with a real keystore.
+- **Docs:** `docs/privacy-policy.md` (draft; based on what the code sends: Google Maps/Places, OSRM, Open Charge Map, Firebase anonymous auth + Firestore, assistant via Cloud Functions → Claude; contact/retention placeholders for you) and `docs/RELEASE.md` (keys, keystore, build, store checklist — nothing executed).
+- **CI:** actions bumped to current majors (checkout v7, setup-java v6, setup-node v7, upload-artifact v7) to clear the Node 20 deprecation warnings.
+
+### Tests (3.B)
+- `test/l10n/l10n_screens_test.dart` → 10 passed: every `FailureCode` has non-empty, distinct EN/BN text; default constructors carry codes, uncoded custom messages pass through; fallbacks; relative time + months EN/BN; domain labels; ranking labels (BN in UI, EN default for AI); Bengali History with entries, fill-up form validation, vehicle form, Alerts-unavailable — each at **200 % text** with tap-target/label/contrast guidelines; destination search hint.
+- Updated `history_test` expectation for the corrected singular ("1 entry in another currency…").
+- Full suite **188 passed**; `flutter analyze` clean; domain coverage **97.1 %** (430/443).
+- **iOS simulator (iPhone 17e, Bengali):** Map shows the Places 403 error **in Bengali** (was English in 3.A); History empty state, Garage, vehicle form (labels, segmented control, unit dropdown, fuel type "রেগুলার (অকটেন)", validation messages) all Bengali, no overflow.
+- **Not verified:** release build with a real keystore; splash on a physical device (simulator launch is too fast to capture reliably); screens that need live data (station results, route ranking, chargers) in Bengali on a device.

@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/theme/app_theme.dart';
+import '../../../../l10n/l10n.dart';
 import '../../domain/charge_point.dart';
 import '../ev_providers.dart';
 
 const kPowerSteps = <double>[0, 22, 50, 150];
 
-String powerStepLabel(double kw) => kw == 0 ? 'Any' : '≥ ${kw.round()} kW';
+String powerStepLabel(double kw, [AppLocalizations? l]) => kw == 0 ? (l ?? kEnglish).powerAny : '≥ ${kw.round()} kW';
 
 /// Filters built from the connector types actually present nearby.
 class EvFilterSheet extends ConsumerWidget {
@@ -20,6 +21,7 @@ class EvFilterSheet extends ConsumerWidget {
     final filter = ref.watch(evFilterProvider);
     final notifier = ref.read(evFilterProvider.notifier);
     final theme = Theme.of(context);
+    final l = context.l10n;
     return SafeArea(
       child: ListView(
         shrinkWrap: true,
@@ -27,24 +29,24 @@ class EvFilterSheet extends ConsumerWidget {
         children: [
           Row(
             children: [
-              Expanded(child: Text('Charger filters', style: theme.textTheme.titleLarge)),
-              TextButton(onPressed: filter.isActive ? notifier.reset : null, child: const Text('Reset')),
+              Expanded(child: Text(l.chargerFilters, style: theme.textTheme.titleLarge)),
+              TextButton(onPressed: filter.isActive ? notifier.reset : null, child: Text(l.reset)),
             ],
           ),
           const SizedBox(height: AppSpacing.sm),
-          Text('Minimum power', style: theme.textTheme.titleSmall),
+          Text(l.minimumPower, style: theme.textTheme.titleSmall),
           const SizedBox(height: AppSpacing.xs),
           SegmentedButton<double>(
             showSelectedIcon: false,
-            segments: [for (final kw in kPowerSteps) ButtonSegment(value: kw, label: Text(powerStepLabel(kw)))],
+            segments: [for (final kw in kPowerSteps) ButtonSegment(value: kw, label: Text(powerStepLabel(kw, l)))],
             selected: {filter.minPowerKw},
             onSelectionChanged: (s) => notifier.set(filter.copyWith(minPowerKw: s.first)),
           ),
           const SizedBox(height: AppSpacing.md),
-          Text('Connector', style: theme.textTheme.titleSmall),
+          Text(l.connector, style: theme.textTheme.titleSmall),
           const SizedBox(height: AppSpacing.xs),
           if (availableConnectors.isEmpty)
-            Text('No connector data nearby.', style: theme.textTheme.bodySmall)
+            Text(l.noConnectorDataNearby, style: theme.textTheme.bodySmall)
           else
             Wrap(
               spacing: AppSpacing.sm,
@@ -64,8 +66,8 @@ class EvFilterSheet extends ConsumerWidget {
             ),
           SwitchListTile(
             contentPadding: EdgeInsets.zero,
-            title: const Text('Only operational'),
-            subtitle: const Text('Hide chargers reported as not working or with unknown status.'),
+            title: Text(l.onlyOperational),
+            subtitle: Text(l.onlyOperationalHelp),
             value: filter.operationalOnly,
             onChanged: (v) => notifier.set(filter.copyWith(operationalOnly: v)),
           ),

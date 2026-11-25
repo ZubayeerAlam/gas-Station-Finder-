@@ -55,7 +55,7 @@ class OsrmRouteRepository implements RouteRepository, DetourRepository {
   /// Rows = sources `[origin, s1..sn]`, columns = destinations
   /// `[destination, s1..sn]`. detour_i = d(origin,s_i) + d(s_i,dest) − d(origin,dest).
   static List<StopDetour?> parseOsrmDetours(Map<String, dynamic> json, int stopCount) {
-    if (json['code'] != 'Ok') throw const NotFoundFailure('Could not compute detours.');
+    if (json['code'] != 'Ok') throw const NotFoundFailure('Could not compute detours.', FailureCode.noDetours);
     final dist = json['distances'], dur = json['durations'];
     if (dist is! List || dist.length != stopCount + 1) throw const FormatException('Bad table size');
     double? at(Object? m, int r, int c) {
@@ -66,7 +66,7 @@ class OsrmRouteRepository implements RouteRepository, DetourRepository {
 
     final direct = at(dist, 0, 0);
     final directT = at(dur, 0, 0);
-    if (direct == null) throw const NotFoundFailure('No route to the destination.');
+    if (direct == null) throw const NotFoundFailure('No route to the destination.', FailureCode.noRouteToDestination);
     return [
       for (var i = 1; i <= stopCount; i++)
         if ((at(dist, 0, i), at(dist, i, 0)) case (final toS?, final fromS?))
@@ -89,7 +89,7 @@ class OsrmRouteRepository implements RouteRepository, DetourRepository {
   static RouteInfo parseOsrmRoute(Map<String, dynamic> json) {
     final routes = json['routes'];
     if (json['code'] != 'Ok' || routes is! List || routes.isEmpty) {
-      throw const NotFoundFailure('No driving route found to this station.');
+      throw const NotFoundFailure('No driving route found to this station.', FailureCode.noRouteToStation);
     }
     final route = routes.first as Map<String, dynamic>;
     final coords = (route['geometry'] as Map<String, dynamic>?)?['coordinates'];

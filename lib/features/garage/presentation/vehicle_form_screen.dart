@@ -5,9 +5,10 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/router/app_routes.dart';
 import '../../../core/theme/app_theme.dart';
-import '../../stations/domain/entities/station.dart';
 import '../domain/consumption_unit.dart';
 import '../domain/vehicle_profile.dart';
+import '../../../l10n/domain_labels.dart';
+import '../../../l10n/l10n.dart';
 import 'garage_providers.dart';
 
 const kFuelTypeChoices = [
@@ -65,10 +66,10 @@ class _VehicleFormScreenState extends ConsumerState<VehicleFormScreen> {
   }
 
   void _setType(EnergyType t) => setState(() {
-        _type = t;
-        _unit = ConsumptionUnit.defaultFor(t);
-        _fuelType = t == EnergyType.fuel ? (_fuelType ?? 'REGULAR_UNLEADED') : null;
-      });
+    _type = t;
+    _unit = ConsumptionUnit.defaultFor(t);
+    _fuelType = t == EnergyType.fuel ? (_fuelType ?? 'REGULAR_UNLEADED') : null;
+  });
 
   void _setUnit(ConsumptionUnit u) {
     final current = parsePositive(_consumption.text);
@@ -102,7 +103,7 @@ class _VehicleFormScreenState extends ConsumerState<VehicleFormScreen> {
       // Opened via deep link there may be nothing to pop.
       context.canPop() ? context.pop() : context.go(AppRoutes.garage);
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Could not save vehicle')));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.couldNotSaveVehicle)));
     }
   }
 
@@ -110,8 +111,9 @@ class _VehicleFormScreenState extends ConsumerState<VehicleFormScreen> {
   Widget build(BuildContext context) {
     final ev = _type == EnergyType.electric;
     final decimal = [FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]'))];
+    final l = context.l10n;
     return Scaffold(
-      appBar: AppBar(title: Text(widget.initial == null ? 'Add vehicle' : 'Edit vehicle')),
+      appBar: AppBar(title: Text(widget.initial == null ? l.addVehicle : l.editVehicle)),
       body: Form(
         key: _form,
         child: ListView(
@@ -121,14 +123,22 @@ class _VehicleFormScreenState extends ConsumerState<VehicleFormScreen> {
               controller: _name,
               textCapitalization: TextCapitalization.words,
               maxLength: 60,
-              decoration: const InputDecoration(labelText: 'Name', hintText: 'e.g. Toyota Corolla'),
-              validator: (v) => (v ?? '').trim().isEmpty ? 'Enter a name' : null,
+              decoration: InputDecoration(labelText: l.vehicleName, hintText: l.vehicleNameHint),
+              validator: (v) => (v ?? '').trim().isEmpty ? l.enterName : null,
             ),
             const SizedBox(height: AppSpacing.sm),
             SegmentedButton<EnergyType>(
-              segments: const [
-                ButtonSegment(value: EnergyType.fuel, icon: Icon(Icons.local_gas_station_rounded), label: Text('Fuel')),
-                ButtonSegment(value: EnergyType.electric, icon: Icon(Icons.ev_station_rounded), label: Text('Electric')),
+              segments: [
+                ButtonSegment(
+                  value: EnergyType.fuel,
+                  icon: const Icon(Icons.local_gas_station_rounded),
+                  label: Text(l.energyFuel),
+                ),
+                ButtonSegment(
+                  value: EnergyType.electric,
+                  icon: const Icon(Icons.ev_station_rounded),
+                  label: Text(l.energyElectric),
+                ),
               ],
               selected: {_type},
               onSelectionChanged: (s) => _setType(s.first),
@@ -138,22 +148,32 @@ class _VehicleFormScreenState extends ConsumerState<VehicleFormScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
+                  flex: 3,
                   child: TextFormField(
                     key: const Key('consumption'),
                     controller: _consumption,
                     keyboardType: const TextInputType.numberWithOptions(decimal: true),
                     inputFormatters: decimal,
-                    decoration: const InputDecoration(labelText: 'Consumption'),
-                    validator: (v) => parsePositive(v) == null ? 'Enter a positive number' : null,
+                    decoration: InputDecoration(labelText: l.consumption),
+                    validator: (v) => parsePositive(v) == null ? l.enterPositiveNumber : null,
                   ),
                 ),
                 const SizedBox(width: AppSpacing.sm),
-                DropdownButton<ConsumptionUnit>(
-                  value: _unit,
-                  onChanged: (u) => u == null ? null : _setUnit(u),
-                  items: [
-                    for (final u in ConsumptionUnit.forType(_type)) DropdownMenuItem(value: u, child: Text(u.label)),
-                  ],
+                // Expanded + isExpanded so large text ellipsizes instead of overflowing.
+                Expanded(
+                  flex: 2,
+                  child: DropdownButton<ConsumptionUnit>(
+                    value: _unit,
+                    isExpanded: true,
+                    onChanged: (u) => u == null ? null : _setUnit(u),
+                    items: [
+                      for (final u in ConsumptionUnit.forType(_type))
+                        DropdownMenuItem(
+                          value: u,
+                          child: Text(u.label, overflow: TextOverflow.ellipsis),
+                        ),
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -164,18 +184,23 @@ class _VehicleFormScreenState extends ConsumerState<VehicleFormScreen> {
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
               inputFormatters: decimal,
               decoration: InputDecoration(
-                labelText: ev ? 'Usable battery capacity' : 'Tank capacity',
+                labelText: ev ? l.usableBatteryCapacity : l.tankCapacityLabel,
                 suffixText: ev ? 'kWh' : 'L',
               ),
-              validator: (v) => parsePositive(v) == null ? 'Enter a positive number' : null,
+              validator: (v) => parsePositive(v) == null ? l.enterPositiveNumber : null,
             ),
             const SizedBox(height: AppSpacing.md),
             if (!ev)
               DropdownButtonFormField<String>(
+                isExpanded: true, // long labels at large text sizes ellipsize instead of overflowing
                 initialValue: _fuelType,
-                decoration: const InputDecoration(labelText: 'Fuel type'),
+                decoration: InputDecoration(labelText: l.fuelTypeLabel),
                 items: [
-                  for (final f in kFuelTypeChoices) DropdownMenuItem(value: f, child: Text(fuelTypeLabel(f))),
+                  for (final f in kFuelTypeChoices)
+                    DropdownMenuItem(
+                      value: f,
+                      child: Text(localizedFuelType(f, l), overflow: TextOverflow.ellipsis),
+                    ),
                 ],
                 onChanged: (f) => setState(() => _fuelType = f),
               )
@@ -185,21 +210,18 @@ class _VehicleFormScreenState extends ConsumerState<VehicleFormScreen> {
                 controller: _efficiency,
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
                 inputFormatters: decimal,
-                decoration: const InputDecoration(
-                  labelText: 'Charging efficiency',
+                decoration: InputDecoration(
+                  labelText: l.chargingEfficiency,
                   suffixText: '%',
-                  helperText: 'Share of bought energy that reaches the battery. Leave 100 if unsure.',
+                  helperText: l.chargingEfficiencyHelper,
                 ),
                 validator: (v) {
                   final p = parsePositive(v);
-                  return p == null || p > 100 ? 'Enter a value between 1 and 100' : null;
+                  return p == null || p > 100 ? l.efficiencyRangeError : null;
                 },
               ),
             const SizedBox(height: AppSpacing.lg),
-            FilledButton(
-              onPressed: _saving ? null : _save,
-              child: Text(_saving ? 'Saving…' : 'Save vehicle'),
-            ),
+            FilledButton(onPressed: _saving ? null : _save, child: Text(_saving ? l.saving : l.saveVehicle)),
           ],
         ),
       ),

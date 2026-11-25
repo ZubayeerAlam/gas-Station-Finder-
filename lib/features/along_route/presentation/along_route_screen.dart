@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-import '../../../core/error/app_failure.dart';
 import '../../../core/location/geo_point.dart';
 import '../../../core/router/app_routes.dart';
 import '../../../core/theme/app_theme.dart';
@@ -12,6 +11,9 @@ import '../../../core/widgets/state_views.dart';
 import '../../garage/domain/vehicle_profile.dart';
 import '../../garage/presentation/garage_providers.dart';
 import '../../ranking/domain/ranking_models.dart';
+import '../../../l10n/domain_labels.dart';
+import '../../../l10n/failure_text.dart';
+import '../../../l10n/l10n.dart';
 import '../../stations/domain/entities/station.dart';
 import '../domain/along_route_models.dart';
 import 'along_route_providers.dart';
@@ -27,13 +29,14 @@ class AlongRouteScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final plan = ref.watch(alongRouteControllerProvider);
     final title = plan.value?.destination.name;
+    final l = context.l10n;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(title == null ? 'Trip' : 'To $title', overflow: TextOverflow.ellipsis),
+        title: Text(title == null ? l.trip : l.tripTo(title), overflow: TextOverflow.ellipsis),
         actions: [
           IconButton(
-            tooltip: 'Change destination',
+            tooltip: l.changeDestination,
             icon: const Icon(Icons.search_rounded),
             onPressed: () => context.pushReplacement(AppRoutes.plan),
           ),
@@ -42,17 +45,17 @@ class AlongRouteScreen extends ConsumerWidget {
       body: switch (plan) {
         AsyncData(value: final p?) => _PlanView(plan: p),
         AsyncError(:final error) => AppErrorView(
-          message: error is AppFailure ? error.message : 'Could not plan this trip.',
+          message: describeFailure(error, l, fallback: l.couldNotPlanTrip),
           onRetry: () => context.pushReplacement(AppRoutes.plan),
         ),
         AsyncData() => AppMessageView(
           icon: Icons.alt_route_rounded,
-          title: 'No trip yet',
-          message: 'Choose a destination to find stations along the way.',
-          primaryLabel: 'Choose destination',
+          title: l.noTripYet,
+          message: l.noTripMessage,
+          primaryLabel: l.chooseDestination,
           onPrimary: () => context.pushReplacement(AppRoutes.plan),
         ),
-        _ => const AppLoading(label: 'Finding stations along your route…'),
+        _ => AppLoading(label: l.findingAlongRoute),
       },
     );
   }
@@ -180,6 +183,7 @@ class _ResultsList {
       final byId = {for (final s in plan.stops) s.station.id: s};
       final unit = vehicle?.unit ?? 'L';
       final theme = Theme.of(context);
+      final l = context.l10n;
 
       Widget tile(RankedStation rs, int? rank) {
         final stop = byId[rs.offer.stationId]!;
@@ -213,45 +217,45 @@ class _ResultsList {
             ),
           Text(
             '${Fmt.distance(plan.route.distanceMeters)} · ${Fmt.duration(plan.route.duration)} · '
-            '${plan.stops.length} ${plan.stops.length == 1 ? 'station' : 'stations'} on the way',
+            '${l.stationsOnTheWay(plan.stops.length)}',
             style: theme.textTheme.titleMedium,
           ),
           if (plan.fuelType != null)
             Text(
-              'Comparing ${fuelTypeLabel(plan.fuelType!)} prices',
+              l.comparingFuelPrices(localizedFuelType(plan.fuelType!, l)),
               style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
             ),
           if (plan.detoursApproximate)
-            const _Notice(
+            _Notice(
               icon: Icons.info_outline_rounded,
-              text: 'Routing service unavailable — detours are straight-line estimates.',
+              text: l.detoursApproximate,
             ),
           if (plan.skippedForDetour > 0)
             _Notice(
               icon: Icons.filter_alt_outlined,
-              text: '${plan.skippedForDetour} more stations farther from the route were not compared.',
+              text: l.skippedForDetour(plan.skippedForDetour),
             ),
           const SizedBox(height: AppSpacing.sm),
           _VehicleControls(vehicle: vehicle),
           const SizedBox(height: AppSpacing.sm),
           SegmentedButton<RankingStrategy>(
             showSelectedIcon: false,
-            segments: [for (final s in RankingStrategy.values) ButtonSegment(value: s, label: Text(strategyLabel(s)))],
+            segments: [for (final s in RankingStrategy.values) ButtonSegment(value: s, label: Text(strategyLabel(s, l)))],
             selected: {strategy},
             onSelectionChanged: (s) => ref.read(rankingStrategyProvider.notifier).set(s.first),
           ),
           const SizedBox(height: AppSpacing.md),
           if (r == null || (r.ranked.isEmpty && r.unpriced.isEmpty))
-            const AppEmptyView(
-              title: 'No stations along this route',
-              message: 'Nothing found within 5 km of the route.',
+            AppEmptyView(
+              title: l.noStationsAlongRoute,
+              message: l.nothingWithin5km,
             )
           else ...[
             for (var i = 0; i < r.ranked.length; i++) tile(r.ranked[i], i + 1),
             if (r.unpriced.isNotEmpty) ...[
               Padding(
                 padding: const EdgeInsets.only(top: AppSpacing.md, bottom: AppSpacing.xs),
-                child: Text('Without a comparable price (${r.unpriced.length})', style: theme.textTheme.titleSmall),
+                child: Text(l.withoutComparablePrice(r.unpriced.length), style: theme.textTheme.titleSmall),
               ),
               for (final u in r.unpriced) tile(u, null),
             ],
@@ -289,14 +293,15 @@ class _VehicleControls extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final v = vehicle;
+    final l = context.l10n;
     if (v == null) {
       return Card(
         margin: EdgeInsets.zero,
         child: ListTile(
           leading: const Icon(Icons.directions_car_filled_outlined),
-          title: const Text('Comparing price per litre only'),
-          subtitle: const Text('Add your vehicle to rank by true trip cost.'),
-          trailing: TextButton(onPressed: () => context.push(AppRoutes.vehicleNew), child: const Text('Add')),
+          title: Text(l.comparingPricePerLitre),
+          subtitle: Text(l.addVehicleForTrueCost),
+          trailing: TextButton(onPressed: () => context.push(AppRoutes.vehicleNew), child: Text(l.add)),
         ),
       );
     }
@@ -309,15 +314,19 @@ class _VehicleControls extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              '${v.name} · ${v.isElectric ? 'battery' : 'tank'} now ${(level * 100).round()}% → full '
-              '(${Fmt.number(v.capacity * (1 - level) / (v.isElectric ? v.chargingEfficiency : 1), maxDecimals: 1)} ${v.unit})',
+              (v.isElectric ? l.batteryNowToFull : l.tankNowToFull)(
+                v.name,
+                (level * 100).round(),
+                Fmt.number(v.capacity * (1 - level) / (v.isElectric ? v.chargingEfficiency : 1), maxDecimals: 1),
+                v.unit,
+              ),
               style: Theme.of(context).textTheme.bodyMedium,
             ),
             Slider(
               value: level,
               divisions: 20,
               label: '${(level * 100).round()}%',
-              semanticFormatterCallback: (x) => '${(x * 100).round()} percent ${v.isElectric ? 'charge' : 'fuel'}',
+              semanticFormatterCallback: (x) => (v.isElectric ? l.percentCharge : l.percentFuel)((x * 100).round()),
               onChanged: (x) => ref.read(fillLevelProvider.notifier).set(x),
             ),
           ],
@@ -350,6 +359,7 @@ class StationResultCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l = context.l10n;
     final o = ranked.offer;
     final dimmed = ranked.caveats.contains(Caveat.closed) || ranked.caveats.contains(Caveat.unreachable);
     final headline = switch ((mode, ranked.totalCost, o.pricePerUnit, o.currencyCode)) {
@@ -373,7 +383,7 @@ class StationResultCard extends StatelessWidget {
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('${detourText(o)} · ${Fmt.distance(stop.alongMeters)} into the trip'),
+              Text(l.intoTheTrip(detourText(o, l), Fmt.distance(stop.alongMeters))),
               if (ranked.badges.isNotEmpty || ranked.caveats.isNotEmpty)
                 Padding(
                   padding: const EdgeInsets.only(top: AppSpacing.xs),
@@ -382,9 +392,9 @@ class StationResultCard extends StatelessWidget {
                     runSpacing: AppSpacing.xs,
                     children: [
                       for (final b in ranked.badges)
-                        _Chip(text: badgeLabel(b), color: theme.colorScheme.primaryContainer),
+                        _Chip(text: badgeLabel(b, l), color: theme.colorScheme.primaryContainer),
                       for (final c in ranked.caveats)
-                        _Chip(text: caveatLabel(c), color: theme.colorScheme.errorContainer),
+                        _Chip(text: caveatLabel(c, l), color: theme.colorScheme.errorContainer),
                     ],
                   ),
                 ),
@@ -394,7 +404,7 @@ class StationResultCard extends StatelessWidget {
           childrenPadding: const EdgeInsets.fromLTRB(AppSpacing.md, 0, AppSpacing.md, AppSpacing.sm),
           expandedCrossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            for (final line in explainRanking(ranked, mode: mode, unit: unit))
+            for (final line in explainRanking(ranked, mode: mode, unit: unit, l: l))
               Padding(
                 padding: const EdgeInsets.only(bottom: AppSpacing.xs),
                 child: Text(line, style: theme.textTheme.bodyMedium),
@@ -405,7 +415,7 @@ class StationResultCard extends StatelessWidget {
               child: TextButton.icon(
                 onPressed: onShowOnMap,
                 icon: const Icon(Icons.map_outlined),
-                label: const Text('Show on map'),
+                label: Text(l.showOnMap),
               ),
             ),
           ],

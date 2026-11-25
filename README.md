@@ -23,7 +23,7 @@ FuelWise finds fuel stations and EV chargers, then ranks them by the *true trip 
 | Community prices | Crowdsourced reports with outlier rejection, trust scores, price history, reliability votes, price alerts | Built · Firebase **emulator**-tested |
 | AI trip assistant | Chat with Claude; it plans with the app's own ranking engine and shows tappable station cards | Built · tested with a fake model; needs an Anthropic key |
 | Offline | Saved station *positions* (place IDs + coordinates only, ≤ 30 days, per Google policy), local garage/history, Firestore offline cache | Built · unit-tested |
-| Languages | English and বাংলা (Bengali); follows the device or a manual choice | Core screens translated; rest in progress |
+| Languages | English and বাংলা (Bengali); follows the device or a manual choice | All screens and error messages · widget-tested |
 
 **Honesty rules the code follows:** prices come only from Google or community reports, never estimated · "Best value" is labelled as a heuristic · stale data is marked, never shown as verified · the AI never invents a number — every figure comes from the app's own calculation.
 
@@ -103,6 +103,9 @@ cd functions && npm test                                 # unit + rules + emulat
 CI ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) runs all of the above plus a debug APK build on every push and pull request. CI never deploys anything.
 
 ## Privacy & data
+
+Full draft policy: [docs/privacy-policy.md](docs/privacy-policy.md). Release steps: [docs/RELEASE.md](docs/RELEASE.md).
+
 
 - Anonymous Firebase sign-in only; no personal data is required.
 - Google Places content is not stored except place IDs and coordinates (deleted after 30 days).

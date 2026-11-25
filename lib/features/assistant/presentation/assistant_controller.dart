@@ -2,6 +2,7 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/error/app_failure.dart';
 import '../../../core/error/result.dart';
 import '../../../core/firebase/firebase_bootstrap.dart';
 import '../../../core/location/location_controller.dart';
@@ -51,16 +52,21 @@ class AssistantCard {
 
 class ChatMessage {
   const ChatMessage.user(this.text)
-      : fromUser = true,
+      : failure = null,
+        tooManySteps = false,
+        fromUser = true,
         cards = const [],
         demo = false,
         isError = false;
 
   const ChatMessage.assistant(this.text, {this.cards = const [], this.demo = false})
-      : fromUser = false,
+      : failure = null,
+        tooManySteps = false,
+        fromUser = false,
         isError = false;
 
-  const ChatMessage.error(this.text)
+  /// [text] is the English fallback; the screen translates [failure].
+  const ChatMessage.error(this.text, {this.failure, this.tooManySteps = false})
       : fromUser = false,
         cards = const [],
         demo = false,
@@ -71,6 +77,8 @@ class ChatMessage {
   final List<AssistantCard> cards;
   final bool demo;
   final bool isError;
+  final AppFailure? failure;
+  final bool tooManySteps;
 }
 
 class AssistantChatState {
@@ -137,7 +145,7 @@ class AssistantController extends Notifier<AssistantChatState> {
       switch (result) {
         case Err(:final failure):
           // A failure mid tool-call leaves the server session waiting: start fresh next time.
-          _finish(ChatMessage.error(failure.message), resetSession: inToolPhase);
+          _finish(ChatMessage.error(failure.message, failure: failure), resetSession: inToolPhase);
           return;
         case Ok(value: final turn):
           state = state.copyWith(sessionId: () => turn.sessionId);
@@ -146,7 +154,7 @@ class AssistantController extends Notifier<AssistantChatState> {
             return;
           }
           if (round >= maxToolRounds) {
-            _finish(const ChatMessage.error('That took too many steps. Please try a simpler question.'), resetSession: true);
+            _finish(const ChatMessage.error('That took too many steps. Please try a simpler question.', tooManySteps: true), resetSession: true);
             return;
           }
           inToolPhase = true;

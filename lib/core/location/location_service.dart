@@ -22,6 +22,7 @@ class GeolocatorLocationService implements LocationService {
         return const Err(LocationFailure(
           LocationFailureReason.serviceDisabled,
           'Location services are turned off. Turn them on to find stations near you.',
+          code: FailureCode.locationServiceDisabled,
         ));
       }
       var permission = await Geolocator.checkPermission();
@@ -32,12 +33,14 @@ class GeolocatorLocationService implements LocationService {
         return const Err(LocationFailure(
           LocationFailureReason.denied,
           'FuelWise needs location permission to find stations near you.',
+          code: FailureCode.locationDenied,
         ));
       }
       if (permission == LocationPermission.deniedForever) {
         return const Err(LocationFailure(
           LocationFailureReason.deniedForever,
           'Location permission is blocked. Enable it in Settings to find stations near you.',
+          code: FailureCode.locationDeniedForever,
         ));
       }
       Position? p;
@@ -59,6 +62,7 @@ class GeolocatorLocationService implements LocationService {
       return const Err(LocationFailure(
         LocationFailureReason.unavailable,
         'Could not determine your location. Please try again.',
+        code: FailureCode.locationUnavailable,
       ));
     }
   }

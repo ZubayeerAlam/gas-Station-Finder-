@@ -11,6 +11,7 @@ import '../../garage/domain/vehicle_profile.dart';
 import '../../garage/presentation/garage_providers.dart';
 import '../../garage/presentation/vehicle_form_screen.dart' show parsePositive;
 import '../domain/fill_up.dart';
+import '../../../l10n/l10n.dart';
 import 'history_providers.dart';
 
 final _currencyPattern = RegExp(r'^[A-Z]{3}$');
@@ -32,19 +33,20 @@ class FillUpFormScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final vehicle = ref.watch(activeVehicleProvider);
+    final l = context.l10n;
     return switch (vehicle) {
       AsyncData(value: final v?) => _FillUpForm(vehicle: v, history: ref.watch(fillUpsProvider(v.id)).value ?? []),
       AsyncData() => Scaffold(
           appBar: AppBar(),
           body: AppMessageView(
             icon: Icons.directions_car_filled_outlined,
-            title: 'No active vehicle',
-            message: 'Add a vehicle in your garage first.',
-            primaryLabel: 'Open garage',
+            title: l.noActiveVehicle,
+            message: l.addVehicleFirst,
+            primaryLabel: l.openGarage,
             onPrimary: () => context.go(AppRoutes.garage),
           ),
         ),
-      AsyncError() => const Scaffold(body: AppErrorView(message: 'Could not load your garage.')),
+      AsyncError() => Scaffold(body: AppErrorView(message: l.couldNotLoadGarage)),
       _ => const Scaffold(body: AppLoading()),
     };
   }
@@ -105,9 +107,9 @@ class _FillUpFormState extends ConsumerState<_FillUpForm> {
   String? _validateOdometer(String? text) {
     if ((text ?? '').trim().isEmpty) return null; // optional
     final v = parsePositive(text);
-    if (v == null) return 'Enter a positive number';
+    if (v == null) return context.l10n.enterPositiveNumber;
     final prev = previousOdometer(widget.history, _date);
-    if (prev != null && v <= prev) return 'Must be above the previous reading (${Fmt.number(prev)} km)';
+    if (prev != null && v <= prev) return context.l10n.odometerMustIncrease(Fmt.number(prev));
     return null;
   }
 
@@ -132,7 +134,7 @@ class _FillUpFormState extends ConsumerState<_FillUpForm> {
     if (result.isOk) {
       context.canPop() ? context.pop() : context.go(AppRoutes.history);
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Could not save fill-up')));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.couldNotSaveFillUp)));
     }
   }
 
@@ -143,9 +145,10 @@ class _FillUpFormState extends ConsumerState<_FillUpForm> {
     final decimal = [FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]'))];
     final amount = parsePositive(_amount.text), cost = parsePositive(_cost.text);
     final theme = Theme.of(context);
+    final l = context.l10n;
 
     return Scaffold(
-      appBar: AppBar(title: Text(ev ? 'Add charging session' : 'Add fill-up')),
+      appBar: AppBar(title: Text(ev ? l.addChargingSession : l.addFillUp)),
       body: Form(
         key: _form,
         child: ListView(
@@ -155,7 +158,7 @@ class _FillUpFormState extends ConsumerState<_FillUpForm> {
               contentPadding: EdgeInsets.zero,
               leading: Icon(ev ? Icons.electric_car_rounded : Icons.directions_car_rounded),
               title: Text(v.name),
-              subtitle: const Text('Active vehicle'),
+              subtitle: Text(l.activeVehicle),
             ),
             OutlinedButton.icon(
               onPressed: _pickDate,
@@ -168,8 +171,8 @@ class _FillUpFormState extends ConsumerState<_FillUpForm> {
               controller: _amount,
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
               inputFormatters: decimal,
-              decoration: InputDecoration(labelText: ev ? 'Energy charged' : 'Fuel added', suffixText: v.unit),
-              validator: (t) => parsePositive(t) == null ? 'Enter a positive number' : null,
+              decoration: InputDecoration(labelText: ev ? l.energyCharged : l.fuelAdded, suffixText: v.unit),
+              validator: (t) => parsePositive(t) == null ? l.enterPositiveNumber : null,
             ),
             const SizedBox(height: AppSpacing.md),
             Row(
@@ -182,8 +185,8 @@ class _FillUpFormState extends ConsumerState<_FillUpForm> {
                     controller: _cost,
                     keyboardType: const TextInputType.numberWithOptions(decimal: true),
                     inputFormatters: decimal,
-                    decoration: const InputDecoration(labelText: 'Total paid'),
-                    validator: (t) => parsePositive(t) == null ? 'Enter a positive number' : null,
+                    decoration: InputDecoration(labelText: l.totalPaid),
+                    validator: (t) => parsePositive(t) == null ? l.enterPositiveNumber : null,
                   ),
                 ),
                 const SizedBox(width: AppSpacing.sm),
@@ -197,8 +200,8 @@ class _FillUpFormState extends ConsumerState<_FillUpForm> {
                       FilteringTextInputFormatter.allow(RegExp('[A-Za-z]')),
                       TextInputFormatter.withFunction((_, n) => n.copyWith(text: n.text.toUpperCase())),
                     ],
-                    decoration: const InputDecoration(labelText: 'Currency', hintText: 'EUR', counterText: ''),
-                    validator: (t) => _currencyPattern.hasMatch((t ?? '').trim()) ? null : '3-letter code',
+                    decoration: InputDecoration(labelText: l.currency, hintText: 'EUR', counterText: ''),
+                    validator: (t) => _currencyPattern.hasMatch((t ?? '').trim()) ? null : l.currencyCodeError,
                   ),
                 ),
               ],
@@ -207,7 +210,7 @@ class _FillUpFormState extends ConsumerState<_FillUpForm> {
               Padding(
                 padding: const EdgeInsets.only(top: AppSpacing.xs),
                 child: Text(
-                  'Unit price: ${Fmt.price(cost / amount, _currency.text).trim()}/${v.unit}',
+                  l.unitPriceLine(Fmt.price(cost / amount, _currency.text).trim(), v.unit),
                   style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
                 ),
               ),
@@ -217,10 +220,10 @@ class _FillUpFormState extends ConsumerState<_FillUpForm> {
               controller: _odometer,
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
               inputFormatters: decimal,
-              decoration: const InputDecoration(
-                labelText: 'Odometer (optional)',
+              decoration: InputDecoration(
+                labelText: l.odometerOptional,
                 suffixText: 'km',
-                helperText: 'Needed to measure real consumption and cost per km.',
+                helperText: l.odometerHelper,
               ),
               validator: _validateOdometer,
             ),
@@ -228,13 +231,13 @@ class _FillUpFormState extends ConsumerState<_FillUpForm> {
               contentPadding: EdgeInsets.zero,
               value: _full,
               onChanged: (x) => setState(() => _full = x),
-              title: Text(ev ? 'Charged to my usual target' : 'Filled the tank'),
-              subtitle: const Text('Partial fills are added to the next full one.'),
+              title: Text(ev ? l.chargedToTarget : l.filledTank),
+              subtitle: Text(l.partialFillHelp),
             ),
             TextFormField(
               controller: _station,
               maxLength: 80,
-              decoration: const InputDecoration(labelText: 'Station (optional)'),
+              decoration: InputDecoration(labelText: l.stationOptional),
             ),
           ],
         ),
@@ -245,7 +248,7 @@ class _FillUpFormState extends ConsumerState<_FillUpForm> {
           padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.sm, AppSpacing.md, AppSpacing.md),
           child: FilledButton(
             onPressed: _saving ? null : _save,
-            child: Text(_saving ? 'Saving…' : 'Save'),
+            child: Text(_saving ? l.saving : l.save),
           ),
         ),
       ),
