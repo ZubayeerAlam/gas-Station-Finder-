@@ -318,7 +318,7 @@ flutter run --dart-define-from-file=config/dev.json --dart-define=FIREBASE_MODE=
 - **Not verified:** offline fallback on a device (cache can't fill while Places returns 403).
 
 ## Phase 3 — Batch 3.B: full Bengali, translated errors, release prep (2026‑11‑25)
-*(implemented, unit/widget-tested, iOS-simulator-checked; CI result recorded below)*
+*(implemented, unit/widget-tested, iOS-simulator-checked, CI green)*
 - **Errors translated without losing detail:** `AppFailure` gained a nullable `FailureCode` (25 codes). Data sources tag their failures (network, timeout, 403 key rejected, 429, 5xx, missing keys, no route, location reasons, community/assistant). `describeFailure(error, l10n, fallback:)` turns a code into text; a failure **without** a code (e.g. a specific message from the server) is shown as-is. The English `message` stays for logs and for the AI's tool results.
 - **Every screen translated:** History (stats, charts, semantics labels), fill-up form, vehicle form, Alerts + alert form, community prices/history/votes, Report price + server verdicts, trip planning (destination search, route results, vehicle controls), ranking badges/caveats/strategies and the "why" explanation, EV filter + charger sheet, assistant errors. Domain stays English: `lib/l10n/domain_labels.dart` maps fuel types, connectors, reliability bands, report verdicts and price validation to translations (codes like E10/CCS2 stay as-is). Relative times and month names come from ARB (`monthsShort`), because intl's `DateFormat` needs locale data that isn't loaded in tests. 327 keys in each language.
 - **A11y bug found by the new tests and fixed:** at 200 % text the fuel-type dropdowns (vehicle form, alert form, report form) and the consumption unit dropdown overflowed horizontally → `isExpanded` + ellipsis.
@@ -333,4 +333,5 @@ flutter run --dart-define-from-file=config/dev.json --dart-define=FIREBASE_MODE=
 - Updated `history_test` expectation for the corrected singular ("1 entry in another currency…").
 - Full suite **188 passed**; `flutter analyze` clean; domain coverage **97.1 %** (430/443).
 - **iOS simulator (iPhone 17e, Bengali):** Map shows the Places 403 error **in Bengali** (was English in 3.A); History empty state, Garage, vehicle form (labels, segmented control, unit dropdown, fuel type "রেগুলার (অকটেন)", validation messages) all Bengali, no overflow.
+- **CI on GitHub:** run 45644565363 for commit 5df7501 — both jobs passed (Functions 1m06s, Flutter 7m45s incl. debug APK); the Node 20 / setup-java deprecation warnings are gone.
 - **Not verified:** release build with a real keystore; splash on a physical device (simulator launch is too fast to capture reliably); screens that need live data (station results, route ranking, chargers) in Bengali on a device.
