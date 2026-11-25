@@ -335,3 +335,7 @@ flutter run --dart-define-from-file=config/dev.json --dart-define=FIREBASE_MODE=
 - **iOS simulator (iPhone 17e, Bengali):** Map shows the Places 403 error **in Bengali** (was English in 3.A); History empty state, Garage, vehicle form (labels, segmented control, unit dropdown, fuel type "রেগুলার (অকটেন)", validation messages) all Bengali, no overflow.
 - **CI on GitHub:** run 45644565363 for commit 5df7501 — both jobs passed (Functions 1m06s, Flutter 7m45s incl. debug APK); the Node 20 / setup-java deprecation warnings are gone.
 - **Not verified:** release build with a real keystore; splash on a physical device (simulator launch is too fast to capture reliably); screens that need live data (station results, route ranking, chargers) in Bengali on a device.
+
+## Final report (2026‑11‑25)
+- Written: [docs/FINAL_REPORT.md](docs/FINAL_REPORT.md).
+- **Correction to the key note in "Next steps" above:** commit `d481cb0` belongs to the older parent repository `~/FluterDev/Project`, not to this repo. `git log -S AIza` over this repo's whole history finds nothing. That commit is not on any remote branch there, and the GitHub repo its remote points to cannot be reached. The key was still kept in plain text locally, so rotating it remains recommended.
