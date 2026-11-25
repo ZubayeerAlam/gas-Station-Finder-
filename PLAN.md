@@ -182,15 +182,18 @@ Implementation history and evidence live in [BUILD.md](BUILD.md). Rule: work one
 ---
 
 ## Phase 2 — AI Trip Assistant (Week 5)
-- [ ] Natural-language text chat UI (voice optional)
-- [ ] Cloud Function (TS) calling Claude API, key server-side only
-- [ ] Verify exact Haiku model ID before use
-- [ ] Tools: `search_stations_along_route`, `get_prices`, `get_vehicle` (reuse backend logic)
-- [ ] Structured responses → tappable station cards (price, detour, savings, reliability, open status, navigate)
-- [ ] Auth, input validation, rate limits, tool allow-list, token limits, timeout/failure handling
-- [ ] Acceptance: AI results match the ranking algorithm; credentials never in client
+- [x] Natural-language text chat UI (`/assistant`, sparkle button on the Map) — simulator-tested; voice not started (optional)
+- [-] Cloud Function (TS) `assistantChat` calling the Claude API via `@anthropic-ai/sdk`, key only in Secret Manager / `functions/.secret.local` — implemented and tested with a scripted fake model + the emulator's labelled offline demo; **no live Claude call yet (no `ANTHROPIC_API_KEY`), not deployed**
+- [x] Verify exact Haiku model ID before use — `claude-haiku-5-5`, checked against the installed SDK 1.14 model list
+- [x] Tools (names adapted, same intent): `plan_route_stops` (= search stations along route, runs the app's own planner + `TripCostEngine` on the device), `get_community_prices` (= get prices, server, Firestore), `get_vehicle` (device garage), `show_station_cards` (display only)
+- [x] Structured responses → tappable station cards (reuses the trip screen's `StationResultCard`: price + source, detour, total cost, savings, reliability, open status, "Show on map" opens the trip)
+- [x] Auth (anonymous OK), input validation, per-user rate limits (20/h, 100/day), tool allow-list, token cap (4096/call, 6 calls/request, 20 turns/session), 60 s model timeout + typed failure mapping, refusal / max_tokens handling
+- [-] Acceptance: AI results match the ranking algorithm — guaranteed structurally and tested (every figure comes from the app's engine; cards show only ids from the app's own plan) · live Claude wording not verified (no key)
+- [x] Acceptance: credentials never in client — key is a function secret; the app only sends text + tool results
 
----
+### Awaiting an Anthropic API key (no paid service authorised)
+- [ ] Put `ANTHROPIC_API_KEY` in `functions/.secret.local` (gitignored) and run one live emulator conversation
+- [ ] Check Claude's answers against the trip screen's ranking on a real route (needs the new Google key too)
 
 ## Phase 3 — Production Quality, Offline & Release (Week 6+)
 

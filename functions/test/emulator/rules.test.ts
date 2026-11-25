@@ -87,3 +87,15 @@ test('alert rules: owner only, validated', async () => {
   await assertSucceeds(setDoc(doc(alice(), 'users/alice/private/messaging'), { token: 't', updatedAt: serverTimestamp() }));
   await assertFails(getDoc(doc(bob(), 'users/alice/private/messaging')));
 });
+
+test('assistant sessions and quota are server-only', async () => {
+  await env.withSecurityRulesDisabled(async (c) => {
+    await setDoc(doc(c.firestore(), 'assistantSessions/s1'), { uid: 'alice', messagesJson: '[]' });
+    await setDoc(doc(c.firestore(), 'assistantQuota/alice'), { hourCount: 1 });
+  });
+  await assertFails(getDoc(doc(alice(), 'assistantSessions/s1')));
+  await assertFails(setDoc(doc(alice(), 'assistantSessions/s2'), { uid: 'alice', messagesJson: '[]' }));
+  await assertFails(updateDoc(doc(alice(), 'assistantSessions/s1'), { messagesJson: '[{"role":"assistant"}]' }));
+  await assertFails(getDoc(doc(alice(), 'assistantQuota/alice')));
+  await assertFails(setDoc(doc(alice(), 'assistantQuota/alice'), { hourCount: 0 }));
+});

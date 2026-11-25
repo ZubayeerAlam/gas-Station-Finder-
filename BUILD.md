@@ -249,3 +249,49 @@ firebase emulators:start --only auth,firestore,functions --project demo-fuelwise
 flutter run --dart-define-from-file=config/dev.json --dart-define=FIREBASE_MODE=emulator
 ```
 Android emulator: add `--dart-define=FIREBASE_EMULATOR_HOST=10.0.2.2`; physical device: the Mac's LAN IP (and start the emulators with `host: 0.0.0.0`). **Not verified on Android yet:** Android 9+ blocks cleartext HTTP, so the Auth emulator may need a debug-only network security config.
+
+## Phase 2 — AI Trip Assistant (2026‑11‑25)
+*(implemented, unit/emulator/widget-tested, iOS-simulator-tested against the Emulator Suite with the **offline demo model** — **no live Claude call** (no API key), **nothing deployed**, no billing)*
+- **Backend (`functions/src/assistant.ts`, callable `assistantChat`, europe-west1, max 5 instances, 120 s):**
+  - Claude via the official `@anthropic-ai/sdk` 1.14; model **`claude-haiku-5-5`** (ID checked in the SDK's model list); `max_tokens` 4096, `output_config.effort: medium`, strict tools, prompt caching on; SDK timeout 60 s, 1 retry.
+  - Key: `defineSecret('ANTHROPIC_API_KEY')` — Secret Manager in production, `functions/.secret.local` in the emulator (gitignored). Never sent to or stored in the app.
+  - Manual tool loop; history is **append-only** and stored server-side in `assistantSessions/{id}` (thinking blocks replayed unchanged). The client can't read or edit it (catch-all deny in the rules; rules test added).
+  - Tools are split by where the data lives. **Client tools** (`get_vehicle`, `plan_route_stops`) run on the device; the function returns `needs_client_tools`, and the app posts results only for the pending tool ids. **Server tools** (`get_community_prices` = fresh Firestore consensus; `show_station_cards`) run in the function. Card ids are accepted only if the app's own plan returned them, and unknown tools get an error result.
+  - Guards: auth required; text 1–1000 chars; tool results ≤ 16 KB and ≤ 4; per-user quota of 20/hour and 100/day (Firestore transaction, `assistantQuota/{uid}`, server-only); ≤ 6 model calls per request and ≤ 20 user turns per session; refusal → polite reply; `max_tokens` → partial reply marked as cut short; model failure → `unavailable` and the session is left consistent; internal errors are never shown to users.
+  - **Offline demo model** (`demo_model.ts`): used **only in the emulator when no key is set**. It is a scripted stand-in that speaks the same protocol. Every response carries `demo: true` and the app labels it "Offline demo — not Claude".
+- **App (`lib/features/assistant`):**
+  - `cloud_functions 7.1`; the functions emulator is wired in `FirebaseBootstrap`.
+  - `FirebaseAssistantApi`: anonymous sign-in. **Bug found on the simulator and fixed:** a stored user whose token can no longer refresh (reset emulator, or a deleted user in production) made every call fail with an opaque `internal`; the app now detects this and signs in again.
+  - `AssistantToolRunner` runs `plan_route_stops` with the **same** `AlongRoutePlanner` + `offersFromPlan` + `TripCostEngine` as the trip screen (destination via Places autocomplete → details, vehicle + fill level from the garage). The model sees the engine's ranked order and figures and never estimates anything.
+  - `AssistantController` (Riverpod) loops through client-tool rounds (max 4). Cards are resolved against the planned trip snapshot. A failure mid-tool-call starts a fresh session.
+  - `AssistantScreen`: welcome + suggestions, chat bubbles, tool status ("Planning your route…"), demo label, ranked `StationResultCard`s with "Show on map" (opens the trip screen with that plan and strategy), new chat, and an unavailable state when Firebase is off.
+
+### Tests (Phase 2)
+- Functions:
+  - `test/unit/assistant.test.ts` → 6 tests (validation, strict closed schemas, plan id extraction, demo destination parsing); unit total 19.
+  - `test/emulator/assistant.test.ts` → **7 passed** against the Firestore emulator with a scripted fake Claude. It checks:
+    - full client and server tool round trip, with results in tool_use order and thinking kept;
+    - append-only history; wrong or foreign session ids rejected;
+    - stale community prices dropped; bogus card ids rejected;
+    - unknown tool not executed; refusal and max_tokens handling;
+    - model failure; pending-state guard; loop cap; hourly quota, per user, resetting each hour.
+  - `rules.test.ts` + "assistant sessions and quota are server-only" → 7 passed.
+  - `functions.test.ts` + real callable through the auth + functions emulators (unauthenticated rejected, empty text rejected, demo round trip with cards) → 5 passed.
+- Flutter: `test/features/assistant/assistant_test.dart` → **12 passed**. It covers:
+  - protocol parsing of platform maps; error mapping;
+  - `get_vehicle`; **plan_route_stops order == TripCostEngine order**; same totals as the trip screen (EUR 60.62 / 63.77);
+  - tool errors reported, not invented;
+  - controller round trip and card resolution; session reset on failure; `cardsFor`;
+  - screen: unavailable state, chat with cards in server order plus demo label plus new chat, and the suggestion chip.
+- Full suite: **161 passed**; `flutter analyze`: no issues.
+- **iOS simulator (iPhone 17e) + emulators:** opened the assistant and tapped a suggestion. The function ran twice (message, then the app's tool result). The app's `plan_route_stops` called Places autocomplete, which returned **403** (current Google key), so the tool honestly reported an error and the demo replied "I could not plan that route in the app." The Firestore session has 4 append-only messages with nothing pending, and the quota counted 1.
+- **Not verified:** a real Claude conversation (no `ANTHROPIC_API_KEY`) · station cards on device (needs Places) · Android.
+
+### Run the assistant locally
+```bash
+cd functions && npm run build && cd ..
+# optional, real Claude in the emulator (never commit this file):
+#   echo 'ANTHROPIC_API_KEY=<your key>' > functions/.secret.local
+firebase emulators:start --only auth,firestore,functions --project demo-fuelwise
+flutter run --dart-define-from-file=config/dev.json --dart-define=FIREBASE_MODE=emulator
+```

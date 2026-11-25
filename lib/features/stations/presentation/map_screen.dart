@@ -36,6 +36,11 @@ class MapScreen extends ConsumerWidget {
         title: const Text('FuelWise'),
         actions: [
           IconButton(
+            tooltip: 'Trip assistant',
+            onPressed: () => context.push(AppRoutes.assistant),
+            icon: const Icon(Icons.auto_awesome_outlined),
+          ),
+          IconButton(
             tooltip: 'Price alerts',
             onPressed: () => context.push(AppRoutes.alerts),
             icon: const Icon(Icons.notifications_none_rounded),

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../features/along_route/presentation/along_route_screen.dart';
 import '../../features/along_route/presentation/destination_search_screen.dart';
+import '../../features/assistant/presentation/assistant_screen.dart';
 import '../../features/garage/domain/vehicle_profile.dart';
 import '../../features/garage/presentation/garage_screen.dart';
 import '../../features/garage/presentation/vehicle_form_screen.dart';
@@ -55,6 +56,11 @@ GoRouter buildRouter({String initialLocation = AppRoutes.map}) => GoRouter(
           path: AppRoutes.plan,
           parentNavigatorKey: _rootKey,
           builder: (_, _) => const DestinationSearchScreen(),
+        ),
+        GoRoute(
+          path: AppRoutes.assistant,
+          parentNavigatorKey: _rootKey,
+          builder: (_, _) => const AssistantScreen(),
         ),
         GoRoute(
           path: AppRoutes.planRoute,

@@ -44,6 +44,9 @@ class AlongRouteController extends AsyncNotifier<AlongRoutePlan?> {
     });
   }
 
+  /// Shows an already planned trip (e.g. one the assistant planned).
+  void show(AlongRoutePlan plan) => state = AsyncData(plan);
+
   void clear() => state = const AsyncData(null);
 }
 

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
@@ -21,6 +22,9 @@ class FirebaseStatus {
 
 /// Emulator project id. The `demo-` prefix makes the Emulator Suite refuse
 /// to talk to any real Google service, so nothing can be billed.
+/// Region the Cloud Functions are defined in (functions/src/index.ts).
+const kFunctionsRegion = 'europe-west1';
+
 const kDemoProjectId = 'demo-fuelwise';
 
 /// Format-valid placeholder (not a real key): the native iOS SDK aborts the
@@ -52,6 +56,7 @@ abstract final class FirebaseBootstrap {
           final host = c.firebaseEmulatorHost;
           FirebaseFirestore.instance.useFirestoreEmulator(host, 8080);
           await FirebaseAuth.instance.useAuthEmulator(host, 9099);
+          FirebaseFunctions.instanceFor(region: kFunctionsRegion).useFunctionsEmulator(host, 5001);
           return const FirebaseStatus(FirebaseMode.emulator, ready: true);
         case FirebaseMode.project:
           if ([c.firebaseProjectId, c.firebaseApiKey, c.firebaseAppId, c.firebaseSenderId].any((v) => v.isEmpty)) {

@@ -105,3 +105,37 @@ test('price alert fires once per cooldown and respects threshold', async () => {
   const again = (await db.doc('alertLog/fan_cheap_st1').get()).data()!;
   assert.deepEqual(again.sentAt, log.sentAt, 'cooldown prevents a duplicate notification');
 });
+
+// The deployed-shape callable, through the functions + auth emulators. With no
+// ANTHROPIC_API_KEY configured the emulator uses the labelled offline demo model.
+test('assistantChat callable: auth required, demo protocol round-trip', async () => {
+  const fnUrl = 'http://127.0.0.1:5001/demo-fuelwise/europe-west1/assistantChat';
+  const call = (data: unknown, token?: string) => fetch(fnUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+    body: JSON.stringify({ data }),
+  }).then(async (r) => ({ status: r.status, body: await r.json() as { result?: any; error?: { status: string } } }));
+
+  const noAuth = await call({ text: 'hi' });
+  assert.equal(noAuth.body.error?.status, 'UNAUTHENTICATED');
+
+  const signUp = await fetch(`http://${process.env.FIREBASE_AUTH_EMULATOR_HOST}/identitytoolkit.googleapis.com/v1/accounts:signUp?key=fake`,
+    { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ returnSecureToken: true }) });
+  const { idToken } = await signUp.json() as { idToken: string };
+
+  const bad = await call({ text: '' }, idToken);
+  assert.equal(bad.body.error?.status, 'INVALID_ARGUMENT');
+
+  const r1 = (await call({ text: 'Where should I fill up on my way to Potsdam?' }, idToken)).body.result;
+  assert.equal(r1.demo, true);
+  assert.equal(r1.status, 'needs_client_tools');
+  assert.equal(r1.clientToolCalls[0].name, 'plan_route_stops');
+  assert.equal(r1.clientToolCalls[0].input.destination, 'Potsdam');
+
+  const plan = { stations: [{ id: 'sA', name: 'Aral', total_cost: '€61.20', detour: '0.4 km' }, { id: 'sB', name: 'Shell' }] };
+  const r2 = (await call({ sessionId: r1.sessionId, toolResults: [{ toolUseId: r1.clientToolCalls[0].id, output: plan }] }, idToken)).body.result;
+  assert.equal(r2.status, 'done');
+  assert.deepEqual(r2.cards, ['sA', 'sB']);
+  assert.equal(r2.demo, true);
+  assert.match(r2.reply, /Aral/);
+});

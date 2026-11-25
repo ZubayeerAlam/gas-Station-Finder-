@@ -10,4 +10,5 @@ abstract final class AppRoutes {
   static const fillUpNew = '/history/new';
   static const reportPrice = '/prices/report';
   static const alerts = '/alerts';
+  static const assistant = '/assistant';
 }
