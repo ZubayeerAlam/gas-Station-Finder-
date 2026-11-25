@@ -233,7 +233,7 @@ Implementation history and evidence live in [BUILD.md](BUILD.md). Rule: work one
 Problem: expired BRTA documents (tax token, fitness, insurance, route permit) mean fines; an overdue CNG cylinder retest is a safety risk; oil/tyre service by km is easy to forget. Works offline, no keys, no paid services.
 - [x] 4.A Domain: `CareReminder`, status by date / km / both (whichever first), km/day estimate, mark-done roll-forward, presets (CNG retest only for CNG, no oil change for EVs), notice times; `HistoryAnalytics.odometerStats`
 - [x] 4.A Data: drift `care_reminders` (schema v4 + migration, upgrade-tested), `DriftCareRepository`, `FailureCode.careSaveFailed`
-- [ ] 4.B Care screen (grouped by urgency), add/edit form, mark-done sheet, Garage menu + badge, EN/BN
+- [x] 4.B Care screen (grouped by urgency), add/edit form, mark-done sheet, Garage menu + badge, EN/BN
 - [ ] 4.C Local notifications (before + on the day, 09:00), permission on first save, Android/iOS setup
 - [ ] Simulator walkthrough; CI green
 

@@ -6,6 +6,7 @@ import '../../../core/router/app_routes.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/state_views.dart';
+import '../../care/presentation/care_providers.dart';
 import '../domain/vehicle_profile.dart';
 import 'garage_providers.dart';
 import '../../../l10n/domain_labels.dart';
@@ -82,6 +83,7 @@ class VehicleCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final ev = vehicle.isElectric;
+    final attention = ref.watch(careAttentionCountProvider(vehicle.id));
     final details = [
       '${vehicle.consumptionPer100Km.toStringAsFixed(1)} ${ev ? 'kWh' : 'L'}/100 km',
       ev
@@ -120,15 +122,28 @@ class VehicleCard extends ConsumerWidget {
                     Text(details, style: theme.textTheme.bodySmall),
                     Text(ev ? context.l10n.fullChargeRange(Fmt.distance(vehicle.rangeMeters(1))) : context.l10n.fullTankRange(Fmt.distance(vehicle.rangeMeters(1))),
                         style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+                    if (attention > 0)
+                      Padding(
+                        padding: const EdgeInsets.only(top: AppSpacing.xs),
+                        child: ActionChip(
+                          key: ValueKey('careChip-${vehicle.id}'),
+                          avatar: Icon(Icons.build_circle_rounded, size: 18, color: theme.colorScheme.error),
+                          label: Text(context.l10n.careAttention(attention)),
+                          onPressed: () => context.push(AppRoutes.care, extra: vehicle),
+                        ),
+                      ),
                   ],
                 ),
               ),
               PopupMenuButton<String>(
                 tooltip: context.l10n.vehicleOptions,
-                onSelected: (v) => v == 'edit'
-                    ? context.push(AppRoutes.vehicleEdit, extra: vehicle)
-                    : _delete(context, ref),
+                onSelected: (v) => switch (v) {
+                  'care' => context.push(AppRoutes.care, extra: vehicle),
+                  'edit' => context.push(AppRoutes.vehicleEdit, extra: vehicle),
+                  _ => _delete(context, ref),
+                },
                 itemBuilder: (_) => [
+                  PopupMenuItem(value: 'care', child: Text(context.l10n.careMenu)),
                   PopupMenuItem(value: 'edit', child: Text(context.l10n.edit)),
                   PopupMenuItem(value: 'delete', child: Text(context.l10n.delete)),
                 ],

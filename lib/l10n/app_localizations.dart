@@ -2075,6 +2075,366 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not save the reminder. Please try again.'**
   String get errorCareSave;
+
+  /// No description provided for @careMenu.
+  ///
+  /// In en, this message translates to:
+  /// **'Care & reminders'**
+  String get careMenu;
+
+  /// No description provided for @careTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Care · {vehicle}'**
+  String careTitle(String vehicle);
+
+  /// No description provided for @careAddReminder.
+  ///
+  /// In en, this message translates to:
+  /// **'Add reminder'**
+  String get careAddReminder;
+
+  /// No description provided for @careEditReminder.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit reminder'**
+  String get careEditReminder;
+
+  /// No description provided for @careEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No reminders yet'**
+  String get careEmptyTitle;
+
+  /// No description provided for @careEmptyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Never miss a tax token, fitness, insurance or service date again. Start with the suggestions for this vehicle.'**
+  String get careEmptyMessage;
+
+  /// No description provided for @careAddSuggested.
+  ///
+  /// In en, this message translates to:
+  /// **'Add suggested reminders'**
+  String get careAddSuggested;
+
+  /// No description provided for @careSuggestedAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 reminder added — set its date} other{{count} reminders added — set their dates}}'**
+  String careSuggestedAdded(int count);
+
+  /// No description provided for @careDisclaimer.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggested intervals are only starting points. Check your documents (BRTA, insurer, cylinder certificate) for the real dates.'**
+  String get careDisclaimer;
+
+  /// No description provided for @careOdometerKnown.
+  ///
+  /// In en, this message translates to:
+  /// **'Odometer {km} (from your history)'**
+  String careOdometerKnown(String km);
+
+  /// No description provided for @careOdometerRate.
+  ///
+  /// In en, this message translates to:
+  /// **' · about {km} per day'**
+  String careOdometerRate(String km);
+
+  /// No description provided for @careNoOdometer.
+  ///
+  /// In en, this message translates to:
+  /// **'No odometer readings yet. Add one with your next fill-up in History to track service by km.'**
+  String get careNoOdometer;
+
+  /// No description provided for @careBandOverdue.
+  ///
+  /// In en, this message translates to:
+  /// **'Overdue'**
+  String get careBandOverdue;
+
+  /// No description provided for @careBandDueSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Due soon'**
+  String get careBandDueSoon;
+
+  /// No description provided for @careBandUpcoming.
+  ///
+  /// In en, this message translates to:
+  /// **'Upcoming'**
+  String get careBandUpcoming;
+
+  /// No description provided for @careBandNeedsSetup.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs a date'**
+  String get careBandNeedsSetup;
+
+  /// No description provided for @careBandDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get careBandDone;
+
+  /// No description provided for @careTypeTaxToken.
+  ///
+  /// In en, this message translates to:
+  /// **'Tax token'**
+  String get careTypeTaxToken;
+
+  /// No description provided for @careTypeFitness.
+  ///
+  /// In en, this message translates to:
+  /// **'Fitness certificate'**
+  String get careTypeFitness;
+
+  /// No description provided for @careTypeInsurance.
+  ///
+  /// In en, this message translates to:
+  /// **'Insurance'**
+  String get careTypeInsurance;
+
+  /// No description provided for @careTypeRoutePermit.
+  ///
+  /// In en, this message translates to:
+  /// **'Route permit'**
+  String get careTypeRoutePermit;
+
+  /// No description provided for @careTypeCngRetest.
+  ///
+  /// In en, this message translates to:
+  /// **'CNG cylinder retest'**
+  String get careTypeCngRetest;
+
+  /// No description provided for @careTypeOilChange.
+  ///
+  /// In en, this message translates to:
+  /// **'Oil change'**
+  String get careTypeOilChange;
+
+  /// No description provided for @careTypeTyreRotation.
+  ///
+  /// In en, this message translates to:
+  /// **'Tyre rotation'**
+  String get careTypeTyreRotation;
+
+  /// No description provided for @careTypeCustom.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom'**
+  String get careTypeCustom;
+
+  /// No description provided for @careNeedsSetup.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to set the due date or km'**
+  String get careNeedsSetup;
+
+  /// No description provided for @careNeedsOdometer.
+  ///
+  /// In en, this message translates to:
+  /// **'Add an odometer reading in History to track this'**
+  String get careNeedsOdometer;
+
+  /// No description provided for @careDoneOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Done on {date}'**
+  String careDoneOn(String date);
+
+  /// No description provided for @careOverdueDays.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Overdue by 1 day} other{Overdue by {count} days}}'**
+  String careOverdueDays(int count);
+
+  /// No description provided for @careOverdueKm.
+  ///
+  /// In en, this message translates to:
+  /// **'Overdue by {km}'**
+  String careOverdueKm(String km);
+
+  /// No description provided for @careDueToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Due today'**
+  String get careDueToday;
+
+  /// No description provided for @careDueInDays.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Due tomorrow · {date}} other{Due in {count} days · {date}}}'**
+  String careDueInDays(int count, String date);
+
+  /// No description provided for @careInKm.
+  ///
+  /// In en, this message translates to:
+  /// **'In {km}'**
+  String careInKm(String km);
+
+  /// No description provided for @careEstimatedDate.
+  ///
+  /// In en, this message translates to:
+  /// **' (≈ {date})'**
+  String careEstimatedDate(String date);
+
+  /// No description provided for @careMarkDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark done'**
+  String get careMarkDone;
+
+  /// No description provided for @careMarkedDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Marked as done'**
+  String get careMarkedDone;
+
+  /// No description provided for @careMarkedDoneNext.
+  ///
+  /// In en, this message translates to:
+  /// **'Marked as done · next {when}'**
+  String careMarkedDoneNext(String when);
+
+  /// No description provided for @careDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Reminder deleted'**
+  String get careDeleted;
+
+  /// No description provided for @careDoneDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Done on'**
+  String get careDoneDate;
+
+  /// No description provided for @careOdometerNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Odometer now (optional)'**
+  String get careOdometerNow;
+
+  /// No description provided for @careTypeField.
+  ///
+  /// In en, this message translates to:
+  /// **'Type'**
+  String get careTypeField;
+
+  /// No description provided for @careTitleField.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get careTitleField;
+
+  /// No description provided for @careTitleRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a name'**
+  String get careTitleRequired;
+
+  /// No description provided for @careDueDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Due date'**
+  String get careDueDate;
+
+  /// No description provided for @careNoDueDate.
+  ///
+  /// In en, this message translates to:
+  /// **'No due date'**
+  String get careNoDueDate;
+
+  /// No description provided for @careClearDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear date'**
+  String get careClearDate;
+
+  /// No description provided for @careDueKm.
+  ///
+  /// In en, this message translates to:
+  /// **'Due at odometer'**
+  String get careDueKm;
+
+  /// No description provided for @careRepeatMonths.
+  ///
+  /// In en, this message translates to:
+  /// **'Repeat every (months)'**
+  String get careRepeatMonths;
+
+  /// No description provided for @careRepeatKm.
+  ///
+  /// In en, this message translates to:
+  /// **'Repeat every (km)'**
+  String get careRepeatKm;
+
+  /// No description provided for @careRepeatHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Used when you mark it done. Leave empty for a one-off.'**
+  String get careRepeatHelp;
+
+  /// No description provided for @careNotify.
+  ///
+  /// In en, this message translates to:
+  /// **'Remind me'**
+  String get careNotify;
+
+  /// No description provided for @careNotifyDays.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{On the day only} =1{1 day before} other{{count} days before}}'**
+  String careNotifyDays(int count);
+
+  /// No description provided for @careNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Note (optional)'**
+  String get careNote;
+
+  /// No description provided for @careNeedDue.
+  ///
+  /// In en, this message translates to:
+  /// **'Set a due date or a due odometer'**
+  String get careNeedDue;
+
+  /// No description provided for @careCurrentOdometer.
+  ///
+  /// In en, this message translates to:
+  /// **'Current odometer: {km}'**
+  String careCurrentOdometer(String km);
+
+  /// No description provided for @careSaveReminder.
+  ///
+  /// In en, this message translates to:
+  /// **'Save reminder'**
+  String get careSaveReminder;
+
+  /// No description provided for @careAttention.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 reminder needs attention} other{{count} reminders need attention}}'**
+  String careAttention(int count);
+
+  /// No description provided for @careWholeNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a whole number'**
+  String get careWholeNumber;
+
+  /// No description provided for @careProgressSemantics.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent} percent of the interval used'**
+  String careProgressSemantics(int percent);
+
+  /// No description provided for @careOptions.
+  ///
+  /// In en, this message translates to:
+  /// **'Reminder options'**
+  String get careOptions;
 }
 
 class _AppLocalizationsDelegate

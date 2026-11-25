@@ -17,20 +17,19 @@ CareReminder r({
   DateTime? lastDoneAt,
   double? lastDoneKm,
   DateTime? created,
-}) =>
-    CareReminder(
-      id: 'r',
-      vehicleId: 'car',
-      type: type,
-      dueDate: due,
-      dueOdometerKm: dueKm,
-      repeatMonths: months,
-      repeatKm: km,
-      notifyDaysBefore: notify,
-      lastDoneAt: lastDoneAt,
-      lastDoneKm: lastDoneKm,
-      createdAt: created ?? DateTime(2026, 1, 1),
-    );
+}) => CareReminder(
+  id: 'r',
+  vehicleId: 'car',
+  type: type,
+  dueDate: due,
+  dueOdometerKm: dueKm,
+  repeatMonths: months,
+  repeatKm: km,
+  notifyDaysBefore: notify,
+  lastDoneAt: lastDoneAt,
+  lastDoneKm: lastDoneKm,
+  createdAt: created ?? DateTime(2026, 1, 1),
+);
 
 void main() {
   group('CareStatus by date', () {
@@ -52,7 +51,9 @@ void main() {
 
     test('progress uses the last done date (or creation) as start', () {
       final s = CareStatus.of(
-          r(due: DateTime(2026, 12, 25), lastDoneAt: DateTime(2025, 12, 25)), now: DateTime(2026, 6, 25));
+        r(due: DateTime(2026, 12, 25), lastDoneAt: DateTime(2025, 12, 25)),
+        now: DateTime(2026, 6, 25),
+      );
       expect(s.progress, closeTo(0.5, 0.01));
     });
   });
@@ -80,14 +81,24 @@ void main() {
     });
 
     test('both: whichever comes first', () {
-      final dateFirst = CareStatus.of(r(due: DateTime(2026, 12, 20), dueKm: 15000),
-          now: now, odometerKm: 13000, kmPerDay: 40);
+      final dateFirst = CareStatus.of(
+        r(due: DateTime(2026, 12, 20), dueKm: 15000),
+        now: now,
+        odometerKm: 13000,
+        kmPerDay: 40,
+      );
       expect((dateFirst.effectiveDueDate, dateFirst.dateEstimated), (DateTime(2026, 12, 20), false));
-      final kmFirst = CareStatus.of(r(due: DateTime(2027, 6, 1), dueKm: 15000),
-          now: now, odometerKm: 14900, kmPerDay: 50);
+      final kmFirst = CareStatus.of(
+        r(due: DateTime(2027, 6, 1), dueKm: 15000),
+        now: now,
+        odometerKm: 14900,
+        kmPerDay: 50,
+      );
       expect((kmFirst.band, kmFirst.dateEstimated), (CareBand.dueSoon, true));
-      expect(CareStatus.of(r(due: DateTime(2027, 6, 1), dueKm: 15000), now: now, odometerKm: 15100).band,
-          CareBand.overdue);
+      expect(
+        CareStatus.of(r(due: DateTime(2027, 6, 1), dueKm: 15000), now: now, odometerKm: 15100).band,
+        CareBand.overdue,
+      );
     });
 
     test('km progress from the last service', () {
@@ -103,8 +114,11 @@ void main() {
 
   group('markDone', () {
     test('repeating by months and km rolls forward from the done point', () {
-      final next = markDone(r(due: DateTime(2026, 11, 30), dueKm: 15000, months: 6, km: 5000),
-          doneAt: DateTime(2026, 11, 25, 18), doneKm: 14800);
+      final next = markDone(
+        r(due: DateTime(2026, 11, 30), dueKm: 15000, months: 6, km: 5000),
+        doneAt: DateTime(2026, 11, 25, 18),
+        doneKm: 14800,
+      );
       expect(next.dueDate, DateTime(2027, 5, 25));
       expect(next.dueOdometerKm, 19800);
       expect(next.lastDoneAt, DateTime(2026, 11, 25, 18));
@@ -127,8 +141,7 @@ void main() {
   });
 
   group('presets', () {
-    const car = VehicleProfile(
-        id: 'c', name: 'Car', energyType: EnergyType.fuel, consumptionPer100Km: 7, capacity: 45);
+    const car = VehicleProfile(id: 'c', name: 'Car', energyType: EnergyType.fuel, consumptionPer100Km: 7, capacity: 45);
     test('CNG retest only for CNG, no oil change for EVs', () {
       expect(suggestedCareTypes(car), isNot(contains(CareType.cngRetest)));
       expect(suggestedCareTypes(car), contains(CareType.oilChange));
@@ -181,8 +194,8 @@ void main() {
   });
 
   group('odometerStats', () {
-    FillUp f(DateTime d, double? odo) => FillUp(
-        id: '$d', vehicleId: 'c', date: d, amount: 30, totalCost: 50, currencyCode: 'BDT', odometerKm: odo);
+    FillUp f(DateTime d, double? odo) =>
+        FillUp(id: '$d', vehicleId: 'c', date: d, amount: 30, totalCost: 50, currencyCode: 'BDT', odometerKm: odo);
 
     test('latest = highest reading; km/day between first and last dated readings', () {
       final s = HistoryAnalytics.odometerStats([

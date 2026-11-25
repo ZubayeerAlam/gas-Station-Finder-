@@ -54,9 +54,9 @@ void main() {
 
     test('unknown stored types are skipped instead of crashing', () async {
       await repo.save(reminder);
-      await (db.update(db.careReminders)..where((t) => t.id.equals('r1'))).write(
-        const CareRemindersCompanion(type: Value('fromTheFuture')),
-      );
+      await (db.update(
+        db.careReminders,
+      )..where((t) => t.id.equals('r1'))).write(const CareRemindersCompanion(type: Value('fromTheFuture')));
       expect(await repo.watchAll().first, isEmpty);
     });
 
@@ -72,21 +72,27 @@ void main() {
     // Capture the v3 tables' SQL from a fresh database, minus the new table.
     final fresh = AppDatabase(NativeDatabase.memory());
     final rows = await fresh
-        .customSelect("SELECT sql FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%' "
-            "AND name != 'care_reminders'")
+        .customSelect(
+          "SELECT sql FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%' "
+          "AND name != 'care_reminders'",
+        )
         .get();
     final v3Sql = rows.map((r) => r.read<String>('sql')).toList();
     await fresh.close();
     expect(v3Sql, hasLength(4));
 
-    final db = AppDatabase(NativeDatabase.memory(setup: (raw) {
-      if (raw.userVersion != 0) return;
-      for (final sql in v3Sql) {
-        raw.execute(sql);
-      }
-      raw.execute("INSERT INTO settings (key, value) VALUES ('locale', 'bn')");
-      raw.userVersion = 3;
-    }));
+    final db = AppDatabase(
+      NativeDatabase.memory(
+        setup: (raw) {
+          if (raw.userVersion != 0) return;
+          for (final sql in v3Sql) {
+            raw.execute(sql);
+          }
+          raw.execute("INSERT INTO settings (key, value) VALUES ('locale', 'bn')");
+          raw.userVersion = 3;
+        },
+      ),
+    );
     addTearDown(db.close);
 
     expect(await db.readSetting('locale'), 'bn');

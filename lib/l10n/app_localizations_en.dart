@@ -1235,4 +1235,250 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errorCareSave => 'Could not save the reminder. Please try again.';
+
+  @override
+  String get careMenu => 'Care & reminders';
+
+  @override
+  String careTitle(String vehicle) {
+    return 'Care · $vehicle';
+  }
+
+  @override
+  String get careAddReminder => 'Add reminder';
+
+  @override
+  String get careEditReminder => 'Edit reminder';
+
+  @override
+  String get careEmptyTitle => 'No reminders yet';
+
+  @override
+  String get careEmptyMessage =>
+      'Never miss a tax token, fitness, insurance or service date again. Start with the suggestions for this vehicle.';
+
+  @override
+  String get careAddSuggested => 'Add suggested reminders';
+
+  @override
+  String careSuggestedAdded(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count reminders added — set their dates',
+      one: '1 reminder added — set its date',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get careDisclaimer =>
+      'Suggested intervals are only starting points. Check your documents (BRTA, insurer, cylinder certificate) for the real dates.';
+
+  @override
+  String careOdometerKnown(String km) {
+    return 'Odometer $km (from your history)';
+  }
+
+  @override
+  String careOdometerRate(String km) {
+    return ' · about $km per day';
+  }
+
+  @override
+  String get careNoOdometer =>
+      'No odometer readings yet. Add one with your next fill-up in History to track service by km.';
+
+  @override
+  String get careBandOverdue => 'Overdue';
+
+  @override
+  String get careBandDueSoon => 'Due soon';
+
+  @override
+  String get careBandUpcoming => 'Upcoming';
+
+  @override
+  String get careBandNeedsSetup => 'Needs a date';
+
+  @override
+  String get careBandDone => 'Done';
+
+  @override
+  String get careTypeTaxToken => 'Tax token';
+
+  @override
+  String get careTypeFitness => 'Fitness certificate';
+
+  @override
+  String get careTypeInsurance => 'Insurance';
+
+  @override
+  String get careTypeRoutePermit => 'Route permit';
+
+  @override
+  String get careTypeCngRetest => 'CNG cylinder retest';
+
+  @override
+  String get careTypeOilChange => 'Oil change';
+
+  @override
+  String get careTypeTyreRotation => 'Tyre rotation';
+
+  @override
+  String get careTypeCustom => 'Custom';
+
+  @override
+  String get careNeedsSetup => 'Tap to set the due date or km';
+
+  @override
+  String get careNeedsOdometer =>
+      'Add an odometer reading in History to track this';
+
+  @override
+  String careDoneOn(String date) {
+    return 'Done on $date';
+  }
+
+  @override
+  String careOverdueDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Overdue by $count days',
+      one: 'Overdue by 1 day',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String careOverdueKm(String km) {
+    return 'Overdue by $km';
+  }
+
+  @override
+  String get careDueToday => 'Due today';
+
+  @override
+  String careDueInDays(int count, String date) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Due in $count days · $date',
+      one: 'Due tomorrow · $date',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String careInKm(String km) {
+    return 'In $km';
+  }
+
+  @override
+  String careEstimatedDate(String date) {
+    return ' (≈ $date)';
+  }
+
+  @override
+  String get careMarkDone => 'Mark done';
+
+  @override
+  String get careMarkedDone => 'Marked as done';
+
+  @override
+  String careMarkedDoneNext(String when) {
+    return 'Marked as done · next $when';
+  }
+
+  @override
+  String get careDeleted => 'Reminder deleted';
+
+  @override
+  String get careDoneDate => 'Done on';
+
+  @override
+  String get careOdometerNow => 'Odometer now (optional)';
+
+  @override
+  String get careTypeField => 'Type';
+
+  @override
+  String get careTitleField => 'Name';
+
+  @override
+  String get careTitleRequired => 'Enter a name';
+
+  @override
+  String get careDueDate => 'Due date';
+
+  @override
+  String get careNoDueDate => 'No due date';
+
+  @override
+  String get careClearDate => 'Clear date';
+
+  @override
+  String get careDueKm => 'Due at odometer';
+
+  @override
+  String get careRepeatMonths => 'Repeat every (months)';
+
+  @override
+  String get careRepeatKm => 'Repeat every (km)';
+
+  @override
+  String get careRepeatHelp =>
+      'Used when you mark it done. Leave empty for a one-off.';
+
+  @override
+  String get careNotify => 'Remind me';
+
+  @override
+  String careNotifyDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count days before',
+      one: '1 day before',
+      zero: 'On the day only',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get careNote => 'Note (optional)';
+
+  @override
+  String get careNeedDue => 'Set a due date or a due odometer';
+
+  @override
+  String careCurrentOdometer(String km) {
+    return 'Current odometer: $km';
+  }
+
+  @override
+  String get careSaveReminder => 'Save reminder';
+
+  @override
+  String careAttention(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count reminders need attention',
+      one: '1 reminder needs attention',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get careWholeNumber => 'Enter a whole number';
+
+  @override
+  String careProgressSemantics(int percent) {
+    return '$percent percent of the interval used';
+  }
+
+  @override
+  String get careOptions => 'Reminder options';
 }

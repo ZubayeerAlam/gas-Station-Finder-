@@ -1230,4 +1230,245 @@ class AppLocalizationsBn extends AppLocalizations {
   @override
   String get errorCareSave =>
       'রিমাইন্ডার সংরক্ষণ করা যায়নি। আবার চেষ্টা করুন।';
+
+  @override
+  String get careMenu => 'যত্ন ও রিমাইন্ডার';
+
+  @override
+  String careTitle(String vehicle) {
+    return 'যত্ন · $vehicle';
+  }
+
+  @override
+  String get careAddReminder => 'রিমাইন্ডার যোগ করুন';
+
+  @override
+  String get careEditReminder => 'রিমাইন্ডার সম্পাদনা';
+
+  @override
+  String get careEmptyTitle => 'এখনো কোনো রিমাইন্ডার নেই';
+
+  @override
+  String get careEmptyMessage =>
+      'ট্যাক্স টোকেন, ফিটনেস, ইন্স্যুরেন্স বা সার্ভিসের তারিখ আর ভুলবেন না। এই গাড়ির জন্য প্রস্তাবিত রিমাইন্ডার দিয়ে শুরু করুন।';
+
+  @override
+  String get careAddSuggested => 'প্রস্তাবিত রিমাইন্ডার যোগ করুন';
+
+  @override
+  String careSuggestedAdded(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countটি রিমাইন্ডার যোগ হয়েছে — তারিখ বসিয়ে দিন',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get careDisclaimer =>
+      'প্রস্তাবিত সময়সীমা শুধু শুরু করার জন্য। আসল তারিখের জন্য আপনার কাগজপত্র (BRTA, ইন্স্যুরেন্স, সিলিন্ডার সার্টিফিকেট) দেখুন।';
+
+  @override
+  String careOdometerKnown(String km) {
+    return 'ওডোমিটার $km (আপনার ইতিহাস থেকে)';
+  }
+
+  @override
+  String careOdometerRate(String km) {
+    return ' · দিনে প্রায় $km';
+  }
+
+  @override
+  String get careNoOdometer =>
+      'এখনো কোনো ওডোমিটার রিডিং নেই। কিমি অনুযায়ী সার্ভিস ট্র্যাক করতে ইতিহাসে পরের ফুয়েল এন্ট্রির সাথে রিডিং দিন।';
+
+  @override
+  String get careBandOverdue => 'মেয়াদ পেরিয়ে গেছে';
+
+  @override
+  String get careBandDueSoon => 'শীঘ্রই করতে হবে';
+
+  @override
+  String get careBandUpcoming => 'আসন্ন';
+
+  @override
+  String get careBandNeedsSetup => 'তারিখ দরকার';
+
+  @override
+  String get careBandDone => 'সম্পন্ন';
+
+  @override
+  String get careTypeTaxToken => 'ট্যাক্স টোকেন';
+
+  @override
+  String get careTypeFitness => 'ফিটনেস সার্টিফিকেট';
+
+  @override
+  String get careTypeInsurance => 'ইন্স্যুরেন্স';
+
+  @override
+  String get careTypeRoutePermit => 'রুট পারমিট';
+
+  @override
+  String get careTypeCngRetest => 'সিএনজি সিলিন্ডার রিটেস্ট';
+
+  @override
+  String get careTypeOilChange => 'ইঞ্জিন অয়েল পরিবর্তন';
+
+  @override
+  String get careTypeTyreRotation => 'টায়ার রোটেশন';
+
+  @override
+  String get careTypeCustom => 'নিজস্ব';
+
+  @override
+  String get careNeedsSetup => 'মেয়াদের তারিখ বা কিমি বসাতে ট্যাপ করুন';
+
+  @override
+  String get careNeedsOdometer =>
+      'এটি ট্র্যাক করতে ইতিহাসে ওডোমিটার রিডিং যোগ করুন';
+
+  @override
+  String careDoneOn(String date) {
+    return 'সম্পন্ন $date';
+  }
+
+  @override
+  String careOverdueDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count দিন পেরিয়ে গেছে',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String careOverdueKm(String km) {
+    return '$km পেরিয়ে গেছে';
+  }
+
+  @override
+  String get careDueToday => 'আজই শেষ দিন';
+
+  @override
+  String careDueInDays(int count, String date) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count দিন বাকি · $date',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String careInKm(String km) {
+    return 'আরও $km';
+  }
+
+  @override
+  String careEstimatedDate(String date) {
+    return ' (≈ $date)';
+  }
+
+  @override
+  String get careMarkDone => 'সম্পন্ন করেছি';
+
+  @override
+  String get careMarkedDone => 'সম্পন্ন হিসেবে চিহ্নিত';
+
+  @override
+  String careMarkedDoneNext(String when) {
+    return 'সম্পন্ন · পরবর্তী $when';
+  }
+
+  @override
+  String get careDeleted => 'রিমাইন্ডার মুছে ফেলা হয়েছে';
+
+  @override
+  String get careDoneDate => 'সম্পন্নের তারিখ';
+
+  @override
+  String get careOdometerNow => 'এখনকার ওডোমিটার (ঐচ্ছিক)';
+
+  @override
+  String get careTypeField => 'ধরন';
+
+  @override
+  String get careTitleField => 'নাম';
+
+  @override
+  String get careTitleRequired => 'একটি নাম লিখুন';
+
+  @override
+  String get careDueDate => 'মেয়াদের তারিখ';
+
+  @override
+  String get careNoDueDate => 'কোনো তারিখ নেই';
+
+  @override
+  String get careClearDate => 'তারিখ মুছুন';
+
+  @override
+  String get careDueKm => 'যে ওডোমিটারে করতে হবে';
+
+  @override
+  String get careRepeatMonths => 'প্রতি কত মাস পরপর';
+
+  @override
+  String get careRepeatKm => 'প্রতি কত কিমি পরপর';
+
+  @override
+  String get careRepeatHelp =>
+      'সম্পন্ন চিহ্নিত করলে পরের তারিখ এভাবে ঠিক হবে। একবারের জন্য হলে খালি রাখুন।';
+
+  @override
+  String get careNotify => 'কখন মনে করাবে';
+
+  @override
+  String careNotifyDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count দিন আগে',
+      zero: 'শুধু ওই দিন',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get careNote => 'নোট (ঐচ্ছিক)';
+
+  @override
+  String get careNeedDue => 'মেয়াদের তারিখ বা ওডোমিটার দিন';
+
+  @override
+  String careCurrentOdometer(String km) {
+    return 'বর্তমান ওডোমিটার: $km';
+  }
+
+  @override
+  String get careSaveReminder => 'রিমাইন্ডার সংরক্ষণ করুন';
+
+  @override
+  String careAttention(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countটি রিমাইন্ডারে মনোযোগ দরকার',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get careWholeNumber => 'একটি পূর্ণ সংখ্যা লিখুন';
+
+  @override
+  String careProgressSemantics(int percent) {
+    return 'সময়সীমার $percent শতাংশ পার হয়েছে';
+  }
+
+  @override
+  String get careOptions => 'রিমাইন্ডার অপশন';
 }

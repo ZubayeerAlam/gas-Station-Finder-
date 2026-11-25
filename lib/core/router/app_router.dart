@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 import '../../features/along_route/presentation/along_route_screen.dart';
 import '../../features/along_route/presentation/destination_search_screen.dart';
 import '../../features/assistant/presentation/assistant_screen.dart';
+import '../../features/care/presentation/care_form_screen.dart';
+import '../../features/care/presentation/care_screen.dart';
 import '../../features/garage/domain/vehicle_profile.dart';
 import '../../features/garage/presentation/garage_screen.dart';
 import '../../features/garage/presentation/vehicle_form_screen.dart';
@@ -92,6 +94,18 @@ GoRouter buildRouter({String initialLocation = AppRoutes.map}) => GoRouter(
           path: AppRoutes.vehicleEdit,
           parentNavigatorKey: _rootKey,
           builder: (_, state) => VehicleFormScreen(initial: state.extra as VehicleProfile?),
+        ),
+        GoRoute(
+          path: AppRoutes.care,
+          parentNavigatorKey: _rootKey,
+          redirect: (_, state) => state.extra is VehicleProfile ? null : AppRoutes.garage,
+          builder: (_, state) => CareScreen(vehicle: state.extra! as VehicleProfile),
+        ),
+        GoRoute(
+          path: AppRoutes.careEdit,
+          parentNavigatorKey: _rootKey,
+          redirect: (_, state) => state.extra is CareFormArgs ? null : AppRoutes.garage,
+          builder: (_, state) => CareFormScreen(args: state.extra! as CareFormArgs),
         ),
       ],
     );

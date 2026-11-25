@@ -124,12 +124,7 @@ List<(CareReminder, CareStatus)> sortByUrgency(List<(CareReminder, CareStatus)> 
 CareReminder markDone(CareReminder r, {required DateTime doneAt, double? doneKm}) {
   final nextDate = r.repeatMonths == null ? null : addMonths(dateOnly(doneAt), r.repeatMonths!);
   final nextKm = r.repeatKm == null || doneKm == null ? null : doneKm + r.repeatKm!;
-  return r.copyWith(
-    lastDoneAt: doneAt,
-    lastDoneKm: doneKm ?? r.lastDoneKm,
-    dueDate: nextDate,
-    dueOdometerKm: nextKm,
-  );
+  return r.copyWith(lastDoneAt: doneAt, lastDoneKm: doneKm ?? r.lastDoneKm, dueDate: nextDate, dueOdometerKm: nextKm);
 }
 
 /// Preset intervals. Starting points only — the user checks their documents.
@@ -158,25 +153,28 @@ const kCarePresets = <CareType, CarePreset>{
 /// only for combustion engines, the CNG cylinder retest only for CNG
 /// (Places fuel code `METHANE`).
 List<CareType> suggestedCareTypes(VehicleProfile v) => [
-      CareType.taxToken,
-      CareType.insurance,
-      CareType.fitness,
-      if (v.preferredFuelType == 'METHANE') CareType.cngRetest,
-      if (!v.isElectric) CareType.oilChange,
-      CareType.tyreRotation,
-    ];
+  CareType.taxToken,
+  CareType.insurance,
+  CareType.fitness,
+  if (v.preferredFuelType == 'METHANE') CareType.cngRetest,
+  if (!v.isElectric) CareType.oilChange,
+  CareType.tyreRotation,
+];
 
 /// New, not-yet-set-up reminder from a preset (the user enters the due date / km).
-CareReminder reminderFromPreset(CareType type,
-        {required String id, required String vehicleId, required DateTime now}) =>
-    CareReminder(
-      id: id,
-      vehicleId: vehicleId,
-      type: type,
-      repeatMonths: kCarePresets[type]?.repeatMonths,
-      repeatKm: kCarePresets[type]?.repeatKm,
-      createdAt: now,
-    );
+CareReminder reminderFromPreset(
+  CareType type, {
+  required String id,
+  required String vehicleId,
+  required DateTime now,
+}) => CareReminder(
+  id: id,
+  vehicleId: vehicleId,
+  type: type,
+  repeatMonths: kCarePresets[type]?.repeatMonths,
+  repeatKm: kCarePresets[type]?.repeatKm,
+  createdAt: now,
+);
 
 enum CareNoticeKind { before, onDay }
 

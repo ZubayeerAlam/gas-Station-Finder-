@@ -356,3 +356,26 @@ Plan: document-expiry and service reminders per vehicle (BRTA tax token, fitness
   - `test/features/care/care_domain_test.dart`: 21 tests (bands and boundaries, time of day, progress, km-only / both, estimates, mark-done, month clamping, presets per vehicle type, notices, urgency sort, odometer stats).
   - `care_data_test.dart`: 4 tests (round-trip, per-vehicle list/update/delete, unknown type skipped, failure code) plus a **real v3 → v4 upgrade test** (a database built from the v3 tables with `user_version = 3` keeps its settings and gains the new table).
   - Full suite **213 passed**; analyze clean.
+
+### Batch 4.B — UI + EN/BN *(implemented, widget-tested; not yet checked on the Simulator)*
+- `care_screen.dart`:
+  - One screen per vehicle with an odometer line ("Odometer N km (from your history) · about N km per day", or a hint to log one).
+  - Reminders grouped by band, each with a status line ("Overdue by 5 days", "Due in 12 days · 7 Dec 2026", "In 600 km (≈ date)") and a progress bar with a spoken percentage.
+  - Empty state with **Add suggested reminders**; a disclaimer that preset intervals are only starting points.
+  - Tile menu: **Mark done** (sheet: date + odometer prefilled from History; the SnackBar shows the next due point), Edit, Delete with Undo.
+- `care_form_screen.dart`:
+  - Type, name (required for Custom), due date (picker + clear), due odometer, repeat months / km (preset defaults on a new reminder), notice days (0/1/3/7/14/30), note. A date or a km is required.
+  - Uses a `Column` instead of a lazy `ListView`, so fields scrolled off screen are still validated. A test caught this.
+- Routes `/garage/care` and `/garage/care/edit`: root navigator, redirect to Garage when the route argument is missing.
+- Garage card: new menu item **Care & reminders** (Edit/Delete unchanged) and an attention chip ("1 reminder needs attention") when anything is overdue or due soon.
+- About 60 new `care*` strings in EN and BN (plurals for days and reminders).
+- **Bug fix found by the new tests:** `Fmt.number(v, maxDecimals: 0)` stripped an integer's own trailing zeros (11900 → "119"). Zeros are now trimmed only after a decimal point. Output with decimals is unchanged; a unit test was added.
+- Tests: `test/features/care/care_ui_test.dart`, 6 widget tests:
+  - suggestions for a petrol car (no CNG retest)
+  - Garage chip, then mark done rolls to 25 May 2027 / 16,900 km
+  - delete + Undo
+  - form validation, then a custom km reminder
+  - preset repeat defaults
+  - Bengali at 200 % text passes the tap-target, label and contrast guidelines
+
+  Full suite **220 passed**; analyze clean.

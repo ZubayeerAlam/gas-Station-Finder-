@@ -27,23 +27,27 @@ class DriftCareRepository implements CareRepository {
   }
 
   @override
-  Future<Result<void>> save(CareReminder r) => _guard(() => _db.into(_db.careReminders).insertOnConflictUpdate(
-        CareRemindersCompanion.insert(
-          id: r.id,
-          vehicleId: r.vehicleId,
-          type: r.type.name,
-          title: Value(r.title?.trim().isEmpty ?? true ? null : r.title!.trim()),
-          dueDate: Value(r.dueDate),
-          dueOdometerKm: Value(r.dueOdometerKm),
-          repeatMonths: Value(r.repeatMonths),
-          repeatKm: Value(r.repeatKm),
-          lastDoneAt: Value(r.lastDoneAt),
-          lastDoneKm: Value(r.lastDoneKm),
-          notifyDaysBefore: Value(r.notifyDaysBefore),
-          note: Value(r.note?.trim().isEmpty ?? true ? null : r.note!.trim()),
-          createdAt: r.createdAt,
+  Future<Result<void>> save(CareReminder r) => _guard(
+    () => _db
+        .into(_db.careReminders)
+        .insertOnConflictUpdate(
+          CareRemindersCompanion.insert(
+            id: r.id,
+            vehicleId: r.vehicleId,
+            type: r.type.name,
+            title: Value(r.title?.trim().isEmpty ?? true ? null : r.title!.trim()),
+            dueDate: Value(r.dueDate),
+            dueOdometerKm: Value(r.dueOdometerKm),
+            repeatMonths: Value(r.repeatMonths),
+            repeatKm: Value(r.repeatKm),
+            lastDoneAt: Value(r.lastDoneAt),
+            lastDoneKm: Value(r.lastDoneKm),
+            notifyDaysBefore: Value(r.notifyDaysBefore),
+            note: Value(r.note?.trim().isEmpty ?? true ? null : r.note!.trim()),
+            createdAt: r.createdAt,
+          ),
         ),
-      ));
+  );
 
   @override
   Future<Result<void>> delete(String reminderId) =>
@@ -80,6 +84,4 @@ class DriftCareRepository implements CareRepository {
   }
 }
 
-final careRepositoryProvider = Provider<CareRepository>(
-  (ref) => DriftCareRepository(ref.watch(appDatabaseProvider)),
-);
+final careRepositoryProvider = Provider<CareRepository>((ref) => DriftCareRepository(ref.watch(appDatabaseProvider)));

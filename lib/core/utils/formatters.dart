@@ -40,6 +40,9 @@ abstract final class Fmt {
   static String monthShort(int month) => _months[month - 1];
 
   /// Trims trailing zeros: 12.50 → "12.5", 40.0 → "40".
-  static String number(double v, {int maxDecimals = 2}) =>
-      v.toStringAsFixed(maxDecimals).replaceFirst(RegExp(r'\.?0+$'), '');
+  static String number(double v, {int maxDecimals = 2}) {
+    final s = v.toStringAsFixed(maxDecimals);
+    // Trim trailing decimal zeros only — never the integer's own zeros ("11900").
+    return s.contains('.') ? s.replaceFirst(RegExp(r'\.?0+$'), '') : s;
+  }
 }

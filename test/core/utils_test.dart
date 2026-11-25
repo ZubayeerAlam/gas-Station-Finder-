@@ -44,4 +44,13 @@ void main() {
       expect(Fmt.relativeTime(now.subtract(const Duration(days: 2)), now: now), '2 d ago');
     });
   });
+
+  test('Fmt.number trims decimal zeros but keeps integer zeros', () {
+    expect(Fmt.number(10), '10');
+    expect(Fmt.number(10.5), '10.5');
+    expect(Fmt.number(1.25), '1.25');
+    expect(Fmt.number(11900, maxDecimals: 0), '11900');
+    expect(Fmt.number(500, maxDecimals: 0), '500');
+    expect(Fmt.number(40.4, maxDecimals: 0), '40');
+  });
 }
