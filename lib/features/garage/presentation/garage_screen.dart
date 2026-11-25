@@ -9,6 +9,8 @@ import '../../../core/widgets/state_views.dart';
 import '../../stations/domain/entities/station.dart';
 import '../domain/vehicle_profile.dart';
 import 'garage_providers.dart';
+import '../../../l10n/l10n.dart';
+import '../../../l10n/language_menu.dart';
 
 class GarageScreen extends ConsumerWidget {
   const GarageScreen({super.key});
@@ -19,18 +21,18 @@ class GarageScreen extends ConsumerWidget {
     final activeId = ref.watch(activeVehicleIdProvider).value;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('My Garage')),
+      appBar: AppBar(title: Text(context.l10n.garageTitle), actions: const [LanguageMenuButton()]),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => context.push(AppRoutes.vehicleNew),
         icon: const Icon(Icons.add_rounded),
-        label: const Text('Add vehicle'),
+        label: Text(context.l10n.addVehicle),
       ),
       body: switch (vehicles) {
         AsyncData(:final value) when value.isEmpty => AppMessageView(
             icon: Icons.directions_car_filled_outlined,
-            title: 'No vehicles yet',
-            message: 'Add your car or EV so FuelWise can calculate real trip costs and range.',
-            primaryLabel: 'Add vehicle',
+            title: context.l10n.noVehiclesTitle,
+            message: context.l10n.noVehiclesMessage,
+            primaryLabel: context.l10n.addVehicle,
             onPrimary: () => context.push(AppRoutes.vehicleNew),
           ),
         AsyncData(:final value) => ListView.separated(
@@ -39,7 +41,7 @@ class GarageScreen extends ConsumerWidget {
             separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
             itemBuilder: (context, i) => VehicleCard(vehicle: value[i], active: value[i].id == activeId),
           ),
-        AsyncError() => const AppErrorView(message: 'Could not load your garage.'),
+        AsyncError() => AppErrorView(message: context.l10n.couldNotLoadGarage),
         _ => const AppLoading(),
       },
     );
@@ -56,11 +58,11 @@ class VehicleCard extends ConsumerWidget {
     final ok = await showDialog<bool>(
       context: context,
       builder: (c) => AlertDialog(
-        title: Text('Delete ${vehicle.name}?'),
-        content: const Text('This removes the vehicle from your garage.'),
+        title: Text(context.l10n.deleteVehicleTitle(vehicle.name)),
+        content: Text(context.l10n.deleteVehicleBody),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(c, false), child: const Text('Cancel')),
-          FilledButton(onPressed: () => Navigator.pop(c, true), child: const Text('Delete')),
+          TextButton(onPressed: () => Navigator.pop(c, false), child: Text(context.l10n.cancel)),
+          FilledButton(onPressed: () => Navigator.pop(c, true), child: Text(context.l10n.delete)),
         ],
       ),
     );
@@ -69,9 +71,9 @@ class VehicleCard extends ConsumerWidget {
     final result = await controller.delete(vehicle.id);
     if (!context.mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text(result.isOk ? '${vehicle.name} deleted' : 'Could not delete vehicle'),
+      content: Text(result.isOk ? context.l10n.vehicleDeleted(vehicle.name) : context.l10n.couldNotDeleteVehicle),
       action: result.isOk
-          ? SnackBarAction(label: 'Undo', onPressed: () => controller.save(vehicle))
+          ? SnackBarAction(label: context.l10n.undo, onPressed: () => controller.save(vehicle))
           : null,
     ));
   }
@@ -82,7 +84,9 @@ class VehicleCard extends ConsumerWidget {
     final ev = vehicle.isElectric;
     final details = [
       '${vehicle.consumptionPer100Km.toStringAsFixed(1)} ${ev ? 'kWh' : 'L'}/100 km',
-      '${vehicle.capacity.toStringAsFixed(0)} ${vehicle.unit} ${ev ? 'battery' : 'tank'}',
+      ev
+          ? context.l10n.batteryCapacity('${vehicle.capacity.toStringAsFixed(0)} ${vehicle.unit}')
+          : context.l10n.tankCapacity('${vehicle.capacity.toStringAsFixed(0)} ${vehicle.unit}'),
       if (vehicle.preferredFuelType != null) fuelTypeLabel(vehicle.preferredFuelType!),
     ].join(' · ');
 
@@ -109,24 +113,24 @@ class VehicleCard extends ConsumerWidget {
                       if (active) ...[
                         const SizedBox(width: AppSpacing.sm),
                         Icon(Icons.check_circle_rounded, size: 18, color: theme.colorScheme.primary,
-                            semanticLabel: 'Active vehicle'),
+                            semanticLabel: context.l10n.activeVehicle),
                       ],
                     ]),
                     const SizedBox(height: AppSpacing.xs),
                     Text(details, style: theme.textTheme.bodySmall),
-                    Text('Full ${ev ? 'charge' : 'tank'} range ≈ ${Fmt.distance(vehicle.rangeMeters(1))}',
+                    Text(ev ? context.l10n.fullChargeRange(Fmt.distance(vehicle.rangeMeters(1))) : context.l10n.fullTankRange(Fmt.distance(vehicle.rangeMeters(1))),
                         style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
                   ],
                 ),
               ),
               PopupMenuButton<String>(
-                tooltip: 'Vehicle options',
+                tooltip: context.l10n.vehicleOptions,
                 onSelected: (v) => v == 'edit'
                     ? context.push(AppRoutes.vehicleEdit, extra: vehicle)
                     : _delete(context, ref),
-                itemBuilder: (_) => const [
-                  PopupMenuItem(value: 'edit', child: Text('Edit')),
-                  PopupMenuItem(value: 'delete', child: Text('Delete')),
+                itemBuilder: (_) => [
+                  PopupMenuItem(value: 'edit', child: Text(context.l10n.edit)),
+                  PopupMenuItem(value: 'delete', child: Text(context.l10n.delete)),
                 ],
               ),
             ],

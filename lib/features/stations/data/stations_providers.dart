@@ -2,8 +2,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/config/app_config.dart';
+import '../../../core/database/app_database.dart';
 import '../../../core/network/dio_client.dart';
 import '../domain/repositories/stations_repository.dart';
+import 'offline_fallback_stations_repository.dart';
+import 'place_location_cache.dart';
 import 'places_remote_data_source.dart';
 import 'places_stations_repository.dart';
 
@@ -32,8 +35,11 @@ final placesRemoteDataSourceProvider = Provider<PlacesRemoteDataSource>((ref) {
 });
 
 final stationsRepositoryProvider = Provider<StationsRepository>((ref) {
-  return PlacesStationsRepository(
-    ref.watch(placesRemoteDataSourceProvider),
-    hasApiKey: ref.watch(appConfigProvider).hasGoogleMapsKey,
+  return OfflineFallbackStationsRepository(
+    PlacesStationsRepository(
+      ref.watch(placesRemoteDataSourceProvider),
+      hasApiKey: ref.watch(appConfigProvider).hasGoogleMapsKey,
+    ),
+    PlaceLocationCache(ref.watch(appDatabaseProvider)),
   );
 });

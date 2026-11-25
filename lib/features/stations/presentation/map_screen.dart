@@ -9,6 +9,7 @@ import '../../../core/location/location_controller.dart';
 import '../../../core/location/location_service.dart';
 import '../../../core/router/app_routes.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../l10n/l10n.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/state_views.dart';
 import '../../route/domain/route_info.dart';
@@ -33,15 +34,15 @@ class MapScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('FuelWise'),
+        title: Text(context.l10n.appTitle),
         actions: [
           IconButton(
-            tooltip: 'Trip assistant',
+            tooltip: context.l10n.tooltipAssistant,
             onPressed: () => context.push(AppRoutes.assistant),
             icon: const Icon(Icons.auto_awesome_outlined),
           ),
           IconButton(
-            tooltip: 'Price alerts',
+            tooltip: context.l10n.tooltipAlerts,
             onPressed: () => context.push(AppRoutes.alerts),
             icon: const Icon(Icons.notifications_none_rounded),
           ),
@@ -50,7 +51,7 @@ class MapScreen extends ConsumerWidget {
             child: FilledButton.tonalIcon(
               onPressed: () => context.push(AppRoutes.plan),
               icon: const Icon(Icons.alt_route_rounded),
-              label: const Text('Plan trip'),
+              label: Text(context.l10n.planTrip),
             ),
           ),
         ],
@@ -58,7 +59,7 @@ class MapScreen extends ConsumerWidget {
       body: switch (location) {
         AsyncData(:final value) => _StationsMap(origin: value),
         AsyncError(:final error) => LocationProblemView(error: error),
-        _ => const AppLoading(label: 'Finding your location…'),
+        _ => AppLoading(label: context.l10n.findingLocation),
       },
     );
   }
@@ -77,16 +78,16 @@ class LocationProblemView extends ConsumerWidget {
     final retry = ref.read(locationControllerProvider.notifier).relocate;
 
     final (String? settingsLabel, VoidCallback? openSettings) = switch (failure?.reason) {
-      LocationFailureReason.deniedForever => ('Open app settings', () => service.openAppSettings()),
-      LocationFailureReason.serviceDisabled => ('Open location settings', () => service.openLocationSettings()),
+      LocationFailureReason.deniedForever => (context.l10n.openAppSettings, () => service.openAppSettings()),
+      LocationFailureReason.serviceDisabled => (context.l10n.openLocationSettings, () => service.openLocationSettings()),
       _ => (null, null),
     };
 
     return AppMessageView(
       icon: Icons.location_off_rounded,
-      title: 'Location needed',
-      message: failure?.message ?? 'Could not determine your location.',
-      primaryLabel: 'Try again',
+      title: context.l10n.locationNeeded,
+      message: failure?.message ?? context.l10n.couldNotDetermineLocation,
+      primaryLabel: context.l10n.tryAgain,
       onPrimary: retry,
       secondaryLabel: settingsLabel,
       onSecondary: openSettings,
@@ -215,7 +216,7 @@ class _StationsMapState extends ConsumerState<_StationsMap> {
           _fitRoute(value);
         case AsyncError(:final error):
           ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text(error is AppFailure ? error.message : 'Could not get directions.')));
+              .showSnackBar(SnackBar(content: Text(error is AppFailure ? error.message : context.l10n.couldNotGetDirections)));
         default:
       }
     });
@@ -253,7 +254,8 @@ class _StationsMapState extends ConsumerState<_StationsMap> {
         ),
     };
 
-    final status = ev ? evStatus(chargers, filtered: filter.isActive) : fuelStatus(stations);
+    final l10n = context.l10n;
+    final status = ev ? evStatus(chargers, filtered: filter.isActive, l: l10n) : fuelStatus(stations, l: l10n);
     final VoidCallback? retry = !status.showRetry
         ? null
         : ev
@@ -315,43 +317,54 @@ class _StationsMapState extends ConsumerState<_StationsMap> {
 /// Text shown in the map's status banner.
 typedef MapStatus = ({IconData icon, String text, bool showRetry});
 
-MapStatus fuelStatus(AsyncValue<List<Station>> stations) => switch (stations) {
-  AsyncLoading() => (icon: Icons.search_rounded, text: 'Searching nearby stations…', showRetry: false),
+MapStatus fuelStatus(AsyncValue<List<Station>> stations, {DateTime? now, AppLocalizations? l}) {
+  final t = l ?? kEnglish;
+  return switch (stations) {
+  AsyncLoading() => (icon: Icons.search_rounded, text: t.searchingStations, showRetry: false),
   AsyncError(:final error) => (
     icon: Icons.error_outline_rounded,
-    text: error is AppFailure ? error.message : 'Could not load stations.',
+    text: error is AppFailure ? error.message : t.couldNotLoadStations,
     showRetry: error is! ConfigFailure, // retrying cannot fix missing config
   ),
   AsyncData(:final value) when value.isEmpty => (
     icon: Icons.search_off_rounded,
-    text: 'No fuel stations within 5 km.',
+    text: t.noStationsNearby,
+    showRetry: true,
+  ),
+  AsyncData(:final value) when value.first.offlineSavedAt != null => (
+    icon: Icons.cloud_off_rounded,
+    text: t.offlineSavedStations(value.length, Fmt.relativeTime(value.first.offlineSavedAt!, now: now)),
     showRetry: true,
   ),
   AsyncData(:final value) => (
     icon: Icons.local_gas_station_rounded,
-    text: '${value.length} stations nearby',
+    text: t.stationsNearby(value.length),
     showRetry: false,
   ),
-};
+  };
+}
 
-MapStatus evStatus(AsyncValue<List<ChargePoint>> chargers, {required bool filtered}) => switch (chargers) {
-  AsyncLoading() => (icon: Icons.search_rounded, text: 'Searching chargers…', showRetry: false),
+MapStatus evStatus(AsyncValue<List<ChargePoint>> chargers, {required bool filtered, AppLocalizations? l}) {
+  final t = l ?? kEnglish;
+  return switch (chargers) {
+  AsyncLoading() => (icon: Icons.search_rounded, text: t.searchingChargers, showRetry: false),
   AsyncError(:final error) => (
     icon: Icons.error_outline_rounded,
-    text: error is AppFailure ? error.message : 'Could not load chargers.',
+    text: error is AppFailure ? error.message : t.couldNotLoadChargers,
     showRetry: error is! ConfigFailure,
   ),
   AsyncData(:final value) when value.isEmpty => (
     icon: Icons.search_off_rounded,
-    text: filtered ? 'No chargers match your filters.' : 'No chargers within 10 km.',
+    text: filtered ? t.noChargersMatchFilters : t.noChargersNearby,
     showRetry: !filtered,
   ),
   AsyncData(:final value) => (
     icon: Icons.ev_station_rounded,
-    text: '${value.length} ${value.length == 1 ? 'charger' : 'chargers'} nearby${filtered ? ' (filtered)' : ''}',
+    text: filtered ? t.chargersNearbyFiltered(value.length) : t.chargersNearby(value.length),
     showRetry: false,
   ),
-};
+  };
+}
 
 /// Fuel / EV switch + filter button.
 class MapModeBar extends StatelessWidget {
@@ -374,9 +387,13 @@ class MapModeBar extends StatelessWidget {
           shape: const StadiumBorder(),
           child: SegmentedButton<MapMode>(
             showSelectedIcon: false,
-            segments: const [
-              ButtonSegment(value: MapMode.fuel, icon: Icon(Icons.local_gas_station_rounded), label: Text('Fuel')),
-              ButtonSegment(value: MapMode.ev, icon: Icon(Icons.ev_station_rounded), label: Text('EV')),
+            segments: [
+              ButtonSegment(
+                  value: MapMode.fuel,
+                  icon: const Icon(Icons.local_gas_station_rounded),
+                  label: Text(context.l10n.modeFuel)),
+              ButtonSegment(
+                  value: MapMode.ev, icon: const Icon(Icons.ev_station_rounded), label: Text(context.l10n.modeEv)),
             ],
             selected: {mode},
             onSelectionChanged: (s) => onMode(s.first),
@@ -388,7 +405,7 @@ class MapModeBar extends StatelessWidget {
             isLabelVisible: filterActive,
             smallSize: 10,
             child: IconButton.filledTonal(
-              tooltip: 'Charger filters',
+              tooltip: context.l10n.chargerFilters,
               onPressed: onFilters,
               icon: const Icon(Icons.tune_rounded),
             ),
@@ -417,7 +434,7 @@ class _StatusBanner extends StatelessWidget {
             Icon(status.icon, size: 20),
             const SizedBox(width: AppSpacing.sm),
             Expanded(child: Text(status.text, maxLines: 4, overflow: TextOverflow.ellipsis)),
-            if (onRetry != null) TextButton(onPressed: onRetry, child: const Text('Retry')),
+            if (onRetry != null) TextButton(onPressed: onRetry, child: Text(context.l10n.retry)),
           ],
         ),
       ),
@@ -445,13 +462,13 @@ class _RouteSummaryCard extends StatelessWidget {
             const SizedBox(width: AppSpacing.md),
             Expanded(
               child: loading || route == null
-                  ? const Text('Calculating route…')
+                  ? Text(context.l10n.calculatingRoute)
                   : Text(
                       '${Fmt.distance(route!.distanceMeters)} · ${Fmt.duration(route!.duration)}',
                       style: theme.textTheme.titleMedium,
                     ),
             ),
-            IconButton(tooltip: 'Clear route', onPressed: onClear, icon: const Icon(Icons.close_rounded)),
+            IconButton(tooltip: context.l10n.clearRoute, onPressed: onClear, icon: const Icon(Icons.close_rounded)),
           ],
         ),
       ),

@@ -48,7 +48,21 @@ class FillUps extends Table {
   Set<Column> get primaryKey => {id};
 }
 
-@DriftDatabase(tables: [Vehicles, Settings, FillUps])
+/// Offline cache of nearby-search results. Google's Places policies allow
+/// storing place IDs indefinitely and latitude/longitude for at most 30
+/// consecutive days — so ONLY those are kept (no names, addresses, prices).
+@DataClassName('PlaceLocationRow')
+class PlaceLocations extends Table {
+  TextColumn get placeId => text()();
+  RealColumn get lat => real()();
+  RealColumn get lng => real()();
+  DateTimeColumn get fetchedAt => dateTime()();
+
+  @override
+  Set<Column> get primaryKey => {placeId};
+}
+
+@DriftDatabase(tables: [Vehicles, Settings, FillUps, PlaceLocations])
 class AppDatabase extends _$AppDatabase {
   AppDatabase(super.executor);
 
@@ -56,13 +70,14 @@ class AppDatabase extends _$AppDatabase {
   factory AppDatabase.onDevice() => AppDatabase(driftDatabase(name: 'fuelwise'));
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
         onCreate: (m) => m.createAll(),
         onUpgrade: (m, from, to) async {
           if (from < 2) await m.createTable(fillUps);
+          if (from < 3) await m.createTable(placeLocations);
         },
       );
 

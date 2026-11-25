@@ -4,11 +4,10 @@
 > Status labels: *implemented* · *locally tested* · *emulator/simulator tested* · *device tested* · *deployed* · *production verified*.
 
 ## Current status
-- **Phase:** 0 — Foundation, Security & Architecture — **in progress**
 - **Mode (2026‑11‑25):** user authorized **autonomous development** — commit + push each verified batch to `origin/main`, no approval stops. No Firebase deploy / billing / paid APIs. Never force-push or commit secrets.
-- **Phase 0:** done except items awaiting the new Google key or a Firebase project (see "Awaiting" below).
-- **Phase 1:** in progress — Batch 1.A (true trip-cost engine), 1.B (My Garage), 1.C (fill-up history), 1.D (stations along route), 1.E (EV mode) done.
-- **Next immediate task:** Batch 1.F — crowdsourced prices, trust scoring, price history, reliability, alerts, community verification (Firebase Emulator Suite, `demo-` project, no deploy).
+- **Done:** Phase 0 (except items awaiting keys / a Firebase project), Phase 1 (1.A–1.F), Phase 2 (AI trip assistant), Phase 3 batch 3.A (offline positions cache, CI, coverage gate, l10n EN+BN foundation, accessibility tests, README).
+- **Next:** Phase 3 batch 3.B — translate the remaining screens + domain labels/failure messages, accessibility audit of remaining screens, release prep that needs no paid service.
+- **Blocked on the user:** working Google Maps key · Open Charge Map key · Anthropic key · Firebase project (monitoring, push, deploy) · release signing + store accounts.
 
 ## Awaiting the new Google Maps API key (user will supply later)
 - Live Places (New) nearby search / details / fuelOptions / evChargeOptions verification on iOS + Android.
@@ -295,3 +294,24 @@ cd functions && npm run build && cd ..
 firebase emulators:start --only auth,firestore,functions --project demo-fuelwise
 flutter run --dart-define-from-file=config/dev.json --dart-define=FIREBASE_MODE=emulator
 ```
+
+## Phase 3 — Batch 3.A: offline, CI, localization, accessibility, README (2026‑11‑25)
+*(implemented, unit/widget-tested, iOS-simulator-tested for localization; CI workflow pushed — result recorded below)*
+- **Offline (Places-policy compliant):** Google's Places policies (checked on developers.google.com, Places API (New) → Policies) allow storing only **place IDs** (indefinitely) and **lat/lng for ≤ 30 consecutive days**; names, addresses and other content may not be stored. The Service Specific Terms page could not be read by the fetch tool, so the stricter reading is used.
+  - New drift table `place_locations(place_id, lat, lng, fetched_at)` (schema v3 + migration). Nothing else from Places is written to disk.
+  - `OfflineFallbackStationsRepository` wraps the Places repository. Live results pass through and their id + position are saved. On a **network/timeout** failure it returns saved positions within the radius, nearest first, named "Saved station" with `offlineSavedAt`. Config/403/server errors are **not** masked. Rows older than 30 days are purged on every read/write.
+  - Map banner: "Offline · N saved station positions (age). Names and prices need a connection." + Retry. Details still need a connection (honest error).
+  - Already local: garage, fill-up history, settings. Community data: Firestore SDK's default offline cache on iOS/Android (not separately tested offline).
+- **CI (`.github/workflows/ci.yml`):** Flutter job: pub get → build_runner + `git diff --exit-code` on generated files → analyze → `test --coverage` → **domain coverage gate ≥ 70 %** (`tool/domain_coverage.py`) → upload lcov → debug APK artifact. Functions job: Node 22 + Java 21 + firebase-tools → `npm test` (unit, rules, assistant, callable integration on the `demo-` project). No deploy step, no secrets.
+- **Coverage:** domain layer **97.3 %** (431/443 lines in 16 files, generated code excluded). Note: lcov only lists files loaded by tests.
+- **Localization:** `flutter_localizations` + `intl`, `l10n.yaml`, `lib/l10n/app_en.arb` / `app_bn.arb` (93 keys each, plurals), generated `AppLocalizations`. `context.l10n` falls back to English when no delegates are installed (keeps pure functions and old widget tests working). Language menu (translate icon on Garage): System default / English / বাংলা, stored via `LocalePreferenceStore` (drift setting `locale`). Translated: bottom navigation, Map (app bar, status banner incl. plurals, location problems, mode toggle, route card), station details sheet, Garage list + delete flow, Assistant, shared loading/error views. Bengali text drafted by Claude — **please review wording** (you are a native speaker).
+- **Accessibility:** automated `meetsGuideline` checks (Android tap-target size, labelled tap targets, text contrast) on Garage and Assistant, at **200 % text scale**, in English and Bengali, with no overflow.
+- **README:** replaced the Flutter template: features with honest status, Mermaid architecture diagram, folder map, setup, emulator instructions, tests, privacy, CI badge.
+- **Flaky test fixed:** `ev_test` "map mode defaults to the active vehicle" waited a fixed 20 ms for the garage stream; failed once under full-suite load → now awaits the providers' futures.
+
+### Tests (3.A)
+- `test/features/stations/data/offline_cache_test.dart` → 6 passed (only id+position stored — column list asserted; offline fallback nearest-first without names; timeout falls back but config/403 don't; 30-day purge; empty cache keeps the error; banner text).
+- `test/l10n/l10n_a11y_test.dart` → 10 passed (every EN key has a BN translation and vice versa; locale preference; EN/BN plurals; Bengali navigation + garage; language menu switches the whole app and back to system; drift store round-trip; accessibility guidelines at 200 % for Garage and Assistant EN/BN; Bengali unavailable state).
+- Full suite: **177 passed**; `flutter analyze`: no issues; functions: unit 19, rules 7, assistant 7, integration 5 — all passed.
+- **iOS simulator (iPhone 17e):** Garage → translate menu → বাংলা: title, empty state, buttons and navigation switch to Bengali; choice survives an app restart (Map app bar, Fuel/EV toggle, Retry in Bengali). Visible gap: failure messages from the data layer are still English.
+- **Not verified:** offline fallback on a device (cache can't fill while Places returns 403) · CI on GitHub (see below).

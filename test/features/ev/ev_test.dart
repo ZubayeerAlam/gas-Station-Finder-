@@ -20,6 +20,7 @@ import 'package:gas_station_finder/features/ev/presentation/widgets/ev_filter_sh
 import 'package:gas_station_finder/features/ev/presentation/widgets/marker_icons.dart';
 import 'package:gas_station_finder/features/garage/data/drift_garage_repository.dart';
 import 'package:gas_station_finder/features/garage/domain/vehicle_profile.dart';
+import 'package:gas_station_finder/features/garage/presentation/garage_providers.dart';
 import 'package:gas_station_finder/features/stations/domain/entities/station.dart';
 import 'package:gas_station_finder/features/stations/presentation/map_screen.dart';
 
@@ -149,7 +150,9 @@ void main() {
       addTearDown(container.dispose);
       container.listen(mapModeProvider, (_, _) {});
       expect(container.read(mapModeProvider), MapMode.fuel); // vehicle stream not loaded yet
-      await Future<void>.delayed(const Duration(milliseconds: 20));
+      // Wait for the garage data itself (a fixed delay was flaky under load).
+      await container.read(vehiclesProvider.future);
+      await container.read(activeVehicleIdProvider.future);
       expect(container.read(mapModeProvider), MapMode.ev);
       container.read(mapModeProvider.notifier).set(MapMode.fuel);
       expect(container.read(mapModeProvider), MapMode.fuel);

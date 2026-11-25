@@ -15,7 +15,9 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Station {
 
- String get id; String get name; GeoPoint get location; String? get address;
+ String get id; String get name; GeoPoint get location; String? get address;/// Set when this came from the offline location cache (only the id and
+/// position are stored there): when it was saved. Null = live result.
+ DateTime? get offlineSavedAt;
 /// Create a copy of Station
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -27,20 +29,20 @@ $StationCopyWith<Station> get copyWith => _$StationCopyWithImpl<Station>(this as
 @override
 bool operator ==(Object other) {
   final _this = this as Station;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Station&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.location, _this.location) || other.location == _this.location)&&(identical(other.address, _this.address) || other.address == _this.address));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Station&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.location, _this.location) || other.location == _this.location)&&(identical(other.address, _this.address) || other.address == _this.address)&&(identical(other.offlineSavedAt, _this.offlineSavedAt) || other.offlineSavedAt == _this.offlineSavedAt));
 }
 
 
 @override
 int get hashCode {
   final _this = this as Station;
-  return Object.hash(runtimeType,_this.id,_this.name,_this.location,_this.address);
+  return Object.hash(runtimeType,_this.id,_this.name,_this.location,_this.address,_this.offlineSavedAt);
 }
 
 @override
 String toString() {
   final _this = this as Station;
-  return 'Station(id: ${_this.id}, name: ${_this.name}, location: ${_this.location}, address: ${_this.address})';
+  return 'Station(id: ${_this.id}, name: ${_this.name}, location: ${_this.location}, address: ${_this.address}, offlineSavedAt: ${_this.offlineSavedAt})';
 }
 
 
@@ -51,7 +53,7 @@ abstract mixin class $StationCopyWith<$Res>  {
   factory $StationCopyWith(Station value, $Res Function(Station) _then) = _$StationCopyWithImpl;
 @useResult
 $Res call({
- String id, String name, GeoPoint location, String? address
+ String id, String name, GeoPoint location, String? address, DateTime? offlineSavedAt
 });
 
 
@@ -68,13 +70,14 @@ class _$StationCopyWithImpl<$Res>
 
 /// Create a copy of Station
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? location = null,Object? address = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? location = null,Object? address = freezed,Object? offlineSavedAt = freezed,}) {
   return _then(Station(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,location: null == location ? _self.location : location // ignore: cast_nullable_to_non_nullable
 as GeoPoint,address: freezed == address ? _self.address : address // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,offlineSavedAt: freezed == offlineSavedAt ? _self.offlineSavedAt : offlineSavedAt // ignore: cast_nullable_to_non_nullable
+as DateTime?,
   ));
 }
 /// Create a copy of Station
@@ -168,10 +171,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  GeoPoint location,  String? address)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  GeoPoint location,  String? address,  DateTime? offlineSavedAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Station() when $default != null:
-return $default(_that.id,_that.name,_that.location,_that.address);case _:
+return $default(_that.id,_that.name,_that.location,_that.address,_that.offlineSavedAt);case _:
   return orElse();
 
 }
@@ -189,10 +192,10 @@ return $default(_that.id,_that.name,_that.location,_that.address);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  GeoPoint location,  String? address)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  GeoPoint location,  String? address,  DateTime? offlineSavedAt)  $default,) {final _that = this;
 switch (_that) {
 case _Station():
-return $default(_that.id,_that.name,_that.location,_that.address);case _:
+return $default(_that.id,_that.name,_that.location,_that.address,_that.offlineSavedAt);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -209,10 +212,10 @@ return $default(_that.id,_that.name,_that.location,_that.address);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  GeoPoint location,  String? address)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  GeoPoint location,  String? address,  DateTime? offlineSavedAt)?  $default,) {final _that = this;
 switch (_that) {
 case _Station() when $default != null:
-return $default(_that.id,_that.name,_that.location,_that.address);case _:
+return $default(_that.id,_that.name,_that.location,_that.address,_that.offlineSavedAt);case _:
   return null;
 
 }
@@ -224,13 +227,16 @@ return $default(_that.id,_that.name,_that.location,_that.address);case _:
 
 
 class _Station implements Station {
-  const _Station({required this.id, required this.name, required this.location, this.address});
+  const _Station({required this.id, required this.name, required this.location, this.address, this.offlineSavedAt});
   
 
 @override final  String id;
 @override final  String name;
 @override final  GeoPoint location;
 @override final  String? address;
+/// Set when this came from the offline location cache (only the id and
+/// position are stored there): when it was saved. Null = live result.
+@override final  DateTime? offlineSavedAt;
 
 /// Create a copy of Station
 /// with the given fields replaced by the non-null parameter values.
@@ -242,18 +248,18 @@ _$StationCopyWith<_Station> get copyWith => __$StationCopyWithImpl<_Station>(thi
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _Station&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.location, location) || other.location == location)&&(identical(other.address, address) || other.address == address));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _Station&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.location, location) || other.location == location)&&(identical(other.address, address) || other.address == address)&&(identical(other.offlineSavedAt, offlineSavedAt) || other.offlineSavedAt == offlineSavedAt));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,id,name,location,address);
+    return Object.hash(runtimeType,id,name,location,address,offlineSavedAt);
 }
 
 @override
 String toString() {
-    return 'Station(id: $id, name: $name, location: $location, address: $address)';
+    return 'Station(id: $id, name: $name, location: $location, address: $address, offlineSavedAt: $offlineSavedAt)';
 }
 
 
@@ -264,7 +270,7 @@ abstract mixin class _$StationCopyWith<$Res> implements $StationCopyWith<$Res> {
   factory _$StationCopyWith(_Station value, $Res Function(_Station) _then) = __$StationCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String name, GeoPoint location, String? address
+ String id, String name, GeoPoint location, String? address, DateTime? offlineSavedAt
 });
 
 
@@ -281,13 +287,14 @@ class __$StationCopyWithImpl<$Res>
 
 /// Create a copy of Station
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? location = null,Object? address = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? location = null,Object? address = freezed,Object? offlineSavedAt = freezed,}) {
   return _then(_Station(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,location: null == location ? _self.location : location // ignore: cast_nullable_to_non_nullable
 as GeoPoint,address: freezed == address ? _self.address : address // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,offlineSavedAt: freezed == offlineSavedAt ? _self.offlineSavedAt : offlineSavedAt // ignore: cast_nullable_to_non_nullable
+as DateTime?,
   ));
 }
 

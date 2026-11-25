@@ -13,6 +13,10 @@ abstract class Station with _$Station {
     required String name,
     required GeoPoint location,
     String? address,
+
+    /// Set when this came from the offline location cache (only the id and
+    /// position are stored there): when it was saved. Null = live result.
+    DateTime? offlineSavedAt,
   }) = _Station;
 }
 

@@ -199,23 +199,23 @@ Implementation history and evidence live in [BUILD.md](BUILD.md). Rule: work one
 
 ### 3.1 Offline-first
 - [x] Evaluate Isar vs Hive → chose **drift** (SQLite; actively maintained, typed queries, migrations, testable in-memory) — see BUILD.md 1.B
-- [ ] Cache stations, prices, vehicles, trip history
-- [ ] Last-updated + offline indicators; resync; stale ≠ verified
+- [-] Cache stations, prices, vehicles, trip history — vehicles + fill-up history are local (drift); station **place IDs + coordinates** cached ≤ 30 days (all Google's Places policy allows — no names/addresses/prices stored); community data uses Firestore's built-in offline cache (not separately verified offline)
+- [-] Last-updated + offline indicators; resync; stale ≠ verified — map shows "Offline · N saved station positions (age)" with Retry; prices are never shown from cache. Not verified on a device in airplane mode (needs a working Google key to fill the cache first)
 
 ### 3.2 Testing
-- [ ] Unit: cost, scoring, detour, trust, aggregation, range, repositories
-- [ ] Widget: details sheet, cards, route selection, Fuel/EV toggle, AI cards, states
-- [ ] Integration: nearby, destination, route, along-route, price submit, EV, AI
-- [ ] ≥70% domain-layer coverage
-- [ ] Functions tests + Firestore Rules tests
+- [x] Unit: cost, scoring, detour, trust, aggregation, range, repositories
+- [x] Widget: details sheet, cards, route selection, Fuel/EV toggle, AI cards, states
+- [-] Integration: price submit, alerts and AI callable run end-to-end against the emulators; nearby / destination / along-route / EV need live keys (fakes only so far); no `integration_test` device suite yet
+- [x] ≥70% domain-layer coverage — **97.3 %** (431/443 lines, 16 domain files; generated code excluded; `tool/domain_coverage.py`, enforced in CI)
+- [x] Functions tests + Firestore Rules tests (unit 19, rules 7, assistant 7, integration 5)
 
 ### 3.3 CI/CD
-- [ ] `.github/workflows/ci.yml`: deps, analyze, test, coverage, APK build
-- [ ] No automatic production deploys
+- [x] `.github/workflows/ci.yml`: deps, generated-code check, analyze, test, coverage gate, debug APK artifact; functions job with emulator tests
+- [x] No automatic production deploys (CI has no deploy step and no secrets)
 
 ### 3.4 Accessibility & Localization
-- [ ] Semantics, text scaling, contrast, focus
-- [ ] English + Bengali; extensible l10n
+- [-] Semantics, text scaling, contrast, focus — automated guideline tests (tap targets, labelled targets, text contrast) + 200 % text on Garage and Assistant (EN + BN); other screens and keyboard focus order not audited yet
+- [-] English + Bengali; extensible l10n — `flutter gen-l10n` (ARB) + language menu (Garage) persisted in drift; translated: navigation, Map, station sheet, Garage list, Assistant, shared states. **Not yet:** History, Alerts, Community section, Report price, trip planning, EV sheets, vehicle/fill-up forms, domain labels (fuel types, badges, explanations) and failure messages; units/relative times still English
 
 ### 3.5 Monitoring
 - [ ] Crashlytics, Analytics, Performance (privacy/consent respected)
@@ -224,7 +224,7 @@ Implementation history and evidence live in [BUILD.md](BUILD.md). Rule: work one
 - [ ] Icon, splash, screenshots, store listing
 - [ ] Privacy policy, Data Safety form
 - [ ] Release build config + signing
-- [ ] README with architecture diagram, GIFs, badges
+- [-] README with architecture diagram, GIFs, badges — README rewritten (features + honest status, Mermaid architecture, setup, tests, privacy, CI badge); screenshots/GIFs wait for a working Google key
 - [ ] Play Store internal/closed test; iOS prep after
 
 ---

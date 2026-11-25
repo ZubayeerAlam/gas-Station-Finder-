@@ -14,6 +14,7 @@ import '../../features/prices/presentation/alerts_screen.dart';
 import '../../features/prices/presentation/report_price_screen.dart';
 import '../../features/stations/domain/entities/station.dart';
 import '../../features/stations/presentation/map_screen.dart';
+import '../../l10n/l10n.dart';
 import 'app_routes.dart';
 
 export 'app_routes.dart';
@@ -21,13 +22,16 @@ export 'app_routes.dart';
 final _rootKey = GlobalKey<NavigatorState>(debugLabel: 'root');
 
 /// Top-level destinations shown in the bottom navigation bar.
-const _destinations = [
-  NavigationDestination(icon: Icon(Icons.map_outlined), selectedIcon: Icon(Icons.map_rounded), label: 'Map'),
-  NavigationDestination(
-      icon: Icon(Icons.receipt_long_outlined), selectedIcon: Icon(Icons.receipt_long_rounded), label: 'History'),
-  NavigationDestination(
-      icon: Icon(Icons.garage_outlined), selectedIcon: Icon(Icons.garage_rounded), label: 'Garage'),
-];
+List<NavigationDestination> _destinations(AppLocalizations l) => [
+      NavigationDestination(
+          icon: const Icon(Icons.map_outlined), selectedIcon: const Icon(Icons.map_rounded), label: l.navMap),
+      NavigationDestination(
+          icon: const Icon(Icons.receipt_long_outlined),
+          selectedIcon: const Icon(Icons.receipt_long_rounded),
+          label: l.navHistory),
+      NavigationDestination(
+          icon: const Icon(Icons.garage_outlined), selectedIcon: const Icon(Icons.garage_rounded), label: l.navGarage),
+    ];
 
 GoRouter buildRouter({String initialLocation = AppRoutes.map}) => GoRouter(
       navigatorKey: _rootKey,
@@ -110,7 +114,7 @@ class _HomeShell extends StatelessWidget {
       bottomNavigationBar: NavigationBar(
         selectedIndex: shell.currentIndex,
         onDestinationSelected: (i) => shell.goBranch(i, initialLocation: i == shell.currentIndex),
-        destinations: _destinations,
+        destinations: _destinations(context.l10n),
       ),
     );
   }

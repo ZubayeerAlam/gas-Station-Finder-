@@ -7,13 +7,11 @@ import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/state_views.dart';
 import '../../along_route/presentation/along_route_providers.dart';
 import '../../along_route/presentation/along_route_screen.dart' show StationResultCard;
+import '../../../l10n/l10n.dart';
 import 'assistant_controller.dart';
 
-const kAssistantSuggestions = [
-  'Where should I fill up on my way to the airport?',
-  'Cheapest charging stop on the way to Hamburg?',
-  'Which station has the smallest detour on my way to work?',
-];
+List<String> assistantSuggestions(AppLocalizations l) =>
+    [l.assistantSuggestion1, l.assistantSuggestion2, l.assistantSuggestion3];
 
 /// Chat with the trip assistant. Station cards are the app's own ranking —
 /// the model only chooses which stations to show.
@@ -64,21 +62,21 @@ class _AssistantScreenState extends ConsumerState<AssistantScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Trip assistant'),
+        title: Text(context.l10n.assistantTitle),
         actions: [
           if (chat.messages.isNotEmpty)
             IconButton(
-              tooltip: 'New chat',
+              tooltip: context.l10n.assistantNewChat,
               icon: const Icon(Icons.add_comment_outlined),
               onPressed: chat.sending ? null : () => ref.read(assistantControllerProvider.notifier).newChat(),
             ),
         ],
       ),
       body: !api.isAvailable
-          ? const AppMessageView(
+          ? AppMessageView(
               icon: Icons.cloud_off_rounded,
-              title: 'Assistant not available',
-              message: 'The trip assistant runs on the FuelWise server, which is not set up in this build.',
+              title: context.l10n.assistantUnavailableTitle,
+              message: context.l10n.assistantUnavailableMessage,
             )
           : Column(
               children: [
@@ -110,14 +108,14 @@ class _AssistantScreenState extends ConsumerState<AssistantScreen> {
                             maxLength: 1000,
                             textInputAction: TextInputAction.send,
                             onSubmitted: chat.sending ? null : (_) => _send(),
-                            decoration: const InputDecoration(
-                              hintText: 'Ask about fuel or charging on your trip',
+                            decoration: InputDecoration(
+                              hintText: context.l10n.assistantInputHint,
                               counterText: '',
                             ),
                           ),
                         ),
                         IconButton.filled(
-                          tooltip: 'Send',
+                          tooltip: context.l10n.assistantSend,
                           onPressed: chat.sending ? null : _send,
                           icon: const Icon(Icons.arrow_upward_rounded),
                         ),
@@ -128,7 +126,7 @@ class _AssistantScreenState extends ConsumerState<AssistantScreen> {
                 Padding(
                   padding: const EdgeInsets.fromLTRB(AppSpacing.md, 0, AppSpacing.md, AppSpacing.xs),
                   child: Text(
-                    'Answers use the app\'s own route ranking. Check prices at the pump.',
+                    context.l10n.assistantFooter,
                     textAlign: TextAlign.center,
                     style: theme.textTheme.labelSmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
                   ),
@@ -152,16 +150,15 @@ class _Welcome extends StatelessWidget {
       children: [
         Icon(Icons.auto_awesome_rounded, size: 48, color: theme.colorScheme.primary),
         const SizedBox(height: AppSpacing.md),
-        Text('Plan smarter stops', style: theme.textTheme.headlineSmall, textAlign: TextAlign.center),
+        Text(context.l10n.assistantWelcomeTitle, style: theme.textTheme.headlineSmall, textAlign: TextAlign.center),
         const SizedBox(height: AppSpacing.sm),
         Text(
-          'Tell me where you are driving. I rank fuel or charging stops on the way by total cost, '
-          'detour and reliability, using your vehicle from the garage.',
+          context.l10n.assistantWelcomeBody,
           style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: AppSpacing.lg),
-        for (final s in kAssistantSuggestions)
+        for (final s in assistantSuggestions(context.l10n))
           Padding(
             padding: const EdgeInsets.only(bottom: AppSpacing.sm),
             child: OutlinedButton(
@@ -191,7 +188,7 @@ class _Thinking extends StatelessWidget {
           children: [
             const SizedBox.square(dimension: 18, child: CircularProgressIndicator(strokeWidth: 2)),
             const SizedBox(width: AppSpacing.sm),
-            Flexible(child: Text(status ?? 'Thinking…', style: Theme.of(context).textTheme.bodySmall)),
+            Flexible(child: Text(status ?? context.l10n.assistantThinking, style: Theme.of(context).textTheme.bodySmall)),
           ],
         ),
       );
@@ -243,7 +240,7 @@ class _MessageView extends StatelessWidget {
           if (m.demo)
             Padding(
               padding: const EdgeInsets.only(bottom: AppSpacing.xs),
-              child: Text('Offline demo — not Claude',
+              child: Text(context.l10n.assistantDemoLabel,
                   style: theme.textTheme.labelSmall?.copyWith(color: cs.tertiary)),
             ),
           bubble,

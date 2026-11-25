@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../theme/app_theme.dart';
+import '../../l10n/l10n.dart';
 
 /// Centered loading indicator with optional label.
 class AppLoading extends StatelessWidget {
@@ -13,7 +14,7 @@ class AppLoading extends StatelessWidget {
     return Center(
       child: Semantics(
         liveRegion: true,
-        label: label ?? 'Loading',
+        label: label ?? context.l10n.loading,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -97,9 +98,9 @@ class AppErrorView extends StatelessWidget {
   @override
   Widget build(BuildContext context) => AppMessageView(
         icon: Icons.cloud_off_rounded,
-        title: 'Something went wrong',
+        title: context.l10n.somethingWentWrong,
         message: message,
-        primaryLabel: onRetry == null ? null : 'Try again',
+        primaryLabel: onRetry == null ? null : context.l10n.tryAgain,
         onPrimary: onRetry,
       );
 }

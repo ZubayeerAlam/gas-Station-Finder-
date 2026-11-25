@@ -16,6 +16,7 @@ import 'package:gas_station_finder/features/assistant/presentation/assistant_too
 import 'package:gas_station_finder/features/garage/domain/vehicle_profile.dart';
 import 'package:gas_station_finder/features/ranking/domain/ranking_models.dart';
 import 'package:gas_station_finder/features/ranking/domain/trip_cost_engine.dart';
+import 'package:gas_station_finder/l10n/l10n.dart';
 
 import '../along_route/along_route_fakes.dart';
 
@@ -251,9 +252,9 @@ void main() {
     testWidgets('suggestion chip sends a message', (tester) async {
       final api = FakeAssistantApi();
       await pump(tester, api);
-      await tester.tap(find.text(kAssistantSuggestions.first));
+      await tester.tap(find.text(assistantSuggestions(kEnglish).first));
       await tester.pumpAndSettle();
-      expect(api.sentMessages.single.$2, kAssistantSuggestions.first);
+      expect(api.sentMessages.single.$2, assistantSuggestions(kEnglish).first);
     });
   });
 }

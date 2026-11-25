@@ -8,6 +8,7 @@ import '../../../../core/utils/formatters.dart';
 import '../../../prices/presentation/community_section.dart';
 import '../../domain/entities/station.dart';
 import '../stations_controllers.dart';
+import '../../../../l10n/l10n.dart';
 
 /// Opens the station details bottom sheet.
 Future<void> showStationDetailsSheet(
@@ -63,7 +64,7 @@ class StationDetailsSheet extends ConsumerWidget {
         const SizedBox(height: AppSpacing.xs),
         Text(
           [
-            if (distance != null) '${Fmt.distance(distance)} away (straight line)',
+            if (distance != null) context.l10n.distanceAwayStraight(Fmt.distance(distance)),
             if (station.address != null) station.address!,
           ].join(' · '),
           style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
@@ -72,19 +73,19 @@ class StationDetailsSheet extends ConsumerWidget {
         FilledButton.icon(
           onPressed: onDirections,
           icon: const Icon(Icons.directions_rounded),
-          label: const Text('Directions'),
+          label: Text(context.l10n.directions),
         ),
         const SizedBox(height: AppSpacing.md),
         const Divider(),
         switch (details) {
           AsyncData(:final value) => _DetailsBody(details: value),
           AsyncError(:final error) => _DetailsError(
-              message: error is AppFailure ? error.message : 'Could not load station details.',
+              message: error is AppFailure ? error.message : context.l10n.couldNotLoadStationDetails,
               onRetry: () => ref.invalidate(stationDetailsProvider(station.id)),
             ),
-          _ => const Padding(
-              padding: EdgeInsets.all(AppSpacing.lg),
-              child: Center(child: CircularProgressIndicator(semanticsLabel: 'Loading station details')),
+          _ => Padding(
+              padding: const EdgeInsets.all(AppSpacing.lg),
+              child: Center(child: CircularProgressIndicator(semanticsLabel: context.l10n.loadingStationDetails)),
             ),
         },
         const Divider(height: AppSpacing.lg * 2),
@@ -108,7 +109,7 @@ class _DetailsError extends StatelessWidget {
         children: [
           Text(message, textAlign: TextAlign.center),
           const SizedBox(height: AppSpacing.sm),
-          OutlinedButton(onPressed: onRetry, child: const Text('Try again')),
+          OutlinedButton(onPressed: onRetry, child: Text(context.l10n.tryAgain)),
         ],
       ),
     );
@@ -137,7 +138,7 @@ class _DetailsBody extends StatelessWidget {
                   size: 18,
                   color: details.openNow! ? Colors.green.shade700 : theme.colorScheme.error,
                 ),
-                label: Text(details.openNow! ? 'Open now' : 'Closed'),
+                label: Text(details.openNow! ? context.l10n.openNow : context.l10n.closed),
               ),
             if (details.rating != null)
               Chip(
@@ -150,18 +151,18 @@ class _DetailsBody extends StatelessWidget {
           ],
         ),
         const SizedBox(height: AppSpacing.md),
-        Text('Fuel prices', style: theme.textTheme.titleMedium),
+        Text(context.l10n.fuelPrices, style: theme.textTheme.titleMedium),
         const SizedBox(height: AppSpacing.sm),
         if (details.hasFuelPrices)
           ...details.fuelPrices.map((p) => _FuelPriceTile(price: p))
         else
           Text(
-            'Fuel prices are not available for this station.',
+            context.l10n.fuelPricesUnavailable,
             style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
           ),
         if (details.evCharge != null && details.evCharge!.connectors.isNotEmpty) ...[
           const SizedBox(height: AppSpacing.md),
-          Text('EV charging', style: theme.textTheme.titleMedium),
+          Text(context.l10n.evCharging, style: theme.textTheme.titleMedium),
           ...details.evCharge!.connectors.map(
             (c) => ListTile(
               contentPadding: EdgeInsets.zero,
@@ -169,8 +170,8 @@ class _DetailsBody extends StatelessWidget {
               title: Text(evConnectorLabel(c.type)),
               subtitle: Text([
                 if (c.maxChargeRateKw != null) '${c.maxChargeRateKw!.toStringAsFixed(0)} kW',
-                if (c.count != null) '${c.count} connectors',
-                if (c.availableCount != null) '${c.availableCount} available (reported)',
+                if (c.count != null) context.l10n.connectorCount(c.count!),
+                if (c.availableCount != null) context.l10n.availableReported(c.availableCount!),
               ].join(' · ')),
             ),
           ),
@@ -192,7 +193,7 @@ class _DetailsBody extends StatelessWidget {
           ExpansionTile(
             tilePadding: EdgeInsets.zero,
             leading: const Icon(Icons.schedule_outlined),
-            title: const Text('Opening hours'),
+            title: Text(context.l10n.openingHours),
             children: [
               for (final line in details.weekdayHours)
                 Align(alignment: Alignment.centerLeft, child: Text(line)),
@@ -216,8 +217,8 @@ class _FuelPriceTile extends StatelessWidget {
       leading: const Icon(Icons.local_gas_station_rounded),
       title: Text(price.fuelLabel),
       subtitle: price.updatedAt == null
-          ? const Text('Source: Google')
-          : Text('Source: Google · updated ${Fmt.relativeTime(price.updatedAt!)}'),
+          ? Text(context.l10n.sourceGoogle)
+          : Text(context.l10n.sourceGoogleUpdated(Fmt.relativeTime(price.updatedAt!))),
       trailing: Text(
         Fmt.price(price.amount, price.currencyCode),
         style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),

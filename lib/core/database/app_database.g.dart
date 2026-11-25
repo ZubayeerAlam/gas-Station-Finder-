@@ -1323,12 +1323,325 @@ class FillUpsCompanion extends UpdateCompanion<FillUpRow> {
   }
 }
 
+class $PlaceLocationsTable extends PlaceLocations
+    with TableInfo<$PlaceLocationsTable, PlaceLocationRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $PlaceLocationsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _placeIdMeta = const VerificationMeta(
+    'placeId',
+  );
+  @override
+  late final GeneratedColumn<String> placeId = GeneratedColumn<String>(
+    'place_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _latMeta = const VerificationMeta('lat');
+  @override
+  late final GeneratedColumn<double> lat = GeneratedColumn<double>(
+    'lat',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _lngMeta = const VerificationMeta('lng');
+  @override
+  late final GeneratedColumn<double> lng = GeneratedColumn<double>(
+    'lng',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _fetchedAtMeta = const VerificationMeta(
+    'fetchedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> fetchedAt = GeneratedColumn<DateTime>(
+    'fetched_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [placeId, lat, lng, fetchedAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'place_locations';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<PlaceLocationRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('place_id')) {
+      context.handle(
+        _placeIdMeta,
+        placeId.isAcceptableOrUnknown(data['place_id']!, _placeIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_placeIdMeta);
+    }
+    if (data.containsKey('lat')) {
+      context.handle(
+        _latMeta,
+        lat.isAcceptableOrUnknown(data['lat']!, _latMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_latMeta);
+    }
+    if (data.containsKey('lng')) {
+      context.handle(
+        _lngMeta,
+        lng.isAcceptableOrUnknown(data['lng']!, _lngMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_lngMeta);
+    }
+    if (data.containsKey('fetched_at')) {
+      context.handle(
+        _fetchedAtMeta,
+        fetchedAt.isAcceptableOrUnknown(data['fetched_at']!, _fetchedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_fetchedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {placeId};
+  @override
+  PlaceLocationRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return PlaceLocationRow(
+      placeId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}place_id'],
+      )!,
+      lat: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}lat'],
+      )!,
+      lng: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}lng'],
+      )!,
+      fetchedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}fetched_at'],
+      )!,
+    );
+  }
+
+  @override
+  $PlaceLocationsTable createAlias(String alias) {
+    return $PlaceLocationsTable(attachedDatabase, alias);
+  }
+}
+
+class PlaceLocationRow extends DataClass
+    implements Insertable<PlaceLocationRow> {
+  final String placeId;
+  final double lat;
+  final double lng;
+  final DateTime fetchedAt;
+  const PlaceLocationRow({
+    required this.placeId,
+    required this.lat,
+    required this.lng,
+    required this.fetchedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['place_id'] = Variable<String>(placeId);
+    map['lat'] = Variable<double>(lat);
+    map['lng'] = Variable<double>(lng);
+    map['fetched_at'] = Variable<DateTime>(fetchedAt);
+    return map;
+  }
+
+  PlaceLocationsCompanion toCompanion(bool nullToAbsent) {
+    return PlaceLocationsCompanion(
+      placeId: Value(placeId),
+      lat: Value(lat),
+      lng: Value(lng),
+      fetchedAt: Value(fetchedAt),
+    );
+  }
+
+  factory PlaceLocationRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return PlaceLocationRow(
+      placeId: serializer.fromJson<String>(json['placeId']),
+      lat: serializer.fromJson<double>(json['lat']),
+      lng: serializer.fromJson<double>(json['lng']),
+      fetchedAt: serializer.fromJson<DateTime>(json['fetchedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'placeId': serializer.toJson<String>(placeId),
+      'lat': serializer.toJson<double>(lat),
+      'lng': serializer.toJson<double>(lng),
+      'fetchedAt': serializer.toJson<DateTime>(fetchedAt),
+    };
+  }
+
+  PlaceLocationRow copyWith({
+    String? placeId,
+    double? lat,
+    double? lng,
+    DateTime? fetchedAt,
+  }) => PlaceLocationRow(
+    placeId: placeId ?? this.placeId,
+    lat: lat ?? this.lat,
+    lng: lng ?? this.lng,
+    fetchedAt: fetchedAt ?? this.fetchedAt,
+  );
+  PlaceLocationRow copyWithCompanion(PlaceLocationsCompanion data) {
+    return PlaceLocationRow(
+      placeId: data.placeId.present ? data.placeId.value : this.placeId,
+      lat: data.lat.present ? data.lat.value : this.lat,
+      lng: data.lng.present ? data.lng.value : this.lng,
+      fetchedAt: data.fetchedAt.present ? data.fetchedAt.value : this.fetchedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PlaceLocationRow(')
+          ..write('placeId: $placeId, ')
+          ..write('lat: $lat, ')
+          ..write('lng: $lng, ')
+          ..write('fetchedAt: $fetchedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(placeId, lat, lng, fetchedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is PlaceLocationRow &&
+          other.placeId == this.placeId &&
+          other.lat == this.lat &&
+          other.lng == this.lng &&
+          other.fetchedAt == this.fetchedAt);
+}
+
+class PlaceLocationsCompanion extends UpdateCompanion<PlaceLocationRow> {
+  final Value<String> placeId;
+  final Value<double> lat;
+  final Value<double> lng;
+  final Value<DateTime> fetchedAt;
+  final Value<int> rowid;
+  const PlaceLocationsCompanion({
+    this.placeId = const Value.absent(),
+    this.lat = const Value.absent(),
+    this.lng = const Value.absent(),
+    this.fetchedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  PlaceLocationsCompanion.insert({
+    required String placeId,
+    required double lat,
+    required double lng,
+    required DateTime fetchedAt,
+    this.rowid = const Value.absent(),
+  }) : placeId = Value(placeId),
+       lat = Value(lat),
+       lng = Value(lng),
+       fetchedAt = Value(fetchedAt);
+  static Insertable<PlaceLocationRow> custom({
+    Expression<String>? placeId,
+    Expression<double>? lat,
+    Expression<double>? lng,
+    Expression<DateTime>? fetchedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (placeId != null) 'place_id': placeId,
+      if (lat != null) 'lat': lat,
+      if (lng != null) 'lng': lng,
+      if (fetchedAt != null) 'fetched_at': fetchedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  PlaceLocationsCompanion copyWith({
+    Value<String>? placeId,
+    Value<double>? lat,
+    Value<double>? lng,
+    Value<DateTime>? fetchedAt,
+    Value<int>? rowid,
+  }) {
+    return PlaceLocationsCompanion(
+      placeId: placeId ?? this.placeId,
+      lat: lat ?? this.lat,
+      lng: lng ?? this.lng,
+      fetchedAt: fetchedAt ?? this.fetchedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (placeId.present) {
+      map['place_id'] = Variable<String>(placeId.value);
+    }
+    if (lat.present) {
+      map['lat'] = Variable<double>(lat.value);
+    }
+    if (lng.present) {
+      map['lng'] = Variable<double>(lng.value);
+    }
+    if (fetchedAt.present) {
+      map['fetched_at'] = Variable<DateTime>(fetchedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PlaceLocationsCompanion(')
+          ..write('placeId: $placeId, ')
+          ..write('lat: $lat, ')
+          ..write('lng: $lng, ')
+          ..write('fetchedAt: $fetchedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
   late final $VehiclesTable vehicles = $VehiclesTable(this);
   late final $SettingsTable settings = $SettingsTable(this);
   late final $FillUpsTable fillUps = $FillUpsTable(this);
+  late final $PlaceLocationsTable placeLocations = $PlaceLocationsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -1337,6 +1650,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     vehicles,
     settings,
     fillUps,
+    placeLocations,
   ];
 }
 
@@ -2023,6 +2337,202 @@ typedef $$FillUpsTableProcessedTableManager =
       FillUpRow,
       PrefetchHooks Function()
     >;
+typedef $$PlaceLocationsTableCreateCompanionBuilder =
+    PlaceLocationsCompanion Function({
+      required String placeId,
+      required double lat,
+      required double lng,
+      required DateTime fetchedAt,
+      Value<int> rowid,
+    });
+typedef $$PlaceLocationsTableUpdateCompanionBuilder =
+    PlaceLocationsCompanion Function({
+      Value<String> placeId,
+      Value<double> lat,
+      Value<double> lng,
+      Value<DateTime> fetchedAt,
+      Value<int> rowid,
+    });
+
+class $$PlaceLocationsTableFilterComposer
+    extends Composer<_$AppDatabase, $PlaceLocationsTable> {
+  $$PlaceLocationsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get placeId => $composableBuilder(
+    column: $table.placeId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get lat => $composableBuilder(
+    column: $table.lat,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get lng => $composableBuilder(
+    column: $table.lng,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get fetchedAt => $composableBuilder(
+    column: $table.fetchedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$PlaceLocationsTableOrderingComposer
+    extends Composer<_$AppDatabase, $PlaceLocationsTable> {
+  $$PlaceLocationsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get placeId => $composableBuilder(
+    column: $table.placeId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get lat => $composableBuilder(
+    column: $table.lat,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get lng => $composableBuilder(
+    column: $table.lng,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get fetchedAt => $composableBuilder(
+    column: $table.fetchedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$PlaceLocationsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $PlaceLocationsTable> {
+  $$PlaceLocationsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get placeId =>
+      $composableBuilder(column: $table.placeId, builder: (column) => column);
+
+  GeneratedColumn<double> get lat =>
+      $composableBuilder(column: $table.lat, builder: (column) => column);
+
+  GeneratedColumn<double> get lng =>
+      $composableBuilder(column: $table.lng, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get fetchedAt =>
+      $composableBuilder(column: $table.fetchedAt, builder: (column) => column);
+}
+
+class $$PlaceLocationsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $PlaceLocationsTable,
+          PlaceLocationRow,
+          $$PlaceLocationsTableFilterComposer,
+          $$PlaceLocationsTableOrderingComposer,
+          $$PlaceLocationsTableAnnotationComposer,
+          $$PlaceLocationsTableCreateCompanionBuilder,
+          $$PlaceLocationsTableUpdateCompanionBuilder,
+          (
+            PlaceLocationRow,
+            BaseReferences<
+              _$AppDatabase,
+              $PlaceLocationsTable,
+              PlaceLocationRow
+            >,
+          ),
+          PlaceLocationRow,
+          PrefetchHooks Function()
+        > {
+  $$PlaceLocationsTableTableManager(
+    _$AppDatabase db,
+    $PlaceLocationsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$PlaceLocationsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$PlaceLocationsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$PlaceLocationsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> placeId = const Value.absent(),
+                Value<double> lat = const Value.absent(),
+                Value<double> lng = const Value.absent(),
+                Value<DateTime> fetchedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => PlaceLocationsCompanion(
+                placeId: placeId,
+                lat: lat,
+                lng: lng,
+                fetchedAt: fetchedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String placeId,
+                required double lat,
+                required double lng,
+                required DateTime fetchedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => PlaceLocationsCompanion.insert(
+                placeId: placeId,
+                lat: lat,
+                lng: lng,
+                fetchedAt: fetchedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$PlaceLocationsTable, PlaceLocationRow>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $PlaceLocationsTable,
+                    PlaceLocationRow
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$PlaceLocationsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $PlaceLocationsTable,
+      PlaceLocationRow,
+      $$PlaceLocationsTableFilterComposer,
+      $$PlaceLocationsTableOrderingComposer,
+      $$PlaceLocationsTableAnnotationComposer,
+      $$PlaceLocationsTableCreateCompanionBuilder,
+      $$PlaceLocationsTableUpdateCompanionBuilder,
+      (
+        PlaceLocationRow,
+        BaseReferences<_$AppDatabase, $PlaceLocationsTable, PlaceLocationRow>,
+      ),
+      PlaceLocationRow,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -2033,4 +2543,6 @@ class $AppDatabaseManager {
       $$SettingsTableTableManager(_db, _db.settings);
   $$FillUpsTableTableManager get fillUps =>
       $$FillUpsTableTableManager(_db, _db.fillUps);
+  $$PlaceLocationsTableTableManager get placeLocations =>
+      $$PlaceLocationsTableTableManager(_db, _db.placeLocations);
 }
