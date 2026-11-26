@@ -533,5 +533,13 @@
   "errorTripSave": "Could not save the trip. Please try again.",
   "@errorTripSave": {"placeholders": {}},
   "errorTripLocationExpired": "This saved place has expired. Please search for it again.",
-  "@errorTripLocationExpired": {"placeholders": {}}
+  "@errorTripLocationExpired": {"placeholders": {}},
+  "errorPartNotShown": "This part of the screen could not be shown.",
+  "@errorPartNotShown": {"placeholders": {}},
+  "pageNotFoundTitle": "Page not found",
+  "@pageNotFoundTitle": {"placeholders": {}},
+  "pageNotFoundBody": "This link does not open anything in FuelWise.",
+  "@pageNotFoundBody": {"placeholders": {}},
+  "goToMap": "Go to the map",
+  "@goToMap": {"placeholders": {}}
 }

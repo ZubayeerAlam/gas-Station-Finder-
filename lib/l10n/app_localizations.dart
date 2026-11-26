@@ -2693,6 +2693,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This saved place has expired. Please search for it again.'**
   String get errorTripLocationExpired;
+
+  /// No description provided for @errorPartNotShown.
+  ///
+  /// In en, this message translates to:
+  /// **'This part of the screen could not be shown.'**
+  String get errorPartNotShown;
+
+  /// No description provided for @pageNotFoundTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Page not found'**
+  String get pageNotFoundTitle;
+
+  /// No description provided for @pageNotFoundBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This link does not open anything in FuelWise.'**
+  String get pageNotFoundBody;
+
+  /// No description provided for @goToMap.
+  ///
+  /// In en, this message translates to:
+  /// **'Go to the map'**
+  String get goToMap;
 }
 
 class _AppLocalizationsDelegate

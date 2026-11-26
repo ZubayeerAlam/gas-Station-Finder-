@@ -1628,4 +1628,16 @@ class AppLocalizationsBn extends AppLocalizations {
   @override
   String get errorTripLocationExpired =>
       'এই সংরক্ষিত জায়গার মেয়াদ শেষ। আবার খুঁজে নিন।';
+
+  @override
+  String get errorPartNotShown => 'স্ক্রিনের এই অংশটি দেখানো যায়নি।';
+
+  @override
+  String get pageNotFoundTitle => 'পেজটি পাওয়া যায়নি';
+
+  @override
+  String get pageNotFoundBody => 'এই লিংকটি FuelWise-এ কিছু খোলে না।';
+
+  @override
+  String get goToMap => 'ম্যাপে যান';
 }

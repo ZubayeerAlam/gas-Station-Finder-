@@ -561,3 +561,16 @@ Plan: document-expiry and service reminders per vehicle (BRTA tax token, fitness
   - `saved_trips_ui_test.dart`: empty state, tap plans without a Places call, needs-lookup label, delete + Undo, dialog validation + save, Bengali at 200% text with accessibility guidelines.
   - Flutter **280 passed**, analyze clean, domain coverage **95.4%**.
 - **Not verified:** the re-lookup against the live Places API (no new key) and the flow on a phone (deferred).
+
+## Cross-phase — Crash recovery / error handling (2026‑11‑27)
+*(implemented, unit + widget-tested; the release-mode fallback card was not seen on a device or a release build)*
+- **Why:** before this, an error thrown outside a `Result` (a timer, a stream without `onError`, a widget build) went only to the console, and a failed build showed a grey box in release builds.
+- **`lib/core/error/crash_handler.dart`:**
+  - `CrashHandler.install()` runs first in `main`, before Firebase start-up.
+  - Framework errors are recorded and still printed in debug builds.
+  - Uncaught async errors (`PlatformDispatcher.onError`) are recorded and marked handled, so they don't close the app.
+  - `CrashProviderObserver` (on the root `ProviderScope`) records providers that fail. Screens keep showing their own error views.
+  - In release builds `ErrorWidget.builder` shows `BuildErrorCard`, a localized EN/BN "This part of the screen could not be shown". Debug builds keep the red screen.
+- **Privacy decision:** no Crashlytics or other crash service. Records stay in memory (last 20), each one line, message cut to 200 characters, no stack trace. Nothing leaves the device. A crash service would need a consent decision and a privacy-policy change, so it is left for "Privacy-conscious analytics".
+- **Router:** `errorBuilder` → `NotFoundScreen` (EN/BN "Page not found", "Go to the map") instead of go_router's English error page.
+- **Tests:** `test/core/crash_handler_test.dart`, 6 tests: ring buffer (order, cap, shortening, one line); async errors handled; framework errors recorded and still presented; provider observer; Bengali fallback card; unknown path → Not found → back to the map. Flutter **286 passed**, analyze clean, domain coverage **95.4%**.

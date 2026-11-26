@@ -1640,4 +1640,17 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get errorTripLocationExpired =>
       'This saved place has expired. Please search for it again.';
+
+  @override
+  String get errorPartNotShown => 'This part of the screen could not be shown.';
+
+  @override
+  String get pageNotFoundTitle => 'Page not found';
+
+  @override
+  String get pageNotFoundBody =>
+      'This link does not open anything in FuelWise.';
+
+  @override
+  String get goToMap => 'Go to the map';
 }

@@ -430,5 +430,9 @@
   "savedTripLastTime": "গতবার: {summary}",
   "savedTripNeedsLookup": "লোকেশন আবার খোঁজা হবে",
   "errorTripSave": "ট্রিপ সংরক্ষণ করা যায়নি। আবার চেষ্টা করুন।",
-  "errorTripLocationExpired": "এই সংরক্ষিত জায়গার মেয়াদ শেষ। আবার খুঁজে নিন।"
+  "errorTripLocationExpired": "এই সংরক্ষিত জায়গার মেয়াদ শেষ। আবার খুঁজে নিন।",
+  "errorPartNotShown": "স্ক্রিনের এই অংশটি দেখানো যায়নি।",
+  "pageNotFoundTitle": "পেজটি পাওয়া যায়নি",
+  "pageNotFoundBody": "এই লিংকটি FuelWise-এ কিছু খোলে না।",
+  "goToMap": "ম্যাপে যান"
 }

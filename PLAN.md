@@ -268,7 +268,7 @@ Development continues without these; each stays unchecked until it is run on the
 - [ ] Spam / fake-report protection, abuse prevention
 - [x] User data deletion: in-app, local + community (emulator-tested; callable not deployed)
 - [ ] Secure key management + API quota monitoring
-- [ ] Crash recovery / error handling
+- [x] Crash recovery / error handling: global handlers (framework, uncaught async, failing providers) keep the app running and keep the last 20 errors in memory only (no crash service, nothing sent); release builds show a localized "this part could not be shown" card instead of a grey box; unknown paths get a localized "Page not found" with a way back — unit + widget-tested; release-mode fallback not seen on a device
 - [ ] Privacy-conscious analytics
 - [ ] Backend cost monitoring
 - [ ] Everything emulator-tested before any deploy request

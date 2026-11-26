@@ -18,6 +18,7 @@ import '../../features/prices/presentation/report_price_screen.dart';
 import '../../features/stations/domain/entities/station.dart';
 import '../../features/stations/presentation/map_screen.dart';
 import '../../l10n/l10n.dart';
+import '../widgets/state_views.dart';
 import 'app_routes.dart';
 
 export 'app_routes.dart';
@@ -39,6 +40,9 @@ List<NavigationDestination> _destinations(AppLocalizations l) => [
 GoRouter buildRouter({String initialLocation = AppRoutes.map}) => GoRouter(
       navigatorKey: _rootKey,
       initialLocation: initialLocation,
+      // Unknown paths (an old or mistyped deep link) get a localized page
+      // with a way back instead of go_router's English error screen.
+      errorBuilder: (context, state) => const NotFoundScreen(),
       routes: [
         StatefulShellRoute.indexedStack(
           builder: (context, state, shell) => _HomeShell(shell: shell),
@@ -135,6 +139,26 @@ class _HomeShell extends StatelessWidget {
         selectedIndex: shell.currentIndex,
         onDestinationSelected: (i) => shell.goBranch(i, initialLocation: i == shell.currentIndex),
         destinations: _destinations(context.l10n),
+      ),
+    );
+  }
+}
+
+/// Shown for a path the app does not know.
+class NotFoundScreen extends StatelessWidget {
+  const NotFoundScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final l = context.l10n;
+    return Scaffold(
+      appBar: AppBar(),
+      body: AppMessageView(
+        icon: Icons.link_off_rounded,
+        title: l.pageNotFoundTitle,
+        message: l.pageNotFoundBody,
+        primaryLabel: l.goToMap,
+        onPrimary: () => context.go(AppRoutes.map),
       ),
     );
   }
