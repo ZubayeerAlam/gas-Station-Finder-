@@ -247,7 +247,7 @@ Problem: expired BRTA documents (tax token, fitness, insurance, route permit) me
 - [x] 5.C Export fill-up history as CSV (History → share icon; system share sheet, Save to Files / Drive / email) — unit + widget-tested, iOS Simulator-checked
 - [x] 5.D.1 Nearby list view (map ↔ list toggle in the status banner; stations nearest first; chargers nearest / fastest, out-of-service last) — unit + widget-tested; **live list not seen yet** (old Google key rejected, no OCM key)
 - [x] 5.D.2 Route alternatives: up to 3 OSRM routes, fastest first; grey tappable alternatives on the map + chips ("+4 min · 12 km") in the route card — unit + widget-tested, live OSRM contract checked; map flow not seen live (needs a station → new Google key)
-- [ ] 5.D.3 Trip history
+- [x] 5.D.3 Saved trips (renamed from "Trip history"): save a planned trip under your own label; one tap on the destination screen plans it again; delete + Undo; drift schema v5 (upgrade-tested). Places-terms-safe: no Google names/addresses stored, coordinates kept ≤ 30 days then re-looked-up by place ID — unit, repository, migration + widget-tested; **live Places re-lookup not seen yet** (no new Google key)
 
 ### Pending physical-device verification (deferred by the user, Moto G96 / Android 16)
 Development continues without these; each stays unchecked until it is run on the phone.
@@ -256,6 +256,7 @@ Development continues without these; each stays unchecked until it is run on the
 - [ ] Maps / Places with the new restricted Google key (key not provided yet), including the nearby list view with real stations and route alternatives drawn on the real map
 - [ ] Bengali layout and 200% text on the real screen
 - [ ] CSV export share sheet on Android (only checked on the iOS Simulator)
+- [ ] Saved trips on the phone: save, re-plan, re-lookup of a trip older than 30 days with the new Google key
 - [ ] Privacy screen: delete device data, delete online data against a deployed backend (needs deploy approval)
 
 ---

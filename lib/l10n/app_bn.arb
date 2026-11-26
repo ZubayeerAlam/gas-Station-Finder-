@@ -417,5 +417,18 @@
   "chargerOutOfService": "বন্ধ আছে",
   "routeFastest": "দ্রুততম · {distance}",
   "routeAlternativeSlower": "+{minutes} মিনিট · {distance}",
-  "routeAlternativeSameTime": "প্রায় একই সময় · {distance}"
+  "routeAlternativeSameTime": "প্রায় একই সময় · {distance}",
+  "savedTripsTitle": "সংরক্ষিত ট্রিপ",
+  "saveTrip": "ট্রিপ সংরক্ষণ করুন",
+  "saveTripDialogTitle": "এই ট্রিপটি সংরক্ষণ করুন",
+  "tripLabel": "নাম",
+  "tripLabelHint": "যেমন: বাসা, অফিস",
+  "tripLabelInvalid": "একটি নাম লিখুন (সর্বোচ্চ ৪০ অক্ষর)",
+  "tripSaved": "ট্রিপ সংরক্ষিত হয়েছে",
+  "tripRemoved": "সংরক্ষিত ট্রিপ মুছে ফেলা হয়েছে",
+  "removeSavedTrip": "সংরক্ষিত ট্রিপ মুছুন",
+  "savedTripLastTime": "গতবার: {summary}",
+  "savedTripNeedsLookup": "লোকেশন আবার খোঁজা হবে",
+  "errorTripSave": "ট্রিপ সংরক্ষণ করা যায়নি। আবার চেষ্টা করুন।",
+  "errorTripLocationExpired": "এই সংরক্ষিত জায়গার মেয়াদ শেষ। আবার খুঁজে নিন।"
 }

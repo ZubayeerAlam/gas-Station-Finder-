@@ -74,7 +74,7 @@ void main() {
     final rows = await fresh
         .customSelect(
           "SELECT sql FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%' "
-          "AND name != 'care_reminders'",
+          "AND name NOT IN ('care_reminders', 'saved_trips')",
         )
         .get();
     final v3Sql = rows.map((r) => r.read<String>('sql')).toList();
@@ -99,6 +99,6 @@ void main() {
     final repo = DriftCareRepository(db);
     expect((await repo.save(reminder)).isOk, isTrue);
     expect(await repo.watchAll().first, hasLength(1));
-    expect(await db.customSelect('PRAGMA user_version').map((r) => r.read<int>('user_version')).getSingle(), 4);
+    expect(await db.customSelect('PRAGMA user_version').map((r) => r.read<int>('user_version')).getSingle(), 5);
   });
 }

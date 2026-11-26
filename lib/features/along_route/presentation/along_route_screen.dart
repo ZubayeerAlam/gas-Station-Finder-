@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import '../../trips/presentation/saved_trips_section.dart';
 
 import '../../../core/location/geo_point.dart';
 import '../../../core/router/app_routes.dart';
@@ -35,6 +36,13 @@ class AlongRouteScreen extends ConsumerWidget {
       appBar: AppBar(
         title: Text(title == null ? l.trip : l.tripTo(title), overflow: TextOverflow.ellipsis),
         actions: [
+          if (plan.value != null)
+            IconButton(
+              key: const ValueKey('saveTrip'),
+              tooltip: l.saveTrip,
+              icon: const Icon(Icons.bookmark_add_outlined),
+              onPressed: () => showSaveTripDialog(context, ref),
+            ),
           IconButton(
             tooltip: l.changeDestination,
             icon: const Icon(Icons.search_rounded),

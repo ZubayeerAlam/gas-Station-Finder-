@@ -86,7 +86,26 @@ class CareReminders extends Table {
   Set<Column> get primaryKey => {id};
 }
 
-@DriftDatabase(tables: [Vehicles, Settings, FillUps, PlaceLocations, CareReminders])
+/// Trips the user saved under their own label. Only the place ID is kept
+/// long-term; coordinates are dropped after 30 days (Google Places terms).
+@DataClassName('SavedTripRow')
+class SavedTrips extends Table {
+  TextColumn get id => text()();
+  TextColumn get label => text().withLength(min: 1, max: 40)();
+  TextColumn get placeId => text().nullable()();
+  RealColumn get lat => real().nullable()();
+  RealColumn get lng => real().nullable()();
+  DateTimeColumn get coordsSavedAt => dateTime().nullable()();
+  RealColumn get lastDistanceMeters => real().nullable()();
+  RealColumn get lastDurationSeconds => real().nullable()();
+  DateTimeColumn get createdAt => dateTime()();
+  DateTimeColumn get lastUsedAt => dateTime()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+@DriftDatabase(tables: [Vehicles, Settings, FillUps, PlaceLocations, CareReminders, SavedTrips])
 class AppDatabase extends _$AppDatabase {
   AppDatabase(super.executor);
 
@@ -94,7 +113,7 @@ class AppDatabase extends _$AppDatabase {
   factory AppDatabase.onDevice() => AppDatabase(driftDatabase(name: 'fuelwise'));
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -103,6 +122,7 @@ class AppDatabase extends _$AppDatabase {
           if (from < 2) await m.createTable(fillUps);
           if (from < 3) await m.createTable(placeLocations);
           if (from < 4) await m.createTable(careReminders);
+          if (from < 5) await m.createTable(savedTrips);
         },
       );
 

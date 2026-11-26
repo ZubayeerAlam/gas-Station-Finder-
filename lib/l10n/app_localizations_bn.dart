@@ -1586,4 +1586,46 @@ class AppLocalizationsBn extends AppLocalizations {
   String routeAlternativeSameTime(String distance) {
     return 'প্রায় একই সময় · $distance';
   }
+
+  @override
+  String get savedTripsTitle => 'সংরক্ষিত ট্রিপ';
+
+  @override
+  String get saveTrip => 'ট্রিপ সংরক্ষণ করুন';
+
+  @override
+  String get saveTripDialogTitle => 'এই ট্রিপটি সংরক্ষণ করুন';
+
+  @override
+  String get tripLabel => 'নাম';
+
+  @override
+  String get tripLabelHint => 'যেমন: বাসা, অফিস';
+
+  @override
+  String get tripLabelInvalid => 'একটি নাম লিখুন (সর্বোচ্চ ৪০ অক্ষর)';
+
+  @override
+  String get tripSaved => 'ট্রিপ সংরক্ষিত হয়েছে';
+
+  @override
+  String get tripRemoved => 'সংরক্ষিত ট্রিপ মুছে ফেলা হয়েছে';
+
+  @override
+  String get removeSavedTrip => 'সংরক্ষিত ট্রিপ মুছুন';
+
+  @override
+  String savedTripLastTime(String summary) {
+    return 'গতবার: $summary';
+  }
+
+  @override
+  String get savedTripNeedsLookup => 'লোকেশন আবার খোঁজা হবে';
+
+  @override
+  String get errorTripSave => 'ট্রিপ সংরক্ষণ করা যায়নি। আবার চেষ্টা করুন।';
+
+  @override
+  String get errorTripLocationExpired =>
+      'এই সংরক্ষিত জায়গার মেয়াদ শেষ। আবার খুঁজে নিন।';
 }

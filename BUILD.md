@@ -539,3 +539,25 @@ Plan: document-expiry and service reminders per vehicle (BRTA tax token, fitness
 - **Live check:** a `curl` to the public OSRM server (two generic Dhaka points, `alternatives=3`) returned `Ok` with 2 routes. This confirms the request format against the live API; no user data was sent.
 - **Not verified:** alternatives drawn on the real Google map and tapping a grey route on a device.
 
+
+## Phase 5 — Batch 5.D.3: saved trips (2026‑11‑27)
+*(implemented, unit + repository + migration + widget-tested; live Places re-lookup not seen because the new Google key is still missing)*
+- **Why:** most drives repeat (home, office, a relative's house). Searching the same place every time costs taps and Places calls.
+- **Naming:** PLAN.md said "Trip history". A full log of every trip would need storing Google place data, so the feature became **saved trips** you choose yourself.
+- **Google Places terms (the main design decision):**
+  - A place ID may be stored indefinitely; latitude/longitude for at most 30 days; Google names and addresses not at all.
+  - So a saved trip keeps only: your own label, the place ID, coordinates with their save time, and our own OSRM distance/time from last time.
+  - `savedTripsProvider` runs `purgeExpiredCoords` before it watches, so coordinates older than 30 days are nulled on every open.
+  - Opening a trip with expired coordinates makes one Place Details call by place ID (its own session token) and refreshes the coordinates. Without a place ID it shows a typed "location expired" error.
+- **Data:**
+  - drift table `saved_trips`, schema **v5** (`if (from < 5) createTable`).
+  - `DriftSavedTripRepository.save` is one transaction: it replaces another trip with the same place ID, upserts, and keeps the 20 most recently used.
+  - Errors map to `FailureCode.tripSaveFailed`. The Privacy "delete device data" wipe covers the new table (test updated to seed every table).
+- **UI:**
+  - Trip screen: bookmark button "Save trip" → dialog with a label (1–40 characters, trimmed and validated).
+  - Destination screen: "Saved trips" above the search hint, with last distance/time, "Location will be looked up again" when needed, delete with Undo. EN/BN strings.
+- **Tests:**
+  - `saved_trips_test.dart`: domain (30-day boundary, label rules, what `tripFromPlan` keeps), repository on in-memory drift (order, place-ID dedupe, cap 20, purge, wipe), v4 → v5 upgrade keeping data, controller (fresh coords skip Places; expired coords → one lookup; no place ID → error; `saveCurrent`; purge on first read).
+  - `saved_trips_ui_test.dart`: empty state, tap plans without a Places call, needs-lookup label, delete + Undo, dialog validation + save, Bengali at 200% text with accessibility guidelines.
+  - Flutter **280 passed**, analyze clean, domain coverage **95.4%**.
+- **Not verified:** the re-lookup against the live Places API (no new key) and the flow on a phone (deferred).

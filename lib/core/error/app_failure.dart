@@ -40,6 +40,8 @@ enum FailureCode {
   careSaveFailed,
   dataDeletionFailed,
   exportFailed,
+  tripSaveFailed,
+  tripLocationExpired,
   locationServiceDisabled,
   locationDenied,
   locationDeniedForever,

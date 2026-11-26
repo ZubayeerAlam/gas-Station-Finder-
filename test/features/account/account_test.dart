@@ -7,6 +7,8 @@ import 'package:gas_station_finder/core/error/app_failure.dart';
 import 'package:gas_station_finder/core/error/result.dart';
 import 'package:gas_station_finder/core/router/app_router.dart';
 import 'package:gas_station_finder/core/theme/app_theme.dart';
+import 'package:gas_station_finder/features/trips/data/drift_saved_trip_repository.dart';
+import 'package:gas_station_finder/features/trips/domain/saved_trip.dart';
 import 'package:gas_station_finder/features/account/data/drift_local_data_store.dart';
 import 'package:gas_station_finder/features/account/domain/account_data.dart';
 import 'package:gas_station_finder/features/account/presentation/account_providers.dart';
@@ -73,6 +75,9 @@ void main() {
       await DriftFillUpRepository(db)
           .save(FillUp(id: 'f', vehicleId: 'v1', date: DateTime(2026), amount: 1, totalCost: 1, currencyCode: 'BDT'));
       await DriftCareRepository(db).save(tax());
+      await DriftSavedTripRepository(db).save(
+        SavedTrip(id: 's', label: 'Home', createdAt: DateTime(2026), lastUsedAt: DateTime(2026)),
+      );
       await db.writeSetting('locale', 'bn');
       for (final t in db.allTables) {
         if (t.actualTableName == 'place_locations') continue; // filled by the station cache, not needed here

@@ -2615,6 +2615,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Similar time · {distance}'**
   String routeAlternativeSameTime(String distance);
+
+  /// No description provided for @savedTripsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved trips'**
+  String get savedTripsTitle;
+
+  /// No description provided for @saveTrip.
+  ///
+  /// In en, this message translates to:
+  /// **'Save trip'**
+  String get saveTrip;
+
+  /// No description provided for @saveTripDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Save this trip'**
+  String get saveTripDialogTitle;
+
+  /// No description provided for @tripLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get tripLabel;
+
+  /// No description provided for @tripLabelHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Home, Office'**
+  String get tripLabelHint;
+
+  /// No description provided for @tripLabelInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a name (up to 40 characters)'**
+  String get tripLabelInvalid;
+
+  /// No description provided for @tripSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Trip saved'**
+  String get tripSaved;
+
+  /// No description provided for @tripRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved trip removed'**
+  String get tripRemoved;
+
+  /// No description provided for @removeSavedTrip.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove saved trip'**
+  String get removeSavedTrip;
+
+  /// No description provided for @savedTripLastTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Last time: {summary}'**
+  String savedTripLastTime(String summary);
+
+  /// No description provided for @savedTripNeedsLookup.
+  ///
+  /// In en, this message translates to:
+  /// **'Location will be looked up again'**
+  String get savedTripNeedsLookup;
+
+  /// No description provided for @errorTripSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save the trip. Please try again.'**
+  String get errorTripSave;
+
+  /// No description provided for @errorTripLocationExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'This saved place has expired. Please search for it again.'**
+  String get errorTripLocationExpired;
 }
 
 class _AppLocalizationsDelegate

@@ -14,6 +14,7 @@ import '../../../l10n/failure_text.dart';
 import '../../../l10n/l10n.dart';
 import '../data/places_place_search_repository.dart';
 import '../domain/along_route_models.dart';
+import '../../trips/presentation/saved_trips_section.dart';
 import 'along_route_providers.dart';
 
 String newSessionToken([Random? random]) {
@@ -115,7 +116,12 @@ class _DestinationSearchScreenState extends ConsumerState<DestinationSearchScree
           title: l.noPlacesFound,
           message: l.tryAnotherName,
         ),
-        AsyncData(:final value) when value.isEmpty => const _SearchHint(),
+        AsyncData(:final value) when value.isEmpty => ListView(
+          children: [
+            SavedTripsSection(onPlan: _start),
+            const _SearchHint(),
+          ],
+        ),
         AsyncData(:final value) => ListView.separated(
           itemCount: value.length,
           separatorBuilder: (_, _) => const Divider(height: 1),

@@ -1598,4 +1598,46 @@ class AppLocalizationsEn extends AppLocalizations {
   String routeAlternativeSameTime(String distance) {
     return 'Similar time · $distance';
   }
+
+  @override
+  String get savedTripsTitle => 'Saved trips';
+
+  @override
+  String get saveTrip => 'Save trip';
+
+  @override
+  String get saveTripDialogTitle => 'Save this trip';
+
+  @override
+  String get tripLabel => 'Name';
+
+  @override
+  String get tripLabelHint => 'e.g. Home, Office';
+
+  @override
+  String get tripLabelInvalid => 'Enter a name (up to 40 characters)';
+
+  @override
+  String get tripSaved => 'Trip saved';
+
+  @override
+  String get tripRemoved => 'Saved trip removed';
+
+  @override
+  String get removeSavedTrip => 'Remove saved trip';
+
+  @override
+  String savedTripLastTime(String summary) {
+    return 'Last time: $summary';
+  }
+
+  @override
+  String get savedTripNeedsLookup => 'Location will be looked up again';
+
+  @override
+  String get errorTripSave => 'Could not save the trip. Please try again.';
+
+  @override
+  String get errorTripLocationExpired =>
+      'This saved place has expired. Please search for it again.';
 }

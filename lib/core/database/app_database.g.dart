@@ -2414,6 +2414,649 @@ class CareRemindersCompanion extends UpdateCompanion<CareReminderRow> {
   }
 }
 
+class $SavedTripsTable extends SavedTrips
+    with TableInfo<$SavedTripsTable, SavedTripRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SavedTripsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _labelMeta = const VerificationMeta('label');
+  @override
+  late final GeneratedColumn<String> label = GeneratedColumn<String>(
+    'label',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(
+      minTextLength: 1,
+      maxTextLength: 40,
+    ),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _placeIdMeta = const VerificationMeta(
+    'placeId',
+  );
+  @override
+  late final GeneratedColumn<String> placeId = GeneratedColumn<String>(
+    'place_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _latMeta = const VerificationMeta('lat');
+  @override
+  late final GeneratedColumn<double> lat = GeneratedColumn<double>(
+    'lat',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _lngMeta = const VerificationMeta('lng');
+  @override
+  late final GeneratedColumn<double> lng = GeneratedColumn<double>(
+    'lng',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _coordsSavedAtMeta = const VerificationMeta(
+    'coordsSavedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> coordsSavedAt =
+      GeneratedColumn<DateTime>(
+        'coords_saved_at',
+        aliasedName,
+        true,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _lastDistanceMetersMeta =
+      const VerificationMeta('lastDistanceMeters');
+  @override
+  late final GeneratedColumn<double> lastDistanceMeters =
+      GeneratedColumn<double>(
+        'last_distance_meters',
+        aliasedName,
+        true,
+        type: DriftSqlType.double,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _lastDurationSecondsMeta =
+      const VerificationMeta('lastDurationSeconds');
+  @override
+  late final GeneratedColumn<double> lastDurationSeconds =
+      GeneratedColumn<double>(
+        'last_duration_seconds',
+        aliasedName,
+        true,
+        type: DriftSqlType.double,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _lastUsedAtMeta = const VerificationMeta(
+    'lastUsedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastUsedAt = GeneratedColumn<DateTime>(
+    'last_used_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    label,
+    placeId,
+    lat,
+    lng,
+    coordsSavedAt,
+    lastDistanceMeters,
+    lastDurationSeconds,
+    createdAt,
+    lastUsedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'saved_trips';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<SavedTripRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('label')) {
+      context.handle(
+        _labelMeta,
+        label.isAcceptableOrUnknown(data['label']!, _labelMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_labelMeta);
+    }
+    if (data.containsKey('place_id')) {
+      context.handle(
+        _placeIdMeta,
+        placeId.isAcceptableOrUnknown(data['place_id']!, _placeIdMeta),
+      );
+    }
+    if (data.containsKey('lat')) {
+      context.handle(
+        _latMeta,
+        lat.isAcceptableOrUnknown(data['lat']!, _latMeta),
+      );
+    }
+    if (data.containsKey('lng')) {
+      context.handle(
+        _lngMeta,
+        lng.isAcceptableOrUnknown(data['lng']!, _lngMeta),
+      );
+    }
+    if (data.containsKey('coords_saved_at')) {
+      context.handle(
+        _coordsSavedAtMeta,
+        coordsSavedAt.isAcceptableOrUnknown(
+          data['coords_saved_at']!,
+          _coordsSavedAtMeta,
+        ),
+      );
+    }
+    if (data.containsKey('last_distance_meters')) {
+      context.handle(
+        _lastDistanceMetersMeta,
+        lastDistanceMeters.isAcceptableOrUnknown(
+          data['last_distance_meters']!,
+          _lastDistanceMetersMeta,
+        ),
+      );
+    }
+    if (data.containsKey('last_duration_seconds')) {
+      context.handle(
+        _lastDurationSecondsMeta,
+        lastDurationSeconds.isAcceptableOrUnknown(
+          data['last_duration_seconds']!,
+          _lastDurationSecondsMeta,
+        ),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('last_used_at')) {
+      context.handle(
+        _lastUsedAtMeta,
+        lastUsedAt.isAcceptableOrUnknown(
+          data['last_used_at']!,
+          _lastUsedAtMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_lastUsedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  SavedTripRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SavedTripRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      label: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}label'],
+      )!,
+      placeId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}place_id'],
+      ),
+      lat: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}lat'],
+      ),
+      lng: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}lng'],
+      ),
+      coordsSavedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}coords_saved_at'],
+      ),
+      lastDistanceMeters: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}last_distance_meters'],
+      ),
+      lastDurationSeconds: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}last_duration_seconds'],
+      ),
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      lastUsedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_used_at'],
+      )!,
+    );
+  }
+
+  @override
+  $SavedTripsTable createAlias(String alias) {
+    return $SavedTripsTable(attachedDatabase, alias);
+  }
+}
+
+class SavedTripRow extends DataClass implements Insertable<SavedTripRow> {
+  final String id;
+  final String label;
+  final String? placeId;
+  final double? lat;
+  final double? lng;
+  final DateTime? coordsSavedAt;
+  final double? lastDistanceMeters;
+  final double? lastDurationSeconds;
+  final DateTime createdAt;
+  final DateTime lastUsedAt;
+  const SavedTripRow({
+    required this.id,
+    required this.label,
+    this.placeId,
+    this.lat,
+    this.lng,
+    this.coordsSavedAt,
+    this.lastDistanceMeters,
+    this.lastDurationSeconds,
+    required this.createdAt,
+    required this.lastUsedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['label'] = Variable<String>(label);
+    if (!nullToAbsent || placeId != null) {
+      map['place_id'] = Variable<String>(placeId);
+    }
+    if (!nullToAbsent || lat != null) {
+      map['lat'] = Variable<double>(lat);
+    }
+    if (!nullToAbsent || lng != null) {
+      map['lng'] = Variable<double>(lng);
+    }
+    if (!nullToAbsent || coordsSavedAt != null) {
+      map['coords_saved_at'] = Variable<DateTime>(coordsSavedAt);
+    }
+    if (!nullToAbsent || lastDistanceMeters != null) {
+      map['last_distance_meters'] = Variable<double>(lastDistanceMeters);
+    }
+    if (!nullToAbsent || lastDurationSeconds != null) {
+      map['last_duration_seconds'] = Variable<double>(lastDurationSeconds);
+    }
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['last_used_at'] = Variable<DateTime>(lastUsedAt);
+    return map;
+  }
+
+  SavedTripsCompanion toCompanion(bool nullToAbsent) {
+    return SavedTripsCompanion(
+      id: Value(id),
+      label: Value(label),
+      placeId: placeId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(placeId),
+      lat: lat == null && nullToAbsent ? const Value.absent() : Value(lat),
+      lng: lng == null && nullToAbsent ? const Value.absent() : Value(lng),
+      coordsSavedAt: coordsSavedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(coordsSavedAt),
+      lastDistanceMeters: lastDistanceMeters == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastDistanceMeters),
+      lastDurationSeconds: lastDurationSeconds == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastDurationSeconds),
+      createdAt: Value(createdAt),
+      lastUsedAt: Value(lastUsedAt),
+    );
+  }
+
+  factory SavedTripRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SavedTripRow(
+      id: serializer.fromJson<String>(json['id']),
+      label: serializer.fromJson<String>(json['label']),
+      placeId: serializer.fromJson<String?>(json['placeId']),
+      lat: serializer.fromJson<double?>(json['lat']),
+      lng: serializer.fromJson<double?>(json['lng']),
+      coordsSavedAt: serializer.fromJson<DateTime?>(json['coordsSavedAt']),
+      lastDistanceMeters: serializer.fromJson<double?>(
+        json['lastDistanceMeters'],
+      ),
+      lastDurationSeconds: serializer.fromJson<double?>(
+        json['lastDurationSeconds'],
+      ),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      lastUsedAt: serializer.fromJson<DateTime>(json['lastUsedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'label': serializer.toJson<String>(label),
+      'placeId': serializer.toJson<String?>(placeId),
+      'lat': serializer.toJson<double?>(lat),
+      'lng': serializer.toJson<double?>(lng),
+      'coordsSavedAt': serializer.toJson<DateTime?>(coordsSavedAt),
+      'lastDistanceMeters': serializer.toJson<double?>(lastDistanceMeters),
+      'lastDurationSeconds': serializer.toJson<double?>(lastDurationSeconds),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'lastUsedAt': serializer.toJson<DateTime>(lastUsedAt),
+    };
+  }
+
+  SavedTripRow copyWith({
+    String? id,
+    String? label,
+    Value<String?> placeId = const Value.absent(),
+    Value<double?> lat = const Value.absent(),
+    Value<double?> lng = const Value.absent(),
+    Value<DateTime?> coordsSavedAt = const Value.absent(),
+    Value<double?> lastDistanceMeters = const Value.absent(),
+    Value<double?> lastDurationSeconds = const Value.absent(),
+    DateTime? createdAt,
+    DateTime? lastUsedAt,
+  }) => SavedTripRow(
+    id: id ?? this.id,
+    label: label ?? this.label,
+    placeId: placeId.present ? placeId.value : this.placeId,
+    lat: lat.present ? lat.value : this.lat,
+    lng: lng.present ? lng.value : this.lng,
+    coordsSavedAt: coordsSavedAt.present
+        ? coordsSavedAt.value
+        : this.coordsSavedAt,
+    lastDistanceMeters: lastDistanceMeters.present
+        ? lastDistanceMeters.value
+        : this.lastDistanceMeters,
+    lastDurationSeconds: lastDurationSeconds.present
+        ? lastDurationSeconds.value
+        : this.lastDurationSeconds,
+    createdAt: createdAt ?? this.createdAt,
+    lastUsedAt: lastUsedAt ?? this.lastUsedAt,
+  );
+  SavedTripRow copyWithCompanion(SavedTripsCompanion data) {
+    return SavedTripRow(
+      id: data.id.present ? data.id.value : this.id,
+      label: data.label.present ? data.label.value : this.label,
+      placeId: data.placeId.present ? data.placeId.value : this.placeId,
+      lat: data.lat.present ? data.lat.value : this.lat,
+      lng: data.lng.present ? data.lng.value : this.lng,
+      coordsSavedAt: data.coordsSavedAt.present
+          ? data.coordsSavedAt.value
+          : this.coordsSavedAt,
+      lastDistanceMeters: data.lastDistanceMeters.present
+          ? data.lastDistanceMeters.value
+          : this.lastDistanceMeters,
+      lastDurationSeconds: data.lastDurationSeconds.present
+          ? data.lastDurationSeconds.value
+          : this.lastDurationSeconds,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      lastUsedAt: data.lastUsedAt.present
+          ? data.lastUsedAt.value
+          : this.lastUsedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SavedTripRow(')
+          ..write('id: $id, ')
+          ..write('label: $label, ')
+          ..write('placeId: $placeId, ')
+          ..write('lat: $lat, ')
+          ..write('lng: $lng, ')
+          ..write('coordsSavedAt: $coordsSavedAt, ')
+          ..write('lastDistanceMeters: $lastDistanceMeters, ')
+          ..write('lastDurationSeconds: $lastDurationSeconds, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('lastUsedAt: $lastUsedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    label,
+    placeId,
+    lat,
+    lng,
+    coordsSavedAt,
+    lastDistanceMeters,
+    lastDurationSeconds,
+    createdAt,
+    lastUsedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SavedTripRow &&
+          other.id == this.id &&
+          other.label == this.label &&
+          other.placeId == this.placeId &&
+          other.lat == this.lat &&
+          other.lng == this.lng &&
+          other.coordsSavedAt == this.coordsSavedAt &&
+          other.lastDistanceMeters == this.lastDistanceMeters &&
+          other.lastDurationSeconds == this.lastDurationSeconds &&
+          other.createdAt == this.createdAt &&
+          other.lastUsedAt == this.lastUsedAt);
+}
+
+class SavedTripsCompanion extends UpdateCompanion<SavedTripRow> {
+  final Value<String> id;
+  final Value<String> label;
+  final Value<String?> placeId;
+  final Value<double?> lat;
+  final Value<double?> lng;
+  final Value<DateTime?> coordsSavedAt;
+  final Value<double?> lastDistanceMeters;
+  final Value<double?> lastDurationSeconds;
+  final Value<DateTime> createdAt;
+  final Value<DateTime> lastUsedAt;
+  final Value<int> rowid;
+  const SavedTripsCompanion({
+    this.id = const Value.absent(),
+    this.label = const Value.absent(),
+    this.placeId = const Value.absent(),
+    this.lat = const Value.absent(),
+    this.lng = const Value.absent(),
+    this.coordsSavedAt = const Value.absent(),
+    this.lastDistanceMeters = const Value.absent(),
+    this.lastDurationSeconds = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.lastUsedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  SavedTripsCompanion.insert({
+    required String id,
+    required String label,
+    this.placeId = const Value.absent(),
+    this.lat = const Value.absent(),
+    this.lng = const Value.absent(),
+    this.coordsSavedAt = const Value.absent(),
+    this.lastDistanceMeters = const Value.absent(),
+    this.lastDurationSeconds = const Value.absent(),
+    required DateTime createdAt,
+    required DateTime lastUsedAt,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       label = Value(label),
+       createdAt = Value(createdAt),
+       lastUsedAt = Value(lastUsedAt);
+  static Insertable<SavedTripRow> custom({
+    Expression<String>? id,
+    Expression<String>? label,
+    Expression<String>? placeId,
+    Expression<double>? lat,
+    Expression<double>? lng,
+    Expression<DateTime>? coordsSavedAt,
+    Expression<double>? lastDistanceMeters,
+    Expression<double>? lastDurationSeconds,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? lastUsedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (label != null) 'label': label,
+      if (placeId != null) 'place_id': placeId,
+      if (lat != null) 'lat': lat,
+      if (lng != null) 'lng': lng,
+      if (coordsSavedAt != null) 'coords_saved_at': coordsSavedAt,
+      if (lastDistanceMeters != null)
+        'last_distance_meters': lastDistanceMeters,
+      if (lastDurationSeconds != null)
+        'last_duration_seconds': lastDurationSeconds,
+      if (createdAt != null) 'created_at': createdAt,
+      if (lastUsedAt != null) 'last_used_at': lastUsedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  SavedTripsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? label,
+    Value<String?>? placeId,
+    Value<double?>? lat,
+    Value<double?>? lng,
+    Value<DateTime?>? coordsSavedAt,
+    Value<double?>? lastDistanceMeters,
+    Value<double?>? lastDurationSeconds,
+    Value<DateTime>? createdAt,
+    Value<DateTime>? lastUsedAt,
+    Value<int>? rowid,
+  }) {
+    return SavedTripsCompanion(
+      id: id ?? this.id,
+      label: label ?? this.label,
+      placeId: placeId ?? this.placeId,
+      lat: lat ?? this.lat,
+      lng: lng ?? this.lng,
+      coordsSavedAt: coordsSavedAt ?? this.coordsSavedAt,
+      lastDistanceMeters: lastDistanceMeters ?? this.lastDistanceMeters,
+      lastDurationSeconds: lastDurationSeconds ?? this.lastDurationSeconds,
+      createdAt: createdAt ?? this.createdAt,
+      lastUsedAt: lastUsedAt ?? this.lastUsedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (label.present) {
+      map['label'] = Variable<String>(label.value);
+    }
+    if (placeId.present) {
+      map['place_id'] = Variable<String>(placeId.value);
+    }
+    if (lat.present) {
+      map['lat'] = Variable<double>(lat.value);
+    }
+    if (lng.present) {
+      map['lng'] = Variable<double>(lng.value);
+    }
+    if (coordsSavedAt.present) {
+      map['coords_saved_at'] = Variable<DateTime>(coordsSavedAt.value);
+    }
+    if (lastDistanceMeters.present) {
+      map['last_distance_meters'] = Variable<double>(lastDistanceMeters.value);
+    }
+    if (lastDurationSeconds.present) {
+      map['last_duration_seconds'] = Variable<double>(
+        lastDurationSeconds.value,
+      );
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (lastUsedAt.present) {
+      map['last_used_at'] = Variable<DateTime>(lastUsedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SavedTripsCompanion(')
+          ..write('id: $id, ')
+          ..write('label: $label, ')
+          ..write('placeId: $placeId, ')
+          ..write('lat: $lat, ')
+          ..write('lng: $lng, ')
+          ..write('coordsSavedAt: $coordsSavedAt, ')
+          ..write('lastDistanceMeters: $lastDistanceMeters, ')
+          ..write('lastDurationSeconds: $lastDurationSeconds, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('lastUsedAt: $lastUsedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -2422,6 +3065,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $FillUpsTable fillUps = $FillUpsTable(this);
   late final $PlaceLocationsTable placeLocations = $PlaceLocationsTable(this);
   late final $CareRemindersTable careReminders = $CareRemindersTable(this);
+  late final $SavedTripsTable savedTrips = $SavedTripsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -2432,6 +3076,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     fillUps,
     placeLocations,
     careReminders,
+    savedTrips,
   ];
 }
 
@@ -3685,6 +4330,316 @@ typedef $$CareRemindersTableProcessedTableManager =
       CareReminderRow,
       PrefetchHooks Function()
     >;
+typedef $$SavedTripsTableCreateCompanionBuilder = SavedTripsCompanion Function({
+  required String id,
+  required String label,
+  Value<String?> placeId,
+  Value<double?> lat,
+  Value<double?> lng,
+  Value<DateTime?> coordsSavedAt,
+  Value<double?> lastDistanceMeters,
+  Value<double?> lastDurationSeconds,
+  required DateTime createdAt,
+  required DateTime lastUsedAt,
+  Value<int> rowid,
+});
+typedef $$SavedTripsTableUpdateCompanionBuilder = SavedTripsCompanion Function({
+  Value<String> id,
+  Value<String> label,
+  Value<String?> placeId,
+  Value<double?> lat,
+  Value<double?> lng,
+  Value<DateTime?> coordsSavedAt,
+  Value<double?> lastDistanceMeters,
+  Value<double?> lastDurationSeconds,
+  Value<DateTime> createdAt,
+  Value<DateTime> lastUsedAt,
+  Value<int> rowid,
+});
+
+class $$SavedTripsTableFilterComposer
+    extends Composer<_$AppDatabase, $SavedTripsTable> {
+  $$SavedTripsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get label => $composableBuilder(
+    column: $table.label,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get placeId => $composableBuilder(
+    column: $table.placeId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get lat => $composableBuilder(
+    column: $table.lat,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get lng => $composableBuilder(
+    column: $table.lng,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get coordsSavedAt => $composableBuilder(
+    column: $table.coordsSavedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get lastDistanceMeters => $composableBuilder(
+    column: $table.lastDistanceMeters,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get lastDurationSeconds => $composableBuilder(
+    column: $table.lastDurationSeconds,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastUsedAt => $composableBuilder(
+    column: $table.lastUsedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$SavedTripsTableOrderingComposer
+    extends Composer<_$AppDatabase, $SavedTripsTable> {
+  $$SavedTripsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get label => $composableBuilder(
+    column: $table.label,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get placeId => $composableBuilder(
+    column: $table.placeId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get lat => $composableBuilder(
+    column: $table.lat,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get lng => $composableBuilder(
+    column: $table.lng,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get coordsSavedAt => $composableBuilder(
+    column: $table.coordsSavedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get lastDistanceMeters => $composableBuilder(
+    column: $table.lastDistanceMeters,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get lastDurationSeconds => $composableBuilder(
+    column: $table.lastDurationSeconds,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lastUsedAt => $composableBuilder(
+    column: $table.lastUsedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$SavedTripsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $SavedTripsTable> {
+  $$SavedTripsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get label =>
+      $composableBuilder(column: $table.label, builder: (column) => column);
+
+  GeneratedColumn<String> get placeId =>
+      $composableBuilder(column: $table.placeId, builder: (column) => column);
+
+  GeneratedColumn<double> get lat =>
+      $composableBuilder(column: $table.lat, builder: (column) => column);
+
+  GeneratedColumn<double> get lng =>
+      $composableBuilder(column: $table.lng, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get coordsSavedAt => $composableBuilder(
+    column: $table.coordsSavedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get lastDistanceMeters => $composableBuilder(
+    column: $table.lastDistanceMeters,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get lastDurationSeconds => $composableBuilder(
+    column: $table.lastDurationSeconds,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get lastUsedAt => $composableBuilder(
+    column: $table.lastUsedAt,
+    builder: (column) => column,
+  );
+}
+
+class $$SavedTripsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $SavedTripsTable,
+          SavedTripRow,
+          $$SavedTripsTableFilterComposer,
+          $$SavedTripsTableOrderingComposer,
+          $$SavedTripsTableAnnotationComposer,
+          $$SavedTripsTableCreateCompanionBuilder,
+          $$SavedTripsTableUpdateCompanionBuilder,
+          (
+            SavedTripRow,
+            BaseReferences<_$AppDatabase, $SavedTripsTable, SavedTripRow>,
+          ),
+          SavedTripRow,
+          PrefetchHooks Function()
+        > {
+  $$SavedTripsTableTableManager(_$AppDatabase db, $SavedTripsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$SavedTripsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$SavedTripsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$SavedTripsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> label = const Value.absent(),
+                Value<String?> placeId = const Value.absent(),
+                Value<double?> lat = const Value.absent(),
+                Value<double?> lng = const Value.absent(),
+                Value<DateTime?> coordsSavedAt = const Value.absent(),
+                Value<double?> lastDistanceMeters = const Value.absent(),
+                Value<double?> lastDurationSeconds = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> lastUsedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => SavedTripsCompanion(
+                id: id,
+                label: label,
+                placeId: placeId,
+                lat: lat,
+                lng: lng,
+                coordsSavedAt: coordsSavedAt,
+                lastDistanceMeters: lastDistanceMeters,
+                lastDurationSeconds: lastDurationSeconds,
+                createdAt: createdAt,
+                lastUsedAt: lastUsedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String label,
+                Value<String?> placeId = const Value.absent(),
+                Value<double?> lat = const Value.absent(),
+                Value<double?> lng = const Value.absent(),
+                Value<DateTime?> coordsSavedAt = const Value.absent(),
+                Value<double?> lastDistanceMeters = const Value.absent(),
+                Value<double?> lastDurationSeconds = const Value.absent(),
+                required DateTime createdAt,
+                required DateTime lastUsedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => SavedTripsCompanion.insert(
+                id: id,
+                label: label,
+                placeId: placeId,
+                lat: lat,
+                lng: lng,
+                coordsSavedAt: coordsSavedAt,
+                lastDistanceMeters: lastDistanceMeters,
+                lastDurationSeconds: lastDurationSeconds,
+                createdAt: createdAt,
+                lastUsedAt: lastUsedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$SavedTripsTable, SavedTripRow>(table),
+                  BaseReferences<_$AppDatabase, $SavedTripsTable, SavedTripRow>(
+                    db,
+                    table,
+                    e,
+                  ),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$SavedTripsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $SavedTripsTable,
+      SavedTripRow,
+      $$SavedTripsTableFilterComposer,
+      $$SavedTripsTableOrderingComposer,
+      $$SavedTripsTableAnnotationComposer,
+      $$SavedTripsTableCreateCompanionBuilder,
+      $$SavedTripsTableUpdateCompanionBuilder,
+      (
+        SavedTripRow,
+        BaseReferences<_$AppDatabase, $SavedTripsTable, SavedTripRow>,
+      ),
+      SavedTripRow,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -3699,4 +4654,6 @@ class $AppDatabaseManager {
       $$PlaceLocationsTableTableManager(_db, _db.placeLocations);
   $$CareRemindersTableTableManager get careReminders =>
       $$CareRemindersTableTableManager(_db, _db.careReminders);
+  $$SavedTripsTableTableManager get savedTrips =>
+      $$SavedTripsTableTableManager(_db, _db.savedTrips);
 }
