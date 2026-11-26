@@ -8,7 +8,10 @@ import 'package:gas_station_finder/core/router/app_router.dart';
 import 'package:gas_station_finder/core/theme/app_theme.dart';
 import 'package:gas_station_finder/features/garage/data/drift_garage_repository.dart';
 import 'package:gas_station_finder/features/garage/domain/vehicle_profile.dart';
+import 'package:gas_station_finder/core/error/app_failure.dart';
+import 'package:gas_station_finder/core/error/result.dart';
 import 'package:gas_station_finder/features/history/data/drift_fill_up_repository.dart';
+import 'package:gas_station_finder/features/history/data/share_history_exporter.dart';
 import 'package:gas_station_finder/features/history/domain/fill_up.dart';
 import 'package:gas_station_finder/features/history/domain/history_analytics.dart';
 import 'package:gas_station_finder/features/history/presentation/fill_up_form_screen.dart';
@@ -258,4 +261,75 @@ void main() {
       expect(repo.items, hasLength(4));
     });
   });
+
+  group('CSV export', () {
+    Future<_FakeExporter> pumpHistory(WidgetTester tester, List<FillUp> fillUps, {Result<void> result = const Ok(null)}) async {
+      final exporter = _FakeExporter(result);
+      await tester.pumpWidget(ProviderScope(
+        overrides: [
+          garageRepositoryProvider.overrideWithValue(FakeGarageRepository([car])),
+          fillUpRepositoryProvider.overrideWithValue(FakeFillUpRepository(fillUps)),
+          historyExporterProvider.overrideWithValue(exporter),
+        ],
+        child: MaterialApp(theme: AppTheme.light(), home: HistoryScreen(now: DateTime(2026, 11, 27))),
+      ));
+      await tester.pumpAndSettle();
+      return exporter;
+    }
+
+    testWidgets('no button without entries', (tester) async {
+      await pumpHistory(tester, const []);
+      expect(find.byKey(const ValueKey('exportCsv')), findsNothing);
+    });
+
+    testWidgets('exports every entry as CSV with a dated file name', (tester) async {
+      final exporter = await pumpHistory(tester, [
+        fill('2', DateTime(2026, 11, 1), 35, 63, odo: 11000),
+        fill('1', DateTime(2026, 10, 1), 30, 54, odo: 10500),
+      ]);
+      await tester.tap(find.byTooltip('Export as CSV'));
+      await tester.pumpAndSettle();
+      final call = exporter.calls.single;
+      expect(call.fileName, 'fuelwise_corolla_2026-11-27.csv');
+      expect(call.subject, 'FuelWise history: Corolla');
+      final lines = call.csv.split('\r\n');
+      expect(lines.first, '\uFEFFdate,vehicle,amount,unit,total_cost,currency,unit_price,odometer_km,full_fill,station');
+      expect(lines[1], startsWith('2026-10-01 00:00,Corolla,30,L,54,EUR,1.8,10500,yes,'));
+      expect(lines[2], startsWith('2026-11-01'));
+      expect(find.byType(SnackBar), findsNothing);
+    });
+
+    testWidgets('failure shows a translated message', (tester) async {
+      await pumpHistory(tester, [fill('1', DateTime(2026, 10, 1), 30, 54)],
+          result: const Err(UnknownFailure('x', FailureCode.exportFailed)));
+      await tester.tap(find.byTooltip('Export as CSV'));
+      await tester.pumpAndSettle();
+      expect(find.text('Could not export the history. Please try again.'), findsOneWidget);
+    });
+
+    test('real exporter reports an error instead of throwing without the platform', () async {
+      TestWidgetsFlutterBinding.ensureInitialized();
+      final r = await ShareHistoryExporter().export(fileName: 'a.csv', csv: 'x');
+      expect(r, isA<Err<void>>());
+    });
+  });
+}
+
+class _ExportCall {
+  _ExportCall(this.fileName, this.csv, this.subject);
+  final String fileName;
+  final String csv;
+  final String? subject;
+}
+
+class _FakeExporter implements HistoryExporter {
+  _FakeExporter(this.result);
+  final Result<void> result;
+  final calls = <_ExportCall>[];
+
+  @override
+  Future<Result<void>> export({required String fileName, required String csv, String? subject, Rect? origin}) async {
+    calls.add(_ExportCall(fileName, csv, subject));
+    return result;
+  }
 }

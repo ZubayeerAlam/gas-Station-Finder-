@@ -2549,6 +2549,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not delete your online data. Check your connection and try again.'**
   String get errorDataDeletion;
+
+  /// No description provided for @historyExportCsv.
+  ///
+  /// In en, this message translates to:
+  /// **'Export as CSV'**
+  String get historyExportCsv;
+
+  /// No description provided for @historyExportSubject.
+  ///
+  /// In en, this message translates to:
+  /// **'FuelWise history: {vehicle}'**
+  String historyExportSubject(String vehicle);
+
+  /// No description provided for @errorExport.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not export the history. Please try again.'**
+  String get errorExport;
 }
 
 class _AppLocalizationsDelegate

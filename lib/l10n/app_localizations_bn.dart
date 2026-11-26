@@ -1545,4 +1545,15 @@ class AppLocalizationsBn extends AppLocalizations {
   @override
   String get errorDataDeletion =>
       'আপনার অনলাইন ডেটা মোছা যায়নি। ইন্টারনেট সংযোগ দেখে আবার চেষ্টা করুন।';
+
+  @override
+  String get historyExportCsv => 'CSV হিসেবে এক্সপোর্ট করুন';
+
+  @override
+  String historyExportSubject(String vehicle) {
+    return 'FuelWise ইতিহাস: $vehicle';
+  }
+
+  @override
+  String get errorExport => 'ইতিহাস এক্সপোর্ট করা যায়নি। আবার চেষ্টা করুন।';
 }

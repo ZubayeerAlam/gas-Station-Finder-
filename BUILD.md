@@ -470,3 +470,26 @@ Plan: document-expiry and service reminders per vehicle (BRTA tax token, fitness
 - **Not verified:** a real Gemini response (no key yet), so the request shape is checked only against the documented format, not the live API; free-tier quota numbers; answer quality in Bengali.
 - **Needs your approval:** creating the `GEMINI_API_KEY` secret in Secret Manager and deploying the function.
 
+## Phase 5 — Batch 5.C: export fill-up history as CSV (2026‑11‑27)
+*(implemented, unit + widget-tested, iOS Simulator-checked; not run on Android)*
+- **Why:** drivers want their fuel log in a spreadsheet (tax, reimbursement, fleet owners), and the data is theirs to take out.
+- **Package:** `share_plus` **13.3.1**, pinned; released 2026‑10‑01, so more than 2 weeks old. The lockfile only gained packages (`share_plus`, its platform interface, `cross_file`, `url_launcher_*`); no existing version changed.
+- `domain/fill_up_csv.dart`, pure:
+  - Columns `date, vehicle, amount, unit, total_cost, currency, unit_price, odometer_km, full_fill, station`, oldest first.
+  - The same machine-readable format in both languages: `.` decimals, `yyyy-MM-dd HH:mm`.
+  - RFC 4180 quoting, CRLF line endings, and a UTF-8 BOM so Excel shows Bengali correctly.
+  - **CSV formula injection is defused:** a text cell starting with `= + - @`, tab or CR gets a `'` prefix.
+  - File name `fuelwise_<ascii-slug>_<date>.csv`, so a vehicle name can't change the path.
+- `data/share_history_exporter.dart`: `HistoryExporter` interface. `ShareHistoryExporter` writes to the temp folder and opens the system share sheet, with an iPad popover anchor. It never throws; failures become `FailureCode.exportFailed` (EN/BN). Nothing leaves the phone unless the user picks a destination.
+- **UI:** share icon in the History app bar, tooltip "Export as CSV" / "CSV হিসেবে এক্সপোর্ট করুন". Shown only when there are entries.
+- **Tests:**
+  - `fill_up_csv_test.dart`, 5 tests: format, EV + Bengali, quoting + injection, empty, file-name slug.
+  - History widget tests, 4 new: no button when empty, the exported content and name, translated failure, and the real exporter returns an error without the platform.
+  - Flutter **243 passed**, analyze clean, domain coverage **95.0%**.
+- **iOS Simulator (iPhone 17e, Bengali):**
+  1. Empty history shows no export icon.
+  2. Added 20 L / BDT 250 at "Meghna,"; the icon appeared.
+  3. Tapping it opened the iOS share sheet: "FuelWise ইতিহাস: Axio · CSV · 146 bytes", with Save to Files.
+  4. The written file (read from the app container) had the BOM, CRLF and `"Meghna,"` quoted.
+- **Not verified:** Android share sheet; opening the file in Excel or Google Sheets.
+

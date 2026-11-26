@@ -485,5 +485,11 @@
   "privacyDeleteCommunityConfirmBody": "Your price reports, votes, price alerts, assistant conversations and anonymous account will be deleted. Station prices already calculated from many reports hold no personal data and expire within 72 hours. This cannot be undone.",
   "privacyCommunityDeleted": "{count, plural, =0{Nothing was stored online} =1{1 item deleted online} other{{count} items deleted online}}",
   "@privacyCommunityDeleted": {"placeholders": {"count": {"type": "int"}}},
-  "errorDataDeletion": "Could not delete your online data. Check your connection and try again."
+  "errorDataDeletion": "Could not delete your online data. Check your connection and try again.",
+  "historyExportCsv": "Export as CSV",
+  "@historyExportCsv": {"placeholders": {}},
+  "historyExportSubject": "FuelWise history: {vehicle}",
+  "@historyExportSubject": {"placeholders": {"vehicle": {"type": "String"}}},
+  "errorExport": "Could not export the history. Please try again.",
+  "@errorExport": {"placeholders": {}}
 }

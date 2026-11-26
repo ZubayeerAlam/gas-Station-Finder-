@@ -36,6 +36,7 @@ String describeFailure(Object? error, AppLocalizations l, {String? fallback}) {
     FailureCode.garageSaveFailed => l.errorGarageSave,
     FailureCode.careSaveFailed => l.errorCareSave,
     FailureCode.dataDeletionFailed => l.errorDataDeletion,
+    FailureCode.exportFailed => l.errorExport,
     FailureCode.locationServiceDisabled => l.errorLocationServiceDisabled,
     FailureCode.locationDenied => l.errorLocationDenied,
     FailureCode.locationDeniedForever => l.errorLocationDeniedForever,

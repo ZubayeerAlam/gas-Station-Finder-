@@ -1557,4 +1557,15 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get errorDataDeletion =>
       'Could not delete your online data. Check your connection and try again.';
+
+  @override
+  String get historyExportCsv => 'Export as CSV';
+
+  @override
+  String historyExportSubject(String vehicle) {
+    return 'FuelWise history: $vehicle';
+  }
+
+  @override
+  String get errorExport => 'Could not export the history. Please try again.';
 }

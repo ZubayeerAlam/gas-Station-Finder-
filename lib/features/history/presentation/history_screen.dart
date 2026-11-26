@@ -3,13 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/error/result.dart';
 import '../../../core/router/app_routes.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/state_views.dart';
 import '../../garage/domain/vehicle_profile.dart';
 import '../../garage/presentation/garage_providers.dart';
+import '../data/share_history_exporter.dart';
 import '../domain/fill_up.dart';
+import '../domain/fill_up_csv.dart';
 import '../domain/history_analytics.dart';
 import '../../../l10n/failure_text.dart';
 import '../../../l10n/l10n.dart';
@@ -29,7 +32,13 @@ class HistoryScreen extends ConsumerWidget {
     final l = context.l10n;
 
     return Scaffold(
-      appBar: AppBar(title: Text(v == null ? l.historyTitle : l.historyTitleFor(v.name))),
+      appBar: AppBar(
+        title: Text(v == null ? l.historyTitle : l.historyTitleFor(v.name)),
+        actions: [
+          if (v != null && (fillUps?.value?.isNotEmpty ?? false))
+            _ExportButton(vehicle: v, fillUps: fillUps!.value!, now: now),
+        ],
+      ),
       floatingActionButton: v == null
           ? null
           : FloatingActionButton.extended(
@@ -53,6 +62,39 @@ class HistoryScreen extends ConsumerWidget {
           ),
         (_, AsyncData(value: final list)) => _HistoryBody(vehicle: v!, fillUps: list, now: now ?? DateTime.now()),
         _ => const AppLoading(),
+      },
+    );
+  }
+}
+
+/// Shares the vehicle's history as a CSV file via the system share sheet.
+class _ExportButton extends ConsumerWidget {
+  const _ExportButton({required this.vehicle, required this.fillUps, this.now});
+
+  final VehicleProfile vehicle;
+  final List<FillUp> fillUps;
+  final DateTime? now;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l = context.l10n;
+    return IconButton(
+      key: const ValueKey('exportCsv'),
+      tooltip: l.historyExportCsv,
+      icon: const Icon(Icons.ios_share_rounded),
+      onPressed: () async {
+        final box = context.findRenderObject() as RenderBox?;
+        final origin = box == null ? null : box.localToGlobal(Offset.zero) & box.size;
+        final messenger = ScaffoldMessenger.of(context);
+        final result = await ref.read(historyExporterProvider).export(
+          fileName: FillUpCsv.fileName(vehicle, now ?? DateTime.now()),
+          csv: FillUpCsv.build(vehicle, fillUps),
+          subject: l.historyExportSubject(vehicle.name),
+          origin: origin,
+        );
+        if (result case Err(:final failure)) {
+          messenger.showSnackBar(SnackBar(content: Text(describeFailure(failure, l))));
+        }
       },
     );
   }
