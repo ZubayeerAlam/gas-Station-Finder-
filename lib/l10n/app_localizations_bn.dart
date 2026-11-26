@@ -1664,4 +1664,16 @@ class AppLocalizationsBn extends AppLocalizations {
   String catalogTypicalNote(String model) {
     return '$model-এর সাধারণ মান, অফিসিয়াল তথ্য নয়। ম্যানুয়াল দেখে নিজের চালানোর সাথে মিলিয়ে ঠিক করুন।';
   }
+
+  @override
+  String get sortCheapest => 'সবচেয়ে সস্তা';
+
+  @override
+  String get noComparablePrice => 'তুলনাযোগ্য দাম নেই';
+
+  @override
+  String get priceSourceCommunityShort => 'কমিউনিটি';
+
+  @override
+  String get priceSourceGoogleShort => 'Google';
 }

@@ -23,6 +23,8 @@ import '../../ev/presentation/widgets/ev_filter_sheet.dart';
 import '../../ev/presentation/widgets/marker_icons.dart';
 import '../domain/entities/station.dart';
 import '../domain/nearby_sort.dart';
+import '../../garage/presentation/garage_providers.dart';
+import '../../../l10n/domain_labels.dart';
 import 'stations_controllers.dart';
 import 'widgets/nearby_list.dart';
 import 'widgets/station_details_sheet.dart';
@@ -114,6 +116,7 @@ class _StationsMapState extends ConsumerState<_StationsMap> {
   /// List view instead of the map (the map stays alive underneath).
   bool _list = false;
   ChargerSort _chargerSort = ChargerSort.nearest;
+  StationSort _stationSort = StationSort.nearest;
 
   @override
   void didUpdateWidget(covariant _StationsMap oldWidget) {
@@ -127,6 +130,25 @@ class _StationsMapState extends ConsumerState<_StationsMap> {
   void dispose() {
     _map?.dispose();
     super.dispose();
+  }
+
+  Widget _stationList(List<Station> stations, {required double bottomPadding}) {
+    final l = context.l10n;
+    final nearest = nearestFirst(stations, widget.origin, (s) => s.location);
+    final fuel = ref.watch(activeVehicleProvider).value?.preferredFuelType ?? 'REGULAR_UNLEADED';
+    final cheapest = _stationSort == StationSort.cheapest && nearest.isNotEmpty;
+    final quotes = cheapest
+        ? ref.watch(nearbyQuotesProvider((ids: nearest.map((r) => r.item.id).join(','), fuel: fuel)))
+        : null;
+    return NearbyStationList(
+      stations: quotes?.value != null ? cheapestFirst(nearest, quotes!.value!) : unpriced(nearest),
+      sort: _stationSort,
+      onSort: (v) => setState(() => _stationSort = v),
+      comparingLabel: l.comparingFuelPrices(localizedFuelType(fuel, l)),
+      pricesLoading: quotes?.isLoading ?? false,
+      onOpen: _openStation,
+      bottomPadding: bottomPadding,
+    );
   }
 
   void _openStation(Station station) {
@@ -330,11 +352,7 @@ class _StationsMapState extends ConsumerState<_StationsMap> {
                           onOpen: _openChargePoint,
                           bottomPadding: routeShown ? 160 : 0,
                         )
-                      : NearbyStationList(
-                          stations: nearestFirst(stations.value!, widget.origin, (s) => s.location),
-                          onOpen: _openStation,
-                          bottomPadding: routeShown ? 160 : 0,
-                        ),
+                      : _stationList(stations.value!, bottomPadding: routeShown ? 160 : 0),
                 ),
             ],
           ),

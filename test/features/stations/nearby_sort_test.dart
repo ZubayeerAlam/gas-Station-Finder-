@@ -1,3 +1,5 @@
+import 'package:gas_station_finder/features/ranking/domain/ranking_models.dart';
+import 'package:gas_station_finder/features/along_route/domain/along_route_repositories.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:gas_station_finder/core/location/geo_point.dart';
 import 'package:gas_station_finder/features/ev/domain/charge_point.dart';
@@ -59,5 +61,39 @@ void main() {
 
   test('empty input', () {
     expect(sortChargers(const [], origin, ChargerSort.fastest), isEmpty);
+  });
+
+  group('cheapestFirst', () {
+    Station st(String id, double km) => Station(
+      id: id,
+      name: id,
+      location: GeoPoint(latitude: 23.78 + km / 111.2, longitude: 90.40),
+    );
+    StationQuote q(double amount, {String cur = 'BDT', PriceSource src = PriceSource.google}) => StationQuote(
+      price: FuelPrice(fuelType: 'REGULAR_UNLEADED', amount: amount, currencyCode: cur),
+      priceSource: src,
+    );
+    final here = const GeoPoint(latitude: 23.78, longitude: 90.40);
+    final ranked = nearestFirst(
+      [st('far', 3), st('mid', 2), st('near', 1), st('none', 0.5), st('usd', 0.2)],
+      here,
+      (s) => s.location,
+    );
+
+    test('cheapest first in the main currency; ties go to the nearer; rest nearest first', () {
+      final out = cheapestFirst(ranked, {
+        'far': q(120),
+        'mid': q(125, src: PriceSource.community),
+        'near': q(120),
+        'usd': q(1.1, cur: 'USD'),
+      });
+      expect(out.map((p) => p.ranked.item.id), ['near', 'far', 'mid', 'usd', 'none']);
+      expect(out[2].source, PriceSource.community);
+      expect(out[3].price, isNull, reason: 'other currency is not compared');
+    });
+
+    test('no prices at all keeps the nearest order', () {
+      expect(cheapestFirst(ranked, const {}).map((p) => p.ranked.item.id), ['usd', 'none', 'near', 'mid', 'far']);
+    });
   });
 }

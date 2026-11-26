@@ -441,5 +441,9 @@
   "catalogCars": "গাড়ি",
   "catalogMotorbikes": "মোটরসাইকেল",
   "catalogElectric": "ইলেকট্রিক",
-  "catalogTypicalNote": "{model}-এর সাধারণ মান, অফিসিয়াল তথ্য নয়। ম্যানুয়াল দেখে নিজের চালানোর সাথে মিলিয়ে ঠিক করুন।"
+  "catalogTypicalNote": "{model}-এর সাধারণ মান, অফিসিয়াল তথ্য নয়। ম্যানুয়াল দেখে নিজের চালানোর সাথে মিলিয়ে ঠিক করুন।",
+  "sortCheapest": "সবচেয়ে সস্তা",
+  "noComparablePrice": "তুলনাযোগ্য দাম নেই",
+  "priceSourceCommunityShort": "কমিউনিটি",
+  "priceSourceGoogleShort": "Google"
 }

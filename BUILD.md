@@ -590,3 +590,15 @@ Plan: document-expiry and service reminders per vehicle (BRTA tax token, fitness
   - Picking fills name, energy type, fuel type, capacity and consumption. The fuel dropdown re-reads its value via a key.
   - EN/BN strings.
 - **Tests:** `vehicle_catalog_test.dart` (7 tests; 293 total pass, domain coverage 95.5 %): data validity + uniqueness, plausible ranges, search, diesel pick → edit → save, EV pick switches to electric, no-match message, Bengali at 200 % text with accessibility guidelines.
+
+## Phase 1.6 follow-up — Station price comparison in the nearby list (2026‑11‑27)
+*(implemented, unit + widget-tested; not seen live because nearby stations need the new Google key)*
+- **What:** the nearby list (5.D.1) gains Nearest / Cheapest chips. Cheapest orders stations by the price of the active vehicle's fuel (Regular when there is no vehicle) and shows "Comparing {fuel} prices". Each row shows the price and its source (Google / community), or "No comparable price".
+- **Domain:** `cheapestFirst` in `nearby_sort.dart`.
+  - Picks the most common currency and never compares across currencies. Equal prices go to the nearer station.
+  - Stations without a comparable price follow, nearest first.
+- **Data:**
+  - `nearbyQuotesProvider` (autoDispose family keyed by station ids + fuel) reuses `stationQuoteLookupProvider`: Google price first, else a fresh community consensus. This is the same rule as trip ranking.
+  - It is watched only while Cheapest is selected, so the default list adds no Places requests (cost).
+- **Tests:** 2 domain tests (order, currency, ties, no prices) and 2 widget tests (chips, label, price + source, no-price row; loading spinner). Flutter **297 passed**, analyze clean, domain coverage **95.6%**.
+- **Not done:** comparing fuel types against each other (e.g. petrol vs CNG cost per 100 km for dual-fuel cars). It needs a dual-fuel vehicle model and is left open in PLAN.md.

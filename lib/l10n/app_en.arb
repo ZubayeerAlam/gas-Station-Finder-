@@ -555,5 +555,13 @@
   "catalogElectric": "Electric",
   "@catalogElectric": {"placeholders": {}},
   "catalogTypicalNote": "Typical values for {model}, not official figures. Check your manual and adjust them to your own driving.",
-  "@catalogTypicalNote": {"placeholders": {"model": {"type": "String"}}}
+  "@catalogTypicalNote": {"placeholders": {"model": {"type": "String"}}},
+  "sortCheapest": "Cheapest",
+  "@sortCheapest": {"placeholders": {}},
+  "noComparablePrice": "No comparable price",
+  "@noComparablePrice": {"placeholders": {}},
+  "priceSourceCommunityShort": "community",
+  "@priceSourceCommunityShort": {"placeholders": {}},
+  "priceSourceGoogleShort": "Google",
+  "@priceSourceGoogleShort": {"placeholders": {}}
 }

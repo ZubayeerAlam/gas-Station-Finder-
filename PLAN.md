@@ -128,7 +128,7 @@ Implementation history and evidence live in [BUILD.md](BUILD.md). Rule: work one
 
 ### 1.6 Price History & Analytics
 - [-] 7-day / 30-day trends (fl_chart: consensus close line + daily min–max band, single currency) — widget-tested, not seen on device (needs Places stations)
-- [ ] Station and fuel-type comparisons
+- [-] Station and fuel-type comparisons — nearby list "Cheapest" sort compares stations for the active vehicle's fuel (Google price, else fresh community consensus; one currency only; no-price stations last; lookups only when chosen) — unit + widget-tested, **not seen live** (needs the new Google key); per-station all-fuel prices are in the details sheet; a cross-fuel cost comparison (e.g. petrol vs CNG per 100 km) not done
 - [-] Verified vs unverified distinction — community prices labelled with report count, age, "outdated" after TTL; Google prices labelled Google
 
 ### 1.7 Station Reliability Score

@@ -1677,4 +1677,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String catalogTypicalNote(String model) {
     return 'Typical values for $model, not official figures. Check your manual and adjust them to your own driving.';
   }
+
+  @override
+  String get sortCheapest => 'Cheapest';
+
+  @override
+  String get noComparablePrice => 'No comparable price';
+
+  @override
+  String get priceSourceCommunityShort => 'community';
+
+  @override
+  String get priceSourceGoogleShort => 'Google';
 }

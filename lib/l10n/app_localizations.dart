@@ -2759,6 +2759,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Typical values for {model}, not official figures. Check your manual and adjust them to your own driving.'**
   String catalogTypicalNote(String model);
+
+  /// No description provided for @sortCheapest.
+  ///
+  /// In en, this message translates to:
+  /// **'Cheapest'**
+  String get sortCheapest;
+
+  /// No description provided for @noComparablePrice.
+  ///
+  /// In en, this message translates to:
+  /// **'No comparable price'**
+  String get noComparablePrice;
+
+  /// No description provided for @priceSourceCommunityShort.
+  ///
+  /// In en, this message translates to:
+  /// **'community'**
+  String get priceSourceCommunityShort;
+
+  /// No description provided for @priceSourceGoogleShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Google'**
+  String get priceSourceGoogleShort;
 }
 
 class _AppLocalizationsDelegate

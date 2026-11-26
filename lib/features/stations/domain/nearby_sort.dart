@@ -1,12 +1,43 @@
 import '../../../core/location/geo_point.dart';
+import '../../along_route/domain/along_route_repositories.dart';
 import '../../ev/domain/charge_point.dart';
+import '../../ranking/domain/ranking_models.dart';
+import 'entities/station.dart';
 
 /// One place in the nearby list, with its straight-line distance.
 typedef Ranked<T> = ({T item, double meters});
 
-/// How the charger list is ordered. Fuel stations are always nearest first
-/// (a nearby search carries no prices to sort by).
+/// How the charger list is ordered.
 enum ChargerSort { nearest, fastest }
+
+/// How the fuel station list is ordered. "Cheapest" uses Google prices or a
+/// fresh community consensus for one fuel type, looked up separately.
+enum StationSort { nearest, cheapest }
+
+/// A nearby station with the price used for comparison (null = none).
+typedef PricedStation = ({Ranked<Station> ranked, FuelPrice? price, PriceSource? source});
+
+/// Cheapest first among stations priced in the most common currency (prices in
+/// different currencies are never compared); ties go to the nearer station.
+/// Stations without a comparable price follow, nearest first.
+List<PricedStation> cheapestFirst(List<Ranked<Station>> nearest, Map<String, StationQuote> quotes) {
+  final all = [
+    for (final r in nearest) (ranked: r, price: quotes[r.item.id]?.price, source: quotes[r.item.id]?.priceSource),
+  ];
+  final counts = <String, int>{};
+  for (final p in all) {
+    if (p.price case final price?) counts[price.currencyCode] = (counts[price.currencyCode] ?? 0) + 1;
+  }
+  if (counts.isEmpty) return [for (final p in all) (ranked: p.ranked, price: null, source: null)];
+  final currency = (counts.entries.toList()..sort((a, b) => b.value.compareTo(a.value))).first.key;
+  bool comparable(PricedStation p) => p.price?.currencyCode == currency;
+  final priced = _stableSort(all.where(comparable).toList(), (a, b) => a.price!.amount.compareTo(b.price!.amount));
+  return [
+    ...priced,
+    for (final p in all)
+      if (!comparable(p)) (ranked: p.ranked, price: null, source: null),
+  ];
+}
 
 /// Nearest first; ties keep the search order (stable).
 List<Ranked<T>> nearestFirst<T>(Iterable<T> items, GeoPoint origin, GeoPoint Function(T) locate) {
