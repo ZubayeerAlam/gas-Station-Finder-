@@ -517,3 +517,25 @@ Plan: document-expiry and service reminders per vehicle (BRTA tax token, fitness
 - **iOS Simulator:** launches fine. The banner shows the "API key rejected" message and, correctly, no list toggle (nothing to list).
 - **Not verified:** the list with real stations or chargers; it needs the new Google key, or the OCM key for chargers.
 
+## Phase 5 — Batch 5.D.2: route alternatives (2026‑11‑27)
+*(implemented, unit + widget-tested, live OSRM contract checked; map flow not seen live because routing starts from a station, which needs the new Google key)*
+- **Why:** in Dhaka traffic the fastest route is not always the one a driver wants. A slightly longer but similar-time road is a real choice.
+- **Data:**
+  - `RouteAlternativesRepository.drivingRoutes` sends `alternatives=3` to OSRM.
+  - `parseOsrmRoutes`: main route plus alternatives, fastest first, at most 3. Broken alternatives are dropped; a broken main route is still an error.
+  - The single-route `drivingRoute` used by the trip planner is unchanged.
+- **Domain:** `RoutePlan` holds the routes and selected index, `select`, and `differenceFromFastest`.
+- **Controller:**
+  - `routeControllerProvider` now holds a `RoutePlan?`.
+  - `select(i)` switches the route and keeps the same route list, so the camera doesn't jump. A bad index, or no plan, is ignored.
+- **Map:**
+  - Every route is drawn; the selected one is primary-colored and on top, the others grey and tappable.
+  - `RouteSummaryCard` (now its own widget) shows the selected route's distance and time, plus chips "Fastest · 12 km", "+4 min · 12 km" and "Similar time · 14 km" (EN/BN).
+- **Tests:**
+  - OSRM: 3 new tests (parse + order + cap + broken alternative; broken main = error; the request carries `alternatives=3`, via a Dio interceptor).
+  - Controller: alternatives, select, ignored bad index.
+  - `route_summary_card_test.dart`, 5 tests: single route without chips; loading; labels and tap; selected headline; Bengali at 200% text with accessibility guidelines.
+  - Flutter **259 passed**, analyze clean, domain coverage **95.2%**.
+- **Live check:** a `curl` to the public OSRM server (two generic Dhaka points, `alternatives=3`) returned `Ok` with 2 routes. This confirms the request format against the live API; no user data was sent.
+- **Not verified:** alternatives drawn on the real Google map and tapping a grey route on a device.
+

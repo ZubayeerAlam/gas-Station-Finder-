@@ -2597,6 +2597,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Out of service'**
   String get chargerOutOfService;
+
+  /// No description provided for @routeFastest.
+  ///
+  /// In en, this message translates to:
+  /// **'Fastest · {distance}'**
+  String routeFastest(String distance);
+
+  /// No description provided for @routeAlternativeSlower.
+  ///
+  /// In en, this message translates to:
+  /// **'+{minutes} min · {distance}'**
+  String routeAlternativeSlower(int minutes, String distance);
+
+  /// No description provided for @routeAlternativeSameTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Similar time · {distance}'**
+  String routeAlternativeSameTime(String distance);
 }
 
 class _AppLocalizationsDelegate

@@ -1571,4 +1571,19 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get chargerOutOfService => 'বন্ধ আছে';
+
+  @override
+  String routeFastest(String distance) {
+    return 'দ্রুততম · $distance';
+  }
+
+  @override
+  String routeAlternativeSlower(int minutes, String distance) {
+    return '+$minutes মিনিট · $distance';
+  }
+
+  @override
+  String routeAlternativeSameTime(String distance) {
+    return 'প্রায় একই সময় · $distance';
+  }
 }

@@ -414,5 +414,8 @@
   "nearbyShowMap": "ম্যাপ দেখুন",
   "sortNearest": "সবচেয়ে কাছে",
   "sortFastest": "দ্রুততম চার্জিং",
-  "chargerOutOfService": "বন্ধ আছে"
+  "chargerOutOfService": "বন্ধ আছে",
+  "routeFastest": "দ্রুততম · {distance}",
+  "routeAlternativeSlower": "+{minutes} মিনিট · {distance}",
+  "routeAlternativeSameTime": "প্রায় একই সময় · {distance}"
 }

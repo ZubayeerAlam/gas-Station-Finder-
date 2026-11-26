@@ -15,6 +15,7 @@ import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/state_views.dart';
 import '../../route/domain/route_info.dart';
 import '../../route/presentation/route_controller.dart';
+import '../../route/presentation/route_summary_card.dart';
 import '../../ev/domain/charge_point.dart';
 import '../../ev/presentation/ev_providers.dart';
 import '../../ev/presentation/widgets/charge_point_sheet.dart';
@@ -141,8 +142,8 @@ class _StationsMapState extends ConsumerState<_StationsMap> {
     );
   }
 
-  void _fitRoute(RouteInfo route) {
-    final pts = route.points;
+  void _fitRoute(RoutePlan plan) {
+    final pts = [for (final r in plan.routes) ...r.points];
     var minLat = pts.first.latitude, maxLat = minLat;
     var minLng = pts.first.longitude, maxLng = minLng;
     for (final p in pts) {
@@ -221,8 +222,8 @@ class _StationsMapState extends ConsumerState<_StationsMap> {
 
     ref.listen(routeControllerProvider, (prev, next) {
       switch (next) {
-        case AsyncData(:final value?):
-          _fitRoute(value);
+        case AsyncData(:final value?) when !identical(prev?.value?.routes, value.routes):
+          _fitRoute(value); // new routes only; switching between them keeps the camera
         case AsyncError(:final error):
           ScaffoldMessenger.of(context)
               .showSnackBar(SnackBar(content: Text(describeFailure(error, context.l10n, fallback: context.l10n.couldNotGetDirections))));
@@ -253,14 +254,20 @@ class _StationsMapState extends ConsumerState<_StationsMap> {
           ),
     };
 
+    final plan = route.value;
     final polylines = <Polyline>{
-      if (route.value case final r?)
-        Polyline(
-          polylineId: const PolylineId('route'),
-          points: r.points.map(_latLng).toList(),
-          color: scheme.primary,
-          width: 5,
-        ),
+      if (plan != null)
+        for (var i = 0; i < plan.routes.length; i++)
+          Polyline(
+            polylineId: PolylineId('route-$i'),
+            points: plan.routes[i].points.map(_latLng).toList(),
+            color: i == plan.selectedIndex ? scheme.primary : scheme.outline.withValues(alpha: 0.7),
+            width: i == plan.selectedIndex ? 6 : 4,
+            // The selected route is drawn on top; others can be tapped to pick them.
+            zIndex: i == plan.selectedIndex ? 2 : 1,
+            consumeTapEvents: i != plan.selectedIndex,
+            onTap: () => ref.read(routeControllerProvider.notifier).select(i),
+          ),
     };
 
     final l10n = context.l10n;
@@ -321,12 +328,12 @@ class _StationsMapState extends ConsumerState<_StationsMap> {
                           sort: _chargerSort,
                           onSort: (v) => setState(() => _chargerSort = v),
                           onOpen: _openChargePoint,
-                          bottomPadding: routeShown ? 96 : 0,
+                          bottomPadding: routeShown ? 160 : 0,
                         )
                       : NearbyStationList(
                           stations: nearestFirst(stations.value!, widget.origin, (s) => s.location),
                           onOpen: _openStation,
-                          bottomPadding: routeShown ? 96 : 0,
+                          bottomPadding: routeShown ? 160 : 0,
                         ),
                 ),
             ],
@@ -338,9 +345,10 @@ class _StationsMapState extends ConsumerState<_StationsMap> {
             right: AppSpacing.md,
             bottom: AppSpacing.lg,
             child: SafeArea(
-              child: _RouteSummaryCard(
-                route: route.value,
+              child: RouteSummaryCard(
+                plan: route.value,
                 loading: route.isLoading,
+                onSelect: (i) => ref.read(routeControllerProvider.notifier).select(i),
                 onClear: () => ref.read(routeControllerProvider.notifier).clear(),
               ),
             ),
@@ -482,40 +490,6 @@ class _StatusBanner extends StatelessWidget {
                 onPressed: onToggleList,
                 icon: Icon(listShown ? Icons.map_outlined : Icons.view_list_rounded),
               ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _RouteSummaryCard extends StatelessWidget {
-  const _RouteSummaryCard({required this.route, required this.loading, required this.onClear});
-
-  final RouteInfo? route;
-  final bool loading;
-  final VoidCallback onClear;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Card(
-      elevation: 3,
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.md),
-        child: Row(
-          children: [
-            const Icon(Icons.route_rounded),
-            const SizedBox(width: AppSpacing.md),
-            Expanded(
-              child: loading || route == null
-                  ? Text(context.l10n.calculatingRoute)
-                  : Text(
-                      '${Fmt.distance(route!.distanceMeters)} · ${Fmt.duration(route!.duration)}',
-                      style: theme.textTheme.titleMedium,
-                    ),
-            ),
-            IconButton(tooltip: context.l10n.clearRoute, onPressed: onClear, icon: const Icon(Icons.close_rounded)),
           ],
         ),
       ),

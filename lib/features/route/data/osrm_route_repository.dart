@@ -13,7 +13,7 @@ import '../domain/route_info.dart';
 
 /// Driving routes from an OSRM server (HTTPS). The public demo server has no
 /// SLA; for production point `OSRM_BASE_URL` at a self-hosted instance.
-class OsrmRouteRepository implements RouteRepository, DetourRepository {
+class OsrmRouteRepository implements RouteRepository, RouteAlternativesRepository, DetourRepository {
   OsrmRouteRepository(this._dio);
 
   final Dio _dio;
@@ -28,6 +28,19 @@ class OsrmRouteRepository implements RouteRepository, DetourRepository {
         queryParameters: {'overview': 'full', 'geometries': 'geojson'},
       );
       return parseOsrmRoute(response.data ?? const {});
+    });
+  }
+
+  @override
+  Future<Result<List<RouteInfo>>> drivingRoutes(GeoPoint origin, GeoPoint destination) {
+    return guardResult(() async {
+      final coords = '${origin.longitude},${origin.latitude};'
+          '${destination.longitude},${destination.latitude}';
+      final response = await _dio.get<Map<String, dynamic>>(
+        '/route/v1/driving/$coords',
+        queryParameters: {'overview': 'full', 'geometries': 'geojson', 'alternatives': kMaxRouteAlternatives},
+      );
+      return parseOsrmRoutes(response.data ?? const {});
     });
   }
 
@@ -86,12 +99,32 @@ class OsrmRouteRepository implements RouteRepository, DetourRepository {
 
   /// Parses an OSRM `/route` response. OSRM GeoJSON coordinates are
   /// `[longitude, latitude]`.
-  static RouteInfo parseOsrmRoute(Map<String, dynamic> json) {
+  static RouteInfo parseOsrmRoute(Map<String, dynamic> json) => parseOsrmRoutes(json).first;
+
+  /// All routes in an OSRM response (main route first, then alternatives),
+  /// fastest first, at most [kMaxRouteAlternatives]. Malformed alternatives
+  /// are dropped; a malformed main route is an error.
+  static List<RouteInfo> parseOsrmRoutes(Map<String, dynamic> json) {
     final routes = json['routes'];
     if (json['code'] != 'Ok' || routes is! List || routes.isEmpty) {
       throw const NotFoundFailure('No driving route found to this station.', FailureCode.noRouteToStation);
     }
-    final route = routes.first as Map<String, dynamic>;
+    final main = _parseOne(routes.first);
+    final alternatives = <RouteInfo>[];
+    for (final r in routes.skip(1)) {
+      try {
+        alternatives.add(_parseOne(r));
+      } on FormatException {
+        // skip a broken alternative
+      }
+    }
+    final all = [main, ...alternatives]..sort((a, b) => a.durationSeconds.compareTo(b.durationSeconds));
+    return all.take(kMaxRouteAlternatives).toList();
+  }
+
+  static RouteInfo _parseOne(Object? raw) {
+    if (raw is! Map<String, dynamic>) throw const FormatException('Bad route');
+    final route = raw;
     final coords = (route['geometry'] as Map<String, dynamic>?)?['coordinates'];
     final points = <GeoPoint>[
       if (coords is List)
@@ -115,5 +148,9 @@ final osrmRepositoryProvider = Provider<OsrmRouteRepository>((ref) {
 });
 
 final routeRepositoryProvider = Provider<RouteRepository>((ref) => ref.watch(osrmRepositoryProvider));
+
+final routeAlternativesRepositoryProvider = Provider<RouteAlternativesRepository>(
+  (ref) => ref.watch(osrmRepositoryProvider),
+);
 
 final detourRepositoryProvider = Provider<DetourRepository>((ref) => ref.watch(osrmRepositoryProvider));

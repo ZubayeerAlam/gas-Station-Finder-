@@ -20,13 +20,13 @@ class _Location implements LocationService {
   Future<bool> openLocationSettings() async => true;
 }
 
-class _Routes implements RouteRepository {
+class _Routes implements RouteAlternativesRepository {
   _Routes(this.result);
-  final Result<RouteInfo> result;
+  final Result<List<RouteInfo>> result;
   GeoPoint? origin;
 
   @override
-  Future<Result<RouteInfo>> drivingRoute(GeoPoint origin, GeoPoint destination) async {
+  Future<Result<List<RouteInfo>>> drivingRoutes(GeoPoint origin, GeoPoint destination) async {
     this.origin = origin;
     return result;
   }
@@ -36,7 +36,7 @@ ProviderContainer _container(_Routes routes) {
   final c = ProviderContainer(
     overrides: [
       locationServiceProvider.overrideWithValue(_Location()),
-      routeRepositoryProvider.overrideWithValue(routes),
+      routeAlternativesRepositoryProvider.overrideWithValue(routes),
     ],
     retry: (_, _) => null,
   );
@@ -46,21 +46,41 @@ ProviderContainer _container(_Routes routes) {
 
 void main() {
   const route = RouteInfo(distanceMeters: 1500, durationSeconds: 240, points: [_here, _there]);
+  const slower = RouteInfo(distanceMeters: 1400, durationSeconds: 420, points: [_here, _there]);
 
   test('initial state is data(null), never loading', () {
-    final c = _container(_Routes(const Ok(route)));
+    final c = _container(_Routes(const Ok([route])));
     final state = c.read(routeControllerProvider);
-    expect(state, isA<AsyncData<RouteInfo?>>());
+    expect(state, isA<AsyncData<RoutePlan?>>());
     expect(state.value, isNull);
   });
 
   test('routeTo uses current location as origin and exposes the route', () async {
-    final routes = _Routes(const Ok(route));
+    final routes = _Routes(const Ok([route]));
     final c = _container(routes);
     c.listen(routeControllerProvider, (_, _) {});
     await c.read(routeControllerProvider.notifier).routeTo(_there);
     expect(routes.origin, _here);
-    expect(c.read(routeControllerProvider).value, route);
+    final plan = c.read(routeControllerProvider).value!;
+    expect(plan.selected, route);
+    expect(plan.hasAlternatives, isFalse);
+  });
+
+  test('alternatives: fastest selected first, select switches, bad index ignored', () async {
+    final c = _container(_Routes(const Ok([route, slower])));
+    c.listen(routeControllerProvider, (_, _) {});
+    final notifier = c.read(routeControllerProvider.notifier);
+    notifier.select(1); // no plan yet: ignored
+    expect(c.read(routeControllerProvider).value, isNull);
+    await notifier.routeTo(_there);
+    final first = c.read(routeControllerProvider).value!;
+    expect((first.selectedIndex, first.hasAlternatives), (0, true));
+    expect(first.differenceFromFastest(1), (meters: -100.0, seconds: 180.0));
+    notifier.select(1);
+    expect(c.read(routeControllerProvider).value!.selected, slower);
+    expect(identical(c.read(routeControllerProvider).value!.routes, first.routes), isTrue, reason: 'camera keeps position');
+    notifier.select(7);
+    expect(c.read(routeControllerProvider).value!.selectedIndex, 1);
   });
 
   test('routeTo failure surfaces typed error; clear resets', () async {

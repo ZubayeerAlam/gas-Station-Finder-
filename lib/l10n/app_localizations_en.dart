@@ -1583,4 +1583,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get chargerOutOfService => 'Out of service';
+
+  @override
+  String routeFastest(String distance) {
+    return 'Fastest · $distance';
+  }
+
+  @override
+  String routeAlternativeSlower(int minutes, String distance) {
+    return '+$minutes min · $distance';
+  }
+
+  @override
+  String routeAlternativeSameTime(String distance) {
+    return 'Similar time · $distance';
+  }
 }

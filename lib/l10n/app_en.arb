@@ -501,5 +501,11 @@
   "sortFastest": "Fastest charging",
   "@sortFastest": {"placeholders": {}},
   "chargerOutOfService": "Out of service",
-  "@chargerOutOfService": {"placeholders": {}}
+  "@chargerOutOfService": {"placeholders": {}},
+  "routeFastest": "Fastest · {distance}",
+  "@routeFastest": {"placeholders": {"distance": {"type": "String"}}},
+  "routeAlternativeSlower": "+{minutes} min · {distance}",
+  "@routeAlternativeSlower": {"placeholders": {"minutes": {"type": "int"}, "distance": {"type": "String"}}},
+  "routeAlternativeSameTime": "Similar time · {distance}",
+  "@routeAlternativeSameTime": {"placeholders": {"distance": {"type": "String"}}}
 }
