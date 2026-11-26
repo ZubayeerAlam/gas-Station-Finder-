@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  alertMatches, consensus, dayKey, distanceKm, rateLimitReason, recencyWeight, reliability, trustScore, weightedMedian,
+  DISPUTE_MIN_FLAGS, alertMatches, consensus, dayKey, disputeState, distanceKm, rateLimitReason, recencyWeight, reliability, trustScore, weightedMedian,
   type AlertRule, type Report,
 } from '../../src/pricing';
 
@@ -99,4 +99,16 @@ test('alert matching: fuel, currency, threshold, radius or station', () => {
 test('helpers', () => {
   assert.equal(dayKey(now), '2026-11-25');
   assert.ok(Math.abs(distanceKm(52.52, 13.405, 52.4, 13.06) - 26.8) < 1);
+});
+
+test('dispute: distinct users, only flags after the last report and inside the TTL', () => {
+  const last = now - 5 * H;
+  const f = (uid: string, ageH: number) => ({ uid, atMs: now - ageH * H });
+  assert.deepEqual(disputeState([f('a', 1), f('b', 2)], last, now), { flagCount: 2, disputed: false });
+  assert.deepEqual(disputeState([f('a', 1), f('a', 2), f('b', 2), f('c', 4)], last, now), { flagCount: 3, disputed: true });
+  // Flags older than the latest report no longer apply.
+  assert.equal(disputeState([f('a', 6), f('b', 7), f('c', 8)], last, now).flagCount, 0);
+  // Very old consensus: TTL bounds the window too.
+  assert.equal(disputeState([f('a', 80)], now - 100 * H, now).flagCount, 0);
+  assert.equal(DISPUTE_MIN_FLAGS, 3);
 });

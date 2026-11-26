@@ -30,6 +30,14 @@ abstract interface class CommunityRepository {
 
   Future<Result<void>> vote(String stationId, StationVote vote);
 
+  /// Fuel types at [stationId] whose current price this user flagged as wrong.
+  Stream<Set<String>> watchMyFlags(String stationId);
+
+  /// "This price is wrong" (one flag per user per station + fuel).
+  Future<Result<void>> flagPrice(String stationId, String fuelType);
+
+  Future<Result<void>> unflagPrice(String stationId, String fuelType);
+
   Stream<List<PriceAlertRule>> watchAlertRules();
 
   Future<Result<void>> saveAlertRule(PriceAlertRule rule);

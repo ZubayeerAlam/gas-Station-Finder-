@@ -53,7 +53,7 @@ class CombinedQuoteLookup implements StationQuoteLookup {
     var price = google?.price;
     PriceSource? source = price == null ? null : PriceSource.google;
     if (price == null) {
-      final c = community.where((p) => p.fuelType == fuelType && p.isFresh(now)).firstOrNull;
+      final c = community.where((p) => p.fuelType == fuelType && p.isUsable(now)).firstOrNull;
       if (c != null) {
         price = FuelPrice(fuelType: c.fuelType, amount: c.price, currencyCode: c.currencyCode, updatedAt: c.lastReportAt);
         source = PriceSource.community;

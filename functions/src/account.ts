@@ -4,6 +4,7 @@ import type { Firestore } from 'firebase-admin/firestore';
 export interface DeletionSummary {
   priceReports: number;
   votes: number;
+  priceFlags: number;
   alertRules: number;
   assistantSessions: number;
 }
@@ -12,6 +13,7 @@ export interface DeletionSummary {
  * Deletes everything in Firestore that is linked to [uid]:
  *  - their price reports (they carry uid, position and time),
  *  - their open/closed votes (stations recorded in users/{uid}.votedStations),
+ *  - their "wrong price" flags (stations recorded in users/{uid}.flaggedStations),
  *  - users/{uid} with alert rules, messaging token and trust stats,
  *  - alert cooldown log entries, assistant conversations and quota.
  *
@@ -30,11 +32,15 @@ export async function deleteUserData(db: Firestore, uid: string): Promise<Deleti
     db.collection('assistantSessions').where('uid', '==', uid).get(),
   ]);
   const voted = (user.get('votedStations') as string[] | undefined) ?? [];
+  const flagged = (user.get('flaggedStations') as string[] | undefined) ?? [];
 
   const writer = db.bulkWriter();
   for (const d of [...reports.docs, ...alertLog.docs, ...sessions.docs]) void writer.delete(d.ref);
   const votes = await Promise.all(voted.map((s) => db.doc(`stations/${s}/verifications/${uid}`).get()));
   for (const v of votes) if (v.exists) void writer.delete(v.ref);
+  const flags = (await Promise.all(flagged.map((s) =>
+    db.collection(`stations/${s}/priceFlags`).where('uid', '==', uid).get()))).flatMap((q) => q.docs);
+  for (const f of flags) void writer.delete(f.ref);
   void writer.delete(db.collection('assistantQuota').doc(uid));
   await writer.close();
   // users/{uid} last, with every subcollection (alertRules, private/messaging).
@@ -43,6 +49,7 @@ export async function deleteUserData(db: Firestore, uid: string): Promise<Deleti
   return {
     priceReports: reports.size,
     votes: votes.filter((v) => v.exists).length,
+    priceFlags: flags.length,
     alertRules: rules.size,
     assistantSessions: sessions.size,
   };

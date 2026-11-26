@@ -164,6 +164,12 @@ test('deleteMyData callable: removes only the caller\'s data and account', async
     const voted = (await db.doc(`users/${me}`).get()).get('votedStations') as string[] | undefined;
     return voted?.includes('stDel') ? true : undefined;
   });
+  await db.doc(`stations/stDel/priceFlags/DIESEL_${me}`).set({ uid: me, fuelType: 'DIESEL', at: Timestamp.now() });
+  await db.doc(`stations/stDel/priceFlags/DIESEL_${other}`).set({ uid: other, fuelType: 'DIESEL', at: Timestamp.now() });
+  await waitFor(async () => {
+    const flagged = (await db.doc(`users/${me}`).get()).get('flaggedStations') as string[] | undefined;
+    return flagged?.includes('stDel') ? true : undefined;
+  });
   await db.doc(`users/${me}/alertRules/r1`).set({ uid: me, fuelType: 'DIESEL', currency: 'EUR', maxPrice: 1.5,
     lat: 52.5, lng: 13.4, radiusKm: 10, enabled: true });
   await db.doc(`users/${me}/private/messaging`).set({ token: 't', updatedAt: Timestamp.now() });
@@ -175,19 +181,20 @@ test('deleteMyData callable: removes only the caller\'s data and account', async
   await db.doc(`alertLog/${me}_r1_stDel`).set({ uid: me, ruleId: 'r1' });
 
   const res = await call(idToken);
-  assert.deepEqual(res.result, { priceReports: 1, votes: 1, alertRules: 1, assistantSessions: 1 });
+  assert.deepEqual(res.result, { priceReports: 1, votes: 1, priceFlags: 1, alertRules: 1, assistantSessions: 1 });
 
   const gone = await Promise.all([
     db.doc('priceReports/del-mine').get(), db.doc(`stations/stDel/verifications/${me}`).get(),
     db.doc(`users/${me}`).get(), db.doc(`users/${me}/alertRules/r1`).get(), db.doc(`users/${me}/private/messaging`).get(),
     db.doc('assistantSessions/s-mine').get(), db.doc(`assistantQuota/${me}`).get(), db.doc(`alertLog/${me}_r1_stDel`).get(),
+    db.doc(`stations/stDel/priceFlags/DIESEL_${me}`).get(),
   ]);
   assert.deepEqual(gone.map((d) => d.exists), gone.map(() => false));
 
   const kept = await Promise.all([
     db.doc('priceReports/del-other').get(), db.doc(`stations/stDel/verifications/${other}`).get(),
     db.doc(`users/${other}/alertRules/r2`).get(), db.doc('assistantSessions/s-other').get(),
-    db.doc('stations/stDel/prices/DIESEL').get(),
+    db.doc('stations/stDel/prices/DIESEL').get(), db.doc(`stations/stDel/priceFlags/DIESEL_${other}`).get(),
   ]);
   assert.deepEqual(kept.map((d) => d.exists), kept.map(() => true));
 
@@ -203,5 +210,29 @@ test('deleteMyData callable: removes only the caller\'s data and account', async
   const again = await fetch(`http://${process.env.FIREBASE_AUTH_EMULATOR_HOST}/identitytoolkit.googleapis.com/v1/accounts:signUp?key=fake`,
     { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ returnSecureToken: true }) });
   const empty = await call((await again.json() as { idToken: string }).idToken);
-  assert.deepEqual(empty.result, { priceReports: 0, votes: 0, alertRules: 0, assistantSessions: 0 });
+  assert.deepEqual(empty.result, { priceReports: 0, votes: 0, priceFlags: 0, alertRules: 0, assistantSessions: 0 });
+});
+
+test('three "wrong price" flags dispute the price; a new report clears it', async () => {
+  const st = 'stFlag';
+  await report('fl-a', 'r1', 1.7, { stationId: st });
+  const flag = (uid: string) =>
+    db.doc(`stations/${st}/priceFlags/DIESEL_${uid}`).set({ uid, fuelType: 'DIESEL', at: Timestamp.now() });
+  const price = () => db.doc(`stations/${st}/prices/DIESEL`).get();
+
+  await flag('f1');
+  await flag('f2');
+  await waitFor(async () => ((await price()).get('flagCount') === 2 ? true : undefined));
+  assert.equal((await price()).get('disputed'), false);
+  await flag('f2'); // same user again: still 2
+  await flag('f3');
+  await waitFor(async () => ((await price()).get('disputed') === true ? true : undefined));
+  assert.equal((await price()).get('flagCount'), 3);
+
+  // A fresh report replaces the consensus: older flags no longer count.
+  await new Promise((r) => setTimeout(r, 20));
+  await report('fl-b', 'r2', 1.72, { stationId: st });
+  const after = (await price()).data()!;
+  assert.equal(after.disputed ?? false, false);
+  assert.equal(after.flagCount ?? 0, 0);
 });

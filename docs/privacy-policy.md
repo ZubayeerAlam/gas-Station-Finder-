@@ -21,10 +21,10 @@ This data is not uploaded. It is removed when you uninstall the app.
 | OSRM routing (`router.project-osrm.org`, public demo server) | Start, destination and station coordinates | Calculate routes and detours |
 | Open Charge Map (EV mode) | The map area being searched | Find chargers |
 | Firebase (Google) – Authentication | An anonymous user ID created on first use | Protect community features from abuse |
-| Firebase – Cloud Firestore | Price reports (station, fuel type, price, currency, time), station votes (open / closed / out of fuel), price alert rules (fuel, price limit, a location and radius) | Community prices and alerts |
+| Firebase – Cloud Firestore | Price reports (station, fuel type, price, currency, time), station votes (open / closed / out of fuel), "this price looks wrong" flags (station, fuel type, time), price alert rules (fuel, price limit, a location and radius) | Community prices and alerts |
 | FuelWise trip assistant (Cloud Functions + Google Gemini API) | Your chat messages and the results of on-device calculations (for example station names, prices, detours, and the trip's start and destination) | Answer trip-planning questions. While FuelWise uses the Gemini API free tier, Google may use this content to improve its products, so do not type personal details into the chat. |
 
-Your anonymous user ID is linked to your reports, votes, alert rules and assistant conversations. The ID is not linked to your name, email or phone number.
+Your anonymous user ID is linked to your reports, votes, price flags, alert rules and assistant conversations. The ID is not linked to your name, email or phone number.
 
 ## Retention
 - Community price reports and the aggregated prices built from them are kept so the price history can be shown. [Set a retention period.]
@@ -36,7 +36,7 @@ Your anonymous user ID is linked to your reports, votes, alert rules and assista
 - You can use the app without the community features or the assistant.
 - **Delete from inside the app:** Garage → *Privacy & data*.
   - *Delete everything on this device* removes your vehicles, fill-ups, reminders, saved station positions and settings from the phone.
-  - *Delete my community data* removes your price reports, votes, alert rules, assistant conversations and the anonymous account from the FuelWise server. Prices already combined into a station's average stay until they expire (about 72 hours) and are not linked to you.
+  - *Delete my community data* removes your price reports, votes, price flags, alert rules, assistant conversations and the anonymous account from the FuelWise server. Prices already combined into a station's average stay until they expire (about 72 hours) and are not linked to you.
 - You can also ask for deletion by contacting [your contact email].
 
 ## Children

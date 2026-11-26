@@ -7,7 +7,7 @@ import { onDocumentCreated, onDocumentWritten } from 'firebase-functions/v2/fire
 import { HttpsError, onCall } from 'firebase-functions/v2/https';
 import { defineSecret, defineString } from 'firebase-functions/params';
 import * as logger from 'firebase-functions/logger';
-import { processReport, refreshReliability, type Messenger } from './handlers';
+import { processReport, refreshDispute, refreshReliability, type Messenger } from './handlers';
 import { AssistantError, DEFAULT_GEMINI_MODEL, parseRequest, runAssistant, type ModelClient } from './assistant';
 import { geminiModel } from './gemini_model';
 import { demoModel } from './demo_model';
@@ -41,6 +41,19 @@ export const onVerificationWritten = onDocumentWritten('stations/{stationId}/ver
       .set({ votedStations: FieldValue.arrayUnion(event.params.stationId) }, { merge: true });
   }
   await refreshReliability(db, event.params.stationId);
+});
+
+export const onPriceFlagWritten = onDocumentWritten('stations/{stationId}/priceFlags/{flagId}', async (event) => {
+  const db = getFirestore();
+  const data = event.data?.after.exists ? event.data.after.data() : event.data?.before.data();
+  const fuelType = data?.fuelType as string | undefined;
+  if (!fuelType) return;
+  // Remember where the user flagged so "delete my data" can find the flag docs.
+  if (event.data?.after.exists && typeof data?.uid === 'string') {
+    await db.collection('users').doc(data.uid)
+      .set({ flaggedStations: FieldValue.arrayUnion(event.params.stationId) }, { merge: true });
+  }
+  await refreshDispute(db, event.params.stationId, fuelType);
 });
 
 // ---------- account ----------

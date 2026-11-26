@@ -1676,4 +1676,22 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get priceSourceGoogleShort => 'Google';
+
+  @override
+  String get flagWrongPrice => 'এই দামটি ভুল মনে হচ্ছে';
+
+  @override
+  String get priceFlaggedByYou => 'আপনি এই দামটি ভুল বলেছেন · ফিরিয়ে নিন';
+
+  @override
+  String get priceFlagSent =>
+      'ধন্যবাদ। তিনজন আলাদা মানুষ ভুল বললে দামটি বিতর্কিত হিসেবে দেখানো হবে।';
+
+  @override
+  String get priceFlagRemoved => 'ফ্ল্যাগ সরানো হয়েছে';
+
+  @override
+  String priceDisputed(int count) {
+    return 'বিতর্কিত: $count জন বলেছেন এটি ভুল';
+  }
 }

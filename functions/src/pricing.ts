@@ -222,3 +222,30 @@ function round(x: number, d: number): number {
   const f = 10 ** d;
   return Math.round(x * f) / f;
 }
+
+// ---------- "wrong price" flags (moderation) ----------
+
+/** Distinct users needed to mark a consensus price as disputed. */
+export const DISPUTE_MIN_FLAGS = 3;
+
+export interface PriceFlag {
+  uid: string;
+  atMs: number;
+}
+
+export interface DisputeState {
+  /** Distinct users who flagged the *current* consensus. */
+  flagCount: number;
+  disputed: boolean;
+}
+
+/**
+ * Only flags newer than the latest report that shaped the consensus count:
+ * a new report replaces the price, so older flags no longer apply. Flags older
+ * than the price TTL never count. One flag per user.
+ */
+export function disputeState(flags: PriceFlag[], lastReportAtMs: number, nowMs: number): DisputeState {
+  const minMs = Math.max(lastReportAtMs, nowMs - PRICE_TTL_HOURS * 3_600_000);
+  const users = new Set(flags.filter((f) => f.atMs > minMs && f.atMs <= nowMs + 60_000).map((f) => f.uid));
+  return { flagCount: users.size, disputed: users.size >= DISPUTE_MIN_FLAGS };
+}

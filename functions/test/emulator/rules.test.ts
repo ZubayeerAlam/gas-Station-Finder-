@@ -99,3 +99,19 @@ test('assistant sessions and quota are server-only', async () => {
   await assertFails(getDoc(doc(alice(), 'assistantQuota/alice')));
   await assertFails(setDoc(doc(alice(), 'assistantQuota/alice'), { hourCount: 0 }));
 });
+
+test('price flags: own uid, id = fuel_uid, server time, fuel whitelist, private', async () => {
+  const flag = (uid = 'alice', fuelType = 'DIESEL') => ({ uid, fuelType, at: serverTimestamp() });
+  await assertSucceeds(setDoc(doc(alice(), 'stations/s1/priceFlags/DIESEL_alice'), flag()));
+  await assertSucceeds(setDoc(doc(alice(), 'stations/s1/priceFlags/DIESEL_alice'), flag())); // re-flag later
+  await assertFails(setDoc(doc(anon(), 'stations/s1/priceFlags/DIESEL_alice'), flag()));
+  await assertFails(setDoc(doc(alice(), 'stations/s1/priceFlags/DIESEL_bob'), flag('bob')));
+  await assertFails(setDoc(doc(alice(), 'stations/s1/priceFlags/PREMIUM_alice'), flag())); // id must match fuel
+  await assertFails(setDoc(doc(alice(), 'stations/s1/priceFlags/ROCKET_alice'), flag('alice', 'ROCKET')));
+  await assertFails(setDoc(doc(alice(), 'stations/s1/priceFlags/DIESEL_alice'), { ...flag(), at: new Date(2020, 1, 1) }));
+  await assertFails(setDoc(doc(alice(), 'stations/s1/priceFlags/DIESEL_alice'), { ...flag(), note: 'x' }));
+  await assertSucceeds(getDoc(doc(alice(), 'stations/s1/priceFlags/DIESEL_alice')));
+  await assertFails(getDoc(doc(bob(), 'stations/s1/priceFlags/DIESEL_alice')));
+  await assertFails(deleteDoc(doc(bob(), 'stations/s1/priceFlags/DIESEL_alice')));
+  await assertSucceeds(deleteDoc(doc(alice(), 'stations/s1/priceFlags/DIESEL_alice')));
+});

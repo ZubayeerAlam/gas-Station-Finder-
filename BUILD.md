@@ -602,3 +602,24 @@ Plan: document-expiry and service reminders per vehicle (BRTA tax token, fitness
   - It is watched only while Cheapest is selected, so the default list adds no Places requests (cost).
 - **Tests:** 2 domain tests (order, currency, ties, no prices) and 2 widget tests (chips, label, price + source, no-price row; loading spinner). Flutter **297 passed**, analyze clean, domain coverage **95.6%**.
 - **Not done:** comparing fuel types against each other (e.g. petrol vs CNG cost per 100 km for dual-fuel cars). It needs a dual-fuel vehicle model and is left open in PLAN.md.
+
+## Phase 2 follow-up — "Wrong price" flags and community moderation (2026‑11‑27)
+*(implemented; unit, Firestore rules, Functions emulator and widget-tested; **nothing deployed**)*
+- **Why:** outlier rejection catches a single bad report. It cannot catch a consensus that is wrong because the station changed its price, or because a few reports agreed on a typo. Drivers on site need a way to say "this is wrong".
+- **Data model:** `stations/{id}/priceFlags/{fuel}_{uid}` = `{uid, fuelType, at}`.
+  - **Rules:** own uid only; the doc id must equal `fuel_uid` (one flag per user per fuel); fuel whitelist; server time; no extra fields; readable and deletable only by the author.
+  - Flags stay private. The public aggregate gets only `flagCount` and `disputed`.
+- **Function** `onPriceFlagWritten` → `refreshDispute` → pure `disputeState`:
+  - Counts distinct users whose flag is newer than the consensus's latest report and inside the 72 h TTL. With **3** or more the price is `disputed`.
+  - A new report rewrites the aggregate without these fields, so the dispute clears and older flags stop counting.
+  - Trust is not lowered by flags, so a group cannot push honest reporters down.
+- **Delete my data:** the trigger records `users/{uid}.flaggedStations`; `deleteUserData` removes the user's flags and returns `priceFlags` in the summary. The privacy policy now lists flags.
+- **App:**
+  - `CommunityPrice.flagCount/disputed` and `isUsable` (fresh and not disputed).
+  - `CombinedQuoteLookup` never ranks with a disputed price.
+  - Price tile: "Disputed: N people say it is wrong", with the price in the error colour.
+  - Selected fuel: "This price looks wrong" / "You flagged this price · undo". EN/BN.
+- **Tests:**
+  - functions: unit **26**, rules **8** (new flag rules test), assistant **8**, integration **7**. The integration suite has a new dispute test (2 flags → not disputed; same user again → still 2; 3rd → disputed; new report clears it), and the deletion test now covers flags.
+  - Flutter: mapping defaults, disputed price excluded from ranking, flag + undo + disputed label, unavailable backend. **301 passed**, analyze clean, domain coverage **95.6%**.
+- **Pending:** deploying rules + functions (needs approval). App Check would make creating many anonymous accounts to mass-flag harder; it is blocked on a real Firebase project.

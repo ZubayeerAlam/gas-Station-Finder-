@@ -32,9 +32,19 @@ abstract class CommunityPrice with _$CommunityPrice {
 
     /// After this the price is stale and must not be used for ranking.
     required DateTime expiresAt,
+
+    /// Distinct users who said the current price is wrong (server-counted).
+    @Default(0) int flagCount,
+
+    /// Enough "wrong price" flags since the last report: shown with a warning
+    /// and never used for ranking until a new report replaces it.
+    @Default(false) bool disputed,
   }) = _CommunityPrice;
 
   bool isFresh(DateTime now) => now.isBefore(expiresAt);
+
+  /// Fresh and not disputed: safe to rank stations with.
+  bool isUsable(DateTime now) => isFresh(now) && !disputed;
 }
 
 /// One UTC day of consensus prices.

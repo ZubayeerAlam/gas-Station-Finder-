@@ -34,16 +34,20 @@ final now = DateTime.utc(2026, 11, 25, 12);
 const berlin = GeoPoint(latitude: 52.52, longitude: 13.405);
 const station = Station(id: 's1', name: 'Aral Mitte', location: berlin, address: 'Main St 1');
 
-CommunityPrice cp({String fuel = 'DIESEL', double price = 1.659, int reports = 3, Duration age = const Duration(hours: 2)}) =>
-    CommunityPrice(
-      fuelType: fuel,
-      price: price,
-      currencyCode: 'EUR',
-      reportCount: reports,
-      confidence: 0.8,
-      lastReportAt: now.subtract(age),
-      expiresAt: now.subtract(age).add(const Duration(hours: 72)),
-    );
+CommunityPrice cp({
+  String fuel = 'DIESEL',
+  double price = 1.659,
+  int reports = 3,
+  Duration age = const Duration(hours: 2),
+}) => CommunityPrice(
+  fuelType: fuel,
+  price: price,
+  currencyCode: 'EUR',
+  reportCount: reports,
+  confidence: 0.8,
+  lastReportAt: now.subtract(age),
+  expiresAt: now.subtract(age).add(const Duration(hours: 72)),
+);
 
 const diesel = VehicleProfile(
   id: 'v',
@@ -87,8 +91,30 @@ void main() {
       expect(p.confidence, 1.0);
       expect(p.lastReportAt.isAtSameMomentAs(now), isTrue);
       expect(parseCommunityPrice({'fuelType': 'DIESEL', 'price': 1.6, 'currency': 'EUR'}), isNull);
-      expect(parseCommunityPrice({'fuelType': 'DIESEL', 'price': 'x', 'currency': 'EUR', 'lastReportAt': now, 'expiresAt': now}),
-          isNull);
+      expect(
+        parseCommunityPrice({
+          'fuelType': 'DIESEL',
+          'price': 'x',
+          'currency': 'EUR',
+          'lastReportAt': now,
+          'expiresAt': now,
+        }),
+        isNull,
+      );
+    });
+
+    test('dispute fields parse with safe defaults', () {
+      final base = {
+        'fuelType': 'DIESEL',
+        'price': 1.6,
+        'currency': 'EUR',
+        'lastReportAt': Timestamp.fromDate(now),
+        'expiresAt': Timestamp.fromDate(now.add(const Duration(hours: 1))),
+      };
+      final plain = parseCommunityPrice(base)!;
+      expect((plain.flagCount, plain.disputed), (0, false));
+      final disputed = parseCommunityPrice({...base, 'flagCount': 3, 'disputed': true})!;
+      expect((disputed.flagCount, disputed.disputed, disputed.isUsable(now)), (3, true, false));
     });
 
     test('history day + reliability defaults', () {
@@ -107,7 +133,12 @@ void main() {
 
     test('alert rule round-trips and only writes keys the rules allow', () {
       const rule = PriceAlertRule(
-        id: 'a1', fuelType: 'DIESEL', currencyCode: 'EUR', maxPrice: 1.6, center: berlin, radiusKm: 10, //
+        id: 'a1',
+        fuelType: 'DIESEL',
+        currencyCode: 'EUR',
+        maxPrice: 1.6,
+        center: berlin,
+        radiusKm: 10, //
       );
       final map = alertRuleToMap(rule, 'u1');
       const allowed = {
@@ -124,9 +155,14 @@ void main() {
     });
 
     test('Firebase errors map to user-facing failures', () {
-      expect(mapFirebaseError(FirebaseException(plugin: 'cloud_firestore', code: 'permission-denied')),
-          isA<ServerFailure>());
-      expect(mapFirebaseError(FirebaseException(plugin: 'cloud_firestore', code: 'unavailable')), isA<NetworkFailure>());
+      expect(
+        mapFirebaseError(FirebaseException(plugin: 'cloud_firestore', code: 'permission-denied')),
+        isA<ServerFailure>(),
+      );
+      expect(
+        mapFirebaseError(FirebaseException(plugin: 'cloud_firestore', code: 'unavailable')),
+        isA<NetworkFailure>(),
+      );
       expect(mapFirebaseError(FirebaseAuthException(code: 'operation-not-allowed')), isA<ConfigFailure>());
       expect(mapFirebaseError(StateError('boom')), isA<UnknownFailure>());
     });
@@ -199,10 +235,17 @@ void main() {
       expect(other, isNull);
     });
 
+    test('a disputed community price is never used for ranking', () {
+      final q = CombinedQuoteLookup.merge(null, [cp().copyWith(disputed: true, flagCount: 3)], null, 'DIESEL', now);
+      expect(q, isNull);
+    });
+
     test('end to end with a repository; unavailable backend = Google only', () async {
       final google = _Google({'s2': const StationQuote(price: googlePrice, priceSource: PriceSource.google)});
       final repo = FakeCommunityRepository(
-        prices: {'s1': [cp()]},
+        prices: {
+          's1': [cp()],
+        },
         reliability: {'s1': const StationReliability(score: 0.6)},
       );
       final combined = CombinedQuoteLookup(google, repo, clock: () => now);
@@ -216,7 +259,11 @@ void main() {
     });
 
     test('EV planning (no fuel type) uses the per-kWh community price', () async {
-      final repo = FakeCommunityRepository(prices: {'c1': [cp(fuel: 'EV_KWH', price: 0.49)]});
+      final repo = FakeCommunityRepository(
+        prices: {
+          'c1': [cp(fuel: 'EV_KWH', price: 0.49)],
+        },
+      );
       final q = await CombinedQuoteLookup(_Google({}), repo, clock: () => now).quotes(['c1']);
       expect(q['c1']!.price!.amount, 0.49);
     });
@@ -229,29 +276,54 @@ void main() {
       tester.view.physicalSize = const Size(1200, 2400);
       tester.view.devicePixelRatio = 1;
       addTearDown(tester.view.reset);
-      await tester.pumpWidget(ProviderScope(
-        retry: (_, _) => null,
-        overrides: [
-          communityRepositoryProvider.overrideWithValue(backend ?? repo),
-          nowProvider.overrideWithValue(() => now),
-          garageRepositoryProvider.overrideWithValue(FakeGarageRepository([diesel])),
-          locationServiceProvider.overrideWithValue(_Location()),
-        ],
-        child: MaterialApp(theme: AppTheme.light(), home: child),
-      ));
+      await tester.pumpWidget(
+        ProviderScope(
+          retry: (_, _) => null,
+          overrides: [
+            communityRepositoryProvider.overrideWithValue(backend ?? repo),
+            nowProvider.overrideWithValue(() => now),
+            garageRepositoryProvider.overrideWithValue(FakeGarageRepository([diesel])),
+            locationServiceProvider.overrideWithValue(_Location()),
+          ],
+          child: MaterialApp(theme: AppTheme.light(), home: child),
+        ),
+      );
       await tester.pumpAndSettle();
     }
 
     testWidgets('community prices, history toggle (7 → 30 days) and votes', (tester) async {
       repo = FakeCommunityRepository(
-        prices: {'s1': [cp(), cp(fuel: 'PREMIUM', price: 1.899, reports: 1, age: const Duration(hours: 90))]},
+        prices: {
+          's1': [cp(), cp(fuel: 'PREMIUM', price: 1.899, reports: 1, age: const Duration(hours: 90))],
+        },
         reliability: {'s1': const StationReliability(score: 0.82, openVotes: 3, closedVotes: 1)},
         history: [
-          PriceHistoryDay(day: DateTime.utc(2026, 11, 23), fuelType: 'DIESEL', currencyCode: 'EUR', close: 1.70, min: 1.68, max: 1.72, samples: 3),
-          PriceHistoryDay(day: DateTime.utc(2026, 11, 25), fuelType: 'DIESEL', currencyCode: 'EUR', close: 1.66, min: 1.65, max: 1.69, samples: 2),
+          PriceHistoryDay(
+            day: DateTime.utc(2026, 11, 23),
+            fuelType: 'DIESEL',
+            currencyCode: 'EUR',
+            close: 1.70,
+            min: 1.68,
+            max: 1.72,
+            samples: 3,
+          ),
+          PriceHistoryDay(
+            day: DateTime.utc(2026, 11, 25),
+            fuelType: 'DIESEL',
+            currencyCode: 'EUR',
+            close: 1.66,
+            min: 1.65,
+            max: 1.69,
+            samples: 2,
+          ),
         ],
       );
-      await pump(tester, const Scaffold(body: SingleChildScrollView(child: CommunitySection(station: station))));
+      await pump(
+        tester,
+        const Scaffold(
+          body: SingleChildScrollView(child: CommunitySection(station: station)),
+        ),
+      );
 
       expect(find.text('EUR 1.659'), findsOneWidget);
       expect(find.textContaining('3 reports'), findsOneWidget);
@@ -278,9 +350,43 @@ void main() {
       expect(find.text('Thanks for confirming!'), findsOneWidget);
     });
 
+    testWidgets('flag a price as wrong, undo; disputed price is marked', (tester) async {
+      repo = FakeCommunityRepository(
+        prices: {
+          's1': [cp(), cp(fuel: 'PREMIUM', price: 1.999).copyWith(disputed: true, flagCount: 4)],
+        },
+      );
+      await pump(
+        tester,
+        const Scaffold(
+          body: SingleChildScrollView(child: CommunitySection(station: station)),
+        ),
+      );
+      expect(find.textContaining('Disputed: 4 people say it is wrong'), findsOneWidget);
+      expect(find.byKey(const Key('flagPrice')), findsNothing, reason: 'only for the selected fuel');
+
+      await tester.tap(find.text('Diesel'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('flagPrice')));
+      await tester.pumpAndSettle();
+      expect(repo.flags['s1'], {'DIESEL'});
+      expect(find.textContaining('Three different people'), findsOneWidget);
+      expect(find.byKey(const Key('unflagPrice')), findsOneWidget);
+
+      await tester.tap(find.byKey(const Key('unflagPrice')));
+      await tester.pumpAndSettle();
+      expect(repo.flags['s1'], isEmpty);
+      expect(find.byKey(const Key('flagPrice')), findsOneWidget);
+    });
+
     testWidgets('vote failure shows the failure message', (tester) async {
       repo = FakeCommunityRepository(failWrites: const NetworkFailure());
-      await pump(tester, const Scaffold(body: SingleChildScrollView(child: CommunitySection(station: station))));
+      await pump(
+        tester,
+        const Scaffold(
+          body: SingleChildScrollView(child: CommunitySection(station: station)),
+        ),
+      );
       expect(find.textContaining('No community reports yet'), findsOneWidget);
       expect(find.text('Not enough community data'), findsOneWidget);
       await tester.tap(find.text('Closed'));
@@ -300,11 +406,24 @@ void main() {
     });
 
     testWidgets('report price: validates, submits draft, shows server verdict', (tester) async {
-      repo = FakeCommunityRepository(prices: {'s1': [cp()]});
+      repo = FakeCommunityRepository(
+        prices: {
+          's1': [cp()],
+        },
+      );
       await pump(tester, const ReportPriceScreen(station: station));
 
       expect(find.text('Diesel'), findsOneWidget, reason: 'fuel defaults to the active vehicle');
-      expect(tester.widget<EditableText>(find.descendant(of: find.byKey(const Key('currency')), matching: find.byType(EditableText))).controller.text, 'EUR', reason: 'currency from existing prices');
+      expect(
+        tester
+            .widget<EditableText>(
+              find.descendant(of: find.byKey(const Key('currency')), matching: find.byType(EditableText)),
+            )
+            .controller
+            .text,
+        'EUR',
+        reason: 'currency from existing prices',
+      );
       await tester.tap(find.text('Send report'));
       await tester.pumpAndSettle();
       expect(find.text('Enter a price'), findsOneWidget);
@@ -358,24 +477,31 @@ void main() {
 
     testWidgets('alerts: backend off → explanation, no create button', (tester) async {
       repo = FakeCommunityRepository();
-      await pump(
-        tester,
-        const AlertsScreen(),
-        backend: const UnavailableCommunityRepository(),
-      );
+      await pump(tester, const AlertsScreen(), backend: const UnavailableCommunityRepository());
       expect(find.text('Alerts are not available'), findsOneWidget);
       expect(find.text('New alert'), findsNothing);
     });
   });
 
+  test('UnavailableCommunityRepository: flags are off, never faked', () async {
+    final r = UnavailableCommunityRepository();
+    expect(await r.watchMyFlags('s').first, isEmpty);
+    expect((await r.flagPrice('s', 'DIESEL')).isOk, isFalse);
+  });
+
   test('UnavailableCommunityRepository never fakes data', () async {
     const r = UnavailableCommunityRepository('off');
     expect(await r.watchPrices('x').first, isEmpty);
-    final res = await r.submitReport(const PriceReportDraft(
-      stationId: 'x', stationLocation: berlin, fuelType: 'DIESEL', price: 1, currencyCode: 'EUR', //
-    ));
+    final res = await r.submitReport(
+      const PriceReportDraft(
+        stationId: 'x',
+        stationLocation: berlin,
+        fuelType: 'DIESEL',
+        price: 1,
+        currencyCode: 'EUR', //
+      ),
+    );
     expect(res, isA<Err<String>>());
     expect((res as Err).failure, isA<ConfigFailure>());
   });
-
 }

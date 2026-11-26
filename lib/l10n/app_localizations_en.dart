@@ -1689,4 +1689,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get priceSourceGoogleShort => 'Google';
+
+  @override
+  String get flagWrongPrice => 'This price looks wrong';
+
+  @override
+  String get priceFlaggedByYou => 'You flagged this price · undo';
+
+  @override
+  String get priceFlagSent =>
+      'Thanks. Three different people flagging it marks the price as disputed.';
+
+  @override
+  String get priceFlagRemoved => 'Flag removed';
+
+  @override
+  String priceDisputed(int count) {
+    return 'Disputed: $count people say it is wrong';
+  }
 }

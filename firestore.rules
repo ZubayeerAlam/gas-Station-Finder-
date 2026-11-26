@@ -52,6 +52,18 @@ service cloud.firestore {
         allow write: if false;
       }
 
+      // "This price is wrong": one flag per user per fuel (doc id = fuel_uid).
+      // Flags stay private; functions publish only the count on the aggregate.
+      match /priceFlags/{flagId} {
+        allow read, delete: if signedIn() && resource.data.uid == request.auth.uid;
+        allow create, update: if signedIn()
+          && flagId == request.resource.data.fuelType + '_' + request.auth.uid
+          && request.resource.data.keys().hasOnly(['uid', 'fuelType', 'at'])
+          && request.resource.data.uid == request.auth.uid
+          && request.resource.data.fuelType in fuelTypes()
+          && request.resource.data.at == request.time;
+      }
+
       // One vote per user per station (doc id = uid); votes themselves stay private.
       match /verifications/{uid} {
         allow read: if isOwner(uid);

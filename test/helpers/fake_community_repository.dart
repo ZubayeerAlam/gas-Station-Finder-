@@ -28,6 +28,7 @@ class FakeCommunityRepository implements CommunityRepository {
 
   final reports = <PriceReportDraft>[];
   final votes = <String, StationVote>{};
+  final flags = <String, Set<String>>{};
   final rules = <PriceAlertRule>[];
   final historyRequests = <({String stationId, String fuelType, int days})>[];
   var _ids = 0;
@@ -75,6 +76,17 @@ class FakeCommunityRepository implements CommunityRepository {
 
   @override
   Future<Result<void>> vote(String stationId, StationVote vote) => _write(() => votes[stationId] = vote);
+
+  @override
+  Stream<Set<String>> watchMyFlags(String stationId) => _watch(() => {...?flags[stationId]});
+
+  @override
+  Future<Result<void>> flagPrice(String stationId, String fuelType) =>
+      _write(() => (flags[stationId] ??= {}).add(fuelType));
+
+  @override
+  Future<Result<void>> unflagPrice(String stationId, String fuelType) =>
+      _write(() => flags[stationId]?.remove(fuelType));
 
   @override
   Stream<List<PriceAlertRule>> watchAlertRules() => _watch(() => List.unmodifiable(rules));

@@ -17,7 +17,10 @@ mixin _$CommunityPrice {
 
  String get fuelType; double get price; String get currencyCode; int get reportCount;/// 0..1 — agreement and number of reports behind the consensus.
  double get confidence; DateTime get lastReportAt;/// After this the price is stale and must not be used for ranking.
- DateTime get expiresAt;
+ DateTime get expiresAt;/// Distinct users who said the current price is wrong (server-counted).
+ int get flagCount;/// Enough "wrong price" flags since the last report: shown with a warning
+/// and never used for ranking until a new report replaces it.
+ bool get disputed;
 /// Create a copy of CommunityPrice
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -29,20 +32,20 @@ $CommunityPriceCopyWith<CommunityPrice> get copyWith => _$CommunityPriceCopyWith
 @override
 bool operator ==(Object other) {
   final _this = this as CommunityPrice;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is CommunityPrice&&(identical(other.fuelType, _this.fuelType) || other.fuelType == _this.fuelType)&&(identical(other.price, _this.price) || other.price == _this.price)&&(identical(other.currencyCode, _this.currencyCode) || other.currencyCode == _this.currencyCode)&&(identical(other.reportCount, _this.reportCount) || other.reportCount == _this.reportCount)&&(identical(other.confidence, _this.confidence) || other.confidence == _this.confidence)&&(identical(other.lastReportAt, _this.lastReportAt) || other.lastReportAt == _this.lastReportAt)&&(identical(other.expiresAt, _this.expiresAt) || other.expiresAt == _this.expiresAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CommunityPrice&&(identical(other.fuelType, _this.fuelType) || other.fuelType == _this.fuelType)&&(identical(other.price, _this.price) || other.price == _this.price)&&(identical(other.currencyCode, _this.currencyCode) || other.currencyCode == _this.currencyCode)&&(identical(other.reportCount, _this.reportCount) || other.reportCount == _this.reportCount)&&(identical(other.confidence, _this.confidence) || other.confidence == _this.confidence)&&(identical(other.lastReportAt, _this.lastReportAt) || other.lastReportAt == _this.lastReportAt)&&(identical(other.expiresAt, _this.expiresAt) || other.expiresAt == _this.expiresAt)&&(identical(other.flagCount, _this.flagCount) || other.flagCount == _this.flagCount)&&(identical(other.disputed, _this.disputed) || other.disputed == _this.disputed));
 }
 
 
 @override
 int get hashCode {
   final _this = this as CommunityPrice;
-  return Object.hash(runtimeType,_this.fuelType,_this.price,_this.currencyCode,_this.reportCount,_this.confidence,_this.lastReportAt,_this.expiresAt);
+  return Object.hash(runtimeType,_this.fuelType,_this.price,_this.currencyCode,_this.reportCount,_this.confidence,_this.lastReportAt,_this.expiresAt,_this.flagCount,_this.disputed);
 }
 
 @override
 String toString() {
   final _this = this as CommunityPrice;
-  return 'CommunityPrice(fuelType: ${_this.fuelType}, price: ${_this.price}, currencyCode: ${_this.currencyCode}, reportCount: ${_this.reportCount}, confidence: ${_this.confidence}, lastReportAt: ${_this.lastReportAt}, expiresAt: ${_this.expiresAt})';
+  return 'CommunityPrice(fuelType: ${_this.fuelType}, price: ${_this.price}, currencyCode: ${_this.currencyCode}, reportCount: ${_this.reportCount}, confidence: ${_this.confidence}, lastReportAt: ${_this.lastReportAt}, expiresAt: ${_this.expiresAt}, flagCount: ${_this.flagCount}, disputed: ${_this.disputed})';
 }
 
 
@@ -53,7 +56,7 @@ abstract mixin class $CommunityPriceCopyWith<$Res>  {
   factory $CommunityPriceCopyWith(CommunityPrice value, $Res Function(CommunityPrice) _then) = _$CommunityPriceCopyWithImpl;
 @useResult
 $Res call({
- String fuelType, double price, String currencyCode, int reportCount, double confidence, DateTime lastReportAt, DateTime expiresAt
+ String fuelType, double price, String currencyCode, int reportCount, double confidence, DateTime lastReportAt, DateTime expiresAt, int flagCount, bool disputed
 });
 
 
@@ -70,7 +73,7 @@ class _$CommunityPriceCopyWithImpl<$Res>
 
 /// Create a copy of CommunityPrice
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? fuelType = null,Object? price = null,Object? currencyCode = null,Object? reportCount = null,Object? confidence = null,Object? lastReportAt = null,Object? expiresAt = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? fuelType = null,Object? price = null,Object? currencyCode = null,Object? reportCount = null,Object? confidence = null,Object? lastReportAt = null,Object? expiresAt = null,Object? flagCount = null,Object? disputed = null,}) {
   return _then(CommunityPrice(
 fuelType: null == fuelType ? _self.fuelType : fuelType // ignore: cast_nullable_to_non_nullable
 as String,price: null == price ? _self.price : price // ignore: cast_nullable_to_non_nullable
@@ -79,7 +82,9 @@ as String,reportCount: null == reportCount ? _self.reportCount : reportCount // 
 as int,confidence: null == confidence ? _self.confidence : confidence // ignore: cast_nullable_to_non_nullable
 as double,lastReportAt: null == lastReportAt ? _self.lastReportAt : lastReportAt // ignore: cast_nullable_to_non_nullable
 as DateTime,expiresAt: null == expiresAt ? _self.expiresAt : expiresAt // ignore: cast_nullable_to_non_nullable
-as DateTime,
+as DateTime,flagCount: null == flagCount ? _self.flagCount : flagCount // ignore: cast_nullable_to_non_nullable
+as int,disputed: null == disputed ? _self.disputed : disputed // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 
@@ -164,10 +169,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String fuelType,  double price,  String currencyCode,  int reportCount,  double confidence,  DateTime lastReportAt,  DateTime expiresAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String fuelType,  double price,  String currencyCode,  int reportCount,  double confidence,  DateTime lastReportAt,  DateTime expiresAt,  int flagCount,  bool disputed)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _CommunityPrice() when $default != null:
-return $default(_that.fuelType,_that.price,_that.currencyCode,_that.reportCount,_that.confidence,_that.lastReportAt,_that.expiresAt);case _:
+return $default(_that.fuelType,_that.price,_that.currencyCode,_that.reportCount,_that.confidence,_that.lastReportAt,_that.expiresAt,_that.flagCount,_that.disputed);case _:
   return orElse();
 
 }
@@ -185,10 +190,10 @@ return $default(_that.fuelType,_that.price,_that.currencyCode,_that.reportCount,
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String fuelType,  double price,  String currencyCode,  int reportCount,  double confidence,  DateTime lastReportAt,  DateTime expiresAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String fuelType,  double price,  String currencyCode,  int reportCount,  double confidence,  DateTime lastReportAt,  DateTime expiresAt,  int flagCount,  bool disputed)  $default,) {final _that = this;
 switch (_that) {
 case _CommunityPrice():
-return $default(_that.fuelType,_that.price,_that.currencyCode,_that.reportCount,_that.confidence,_that.lastReportAt,_that.expiresAt);case _:
+return $default(_that.fuelType,_that.price,_that.currencyCode,_that.reportCount,_that.confidence,_that.lastReportAt,_that.expiresAt,_that.flagCount,_that.disputed);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -205,10 +210,10 @@ return $default(_that.fuelType,_that.price,_that.currencyCode,_that.reportCount,
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String fuelType,  double price,  String currencyCode,  int reportCount,  double confidence,  DateTime lastReportAt,  DateTime expiresAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String fuelType,  double price,  String currencyCode,  int reportCount,  double confidence,  DateTime lastReportAt,  DateTime expiresAt,  int flagCount,  bool disputed)?  $default,) {final _that = this;
 switch (_that) {
 case _CommunityPrice() when $default != null:
-return $default(_that.fuelType,_that.price,_that.currencyCode,_that.reportCount,_that.confidence,_that.lastReportAt,_that.expiresAt);case _:
+return $default(_that.fuelType,_that.price,_that.currencyCode,_that.reportCount,_that.confidence,_that.lastReportAt,_that.expiresAt,_that.flagCount,_that.disputed);case _:
   return null;
 
 }
@@ -220,7 +225,7 @@ return $default(_that.fuelType,_that.price,_that.currencyCode,_that.reportCount,
 
 
 class _CommunityPrice extends CommunityPrice {
-  const _CommunityPrice({required this.fuelType, required this.price, required this.currencyCode, required this.reportCount, required this.confidence, required this.lastReportAt, required this.expiresAt}): super._();
+  const _CommunityPrice({required this.fuelType, required this.price, required this.currencyCode, required this.reportCount, required this.confidence, required this.lastReportAt, required this.expiresAt, this.flagCount = 0, this.disputed = false}): super._();
   
 
 @override final  String fuelType;
@@ -232,6 +237,11 @@ class _CommunityPrice extends CommunityPrice {
 @override final  DateTime lastReportAt;
 /// After this the price is stale and must not be used for ranking.
 @override final  DateTime expiresAt;
+/// Distinct users who said the current price is wrong (server-counted).
+@override@JsonKey() final  int flagCount;
+/// Enough "wrong price" flags since the last report: shown with a warning
+/// and never used for ranking until a new report replaces it.
+@override@JsonKey() final  bool disputed;
 
 /// Create a copy of CommunityPrice
 /// with the given fields replaced by the non-null parameter values.
@@ -243,18 +253,18 @@ _$CommunityPriceCopyWith<_CommunityPrice> get copyWith => __$CommunityPriceCopyW
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _CommunityPrice&&(identical(other.fuelType, fuelType) || other.fuelType == fuelType)&&(identical(other.price, price) || other.price == price)&&(identical(other.currencyCode, currencyCode) || other.currencyCode == currencyCode)&&(identical(other.reportCount, reportCount) || other.reportCount == reportCount)&&(identical(other.confidence, confidence) || other.confidence == confidence)&&(identical(other.lastReportAt, lastReportAt) || other.lastReportAt == lastReportAt)&&(identical(other.expiresAt, expiresAt) || other.expiresAt == expiresAt));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _CommunityPrice&&(identical(other.fuelType, fuelType) || other.fuelType == fuelType)&&(identical(other.price, price) || other.price == price)&&(identical(other.currencyCode, currencyCode) || other.currencyCode == currencyCode)&&(identical(other.reportCount, reportCount) || other.reportCount == reportCount)&&(identical(other.confidence, confidence) || other.confidence == confidence)&&(identical(other.lastReportAt, lastReportAt) || other.lastReportAt == lastReportAt)&&(identical(other.expiresAt, expiresAt) || other.expiresAt == expiresAt)&&(identical(other.flagCount, flagCount) || other.flagCount == flagCount)&&(identical(other.disputed, disputed) || other.disputed == disputed));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,fuelType,price,currencyCode,reportCount,confidence,lastReportAt,expiresAt);
+    return Object.hash(runtimeType,fuelType,price,currencyCode,reportCount,confidence,lastReportAt,expiresAt,flagCount,disputed);
 }
 
 @override
 String toString() {
-    return 'CommunityPrice(fuelType: $fuelType, price: $price, currencyCode: $currencyCode, reportCount: $reportCount, confidence: $confidence, lastReportAt: $lastReportAt, expiresAt: $expiresAt)';
+    return 'CommunityPrice(fuelType: $fuelType, price: $price, currencyCode: $currencyCode, reportCount: $reportCount, confidence: $confidence, lastReportAt: $lastReportAt, expiresAt: $expiresAt, flagCount: $flagCount, disputed: $disputed)';
 }
 
 
@@ -265,7 +275,7 @@ abstract mixin class _$CommunityPriceCopyWith<$Res> implements $CommunityPriceCo
   factory _$CommunityPriceCopyWith(_CommunityPrice value, $Res Function(_CommunityPrice) _then) = __$CommunityPriceCopyWithImpl;
 @override @useResult
 $Res call({
- String fuelType, double price, String currencyCode, int reportCount, double confidence, DateTime lastReportAt, DateTime expiresAt
+ String fuelType, double price, String currencyCode, int reportCount, double confidence, DateTime lastReportAt, DateTime expiresAt, int flagCount, bool disputed
 });
 
 
@@ -282,7 +292,7 @@ class __$CommunityPriceCopyWithImpl<$Res>
 
 /// Create a copy of CommunityPrice
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? fuelType = null,Object? price = null,Object? currencyCode = null,Object? reportCount = null,Object? confidence = null,Object? lastReportAt = null,Object? expiresAt = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? fuelType = null,Object? price = null,Object? currencyCode = null,Object? reportCount = null,Object? confidence = null,Object? lastReportAt = null,Object? expiresAt = null,Object? flagCount = null,Object? disputed = null,}) {
   return _then(_CommunityPrice(
 fuelType: null == fuelType ? _self.fuelType : fuelType // ignore: cast_nullable_to_non_nullable
 as String,price: null == price ? _self.price : price // ignore: cast_nullable_to_non_nullable
@@ -291,7 +301,9 @@ as String,reportCount: null == reportCount ? _self.reportCount : reportCount // 
 as int,confidence: null == confidence ? _self.confidence : confidence // ignore: cast_nullable_to_non_nullable
 as double,lastReportAt: null == lastReportAt ? _self.lastReportAt : lastReportAt // ignore: cast_nullable_to_non_nullable
 as DateTime,expiresAt: null == expiresAt ? _self.expiresAt : expiresAt // ignore: cast_nullable_to_non_nullable
-as DateTime,
+as DateTime,flagCount: null == flagCount ? _self.flagCount : flagCount // ignore: cast_nullable_to_non_nullable
+as int,disputed: null == disputed ? _self.disputed : disputed // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 

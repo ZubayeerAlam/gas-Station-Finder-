@@ -2783,6 +2783,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Google'**
   String get priceSourceGoogleShort;
+
+  /// No description provided for @flagWrongPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'This price looks wrong'**
+  String get flagWrongPrice;
+
+  /// No description provided for @priceFlaggedByYou.
+  ///
+  /// In en, this message translates to:
+  /// **'You flagged this price · undo'**
+  String get priceFlaggedByYou;
+
+  /// No description provided for @priceFlagSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Thanks. Three different people flagging it marks the price as disputed.'**
+  String get priceFlagSent;
+
+  /// No description provided for @priceFlagRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'Flag removed'**
+  String get priceFlagRemoved;
+
+  /// No description provided for @priceDisputed.
+  ///
+  /// In en, this message translates to:
+  /// **'Disputed: {count} people say it is wrong'**
+  String priceDisputed(int count);
 }
 
 class _AppLocalizationsDelegate

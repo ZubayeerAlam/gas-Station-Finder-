@@ -32,6 +32,10 @@ final myVoteProvider = StreamProvider.family<StationVote?, String>(
   (ref, stationId) => ref.watch(communityRepositoryProvider).watchMyVote(stationId),
 );
 
+final myPriceFlagsProvider = StreamProvider.family<Set<String>, String>(
+  (ref, stationId) => ref.watch(communityRepositoryProvider).watchMyFlags(stationId),
+);
+
 final alertRulesProvider = StreamProvider<List<PriceAlertRule>>(
   (ref) => ref.watch(communityRepositoryProvider).watchAlertRules(),
 );

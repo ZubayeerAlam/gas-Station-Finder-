@@ -83,7 +83,10 @@ class _CommunitySectionState extends ConsumerState<CommunitySection> {
           AsyncError(:final error) => Text(describeFailure(error, l, fallback: l.couldNotLoadCommunityPrices), style: muted),
           _ => const LinearProgressIndicator(),
         },
-        if (_historyFuel case final fuel?) PriceHistoryPanel(stationId: id, fuelType: fuel),
+        if (_historyFuel case final fuel?) ...[
+          PriceHistoryPanel(stationId: id, fuelType: fuel),
+          PriceFlagButton(stationId: id, fuelType: fuel),
+        ],
         const SizedBox(height: AppSpacing.md),
         ReliabilityPanel(stationId: id),
       ],
@@ -114,6 +117,7 @@ class CommunityPriceTile extends StatelessWidget {
         l.communityReports(l.reportCount(price.reportCount)),
         l.updatedAgo(relativeTime(price.lastReportAt, l, now: now)),
         if (!fresh) l.outdated,
+        if (price.disputed) l.priceDisputed(price.flagCount),
       ].join(' · ')),
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
@@ -122,13 +126,54 @@ class CommunityPriceTile extends StatelessWidget {
             Fmt.price(price.price, price.currencyCode),
             style: theme.textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.w700,
-              color: fresh ? null : theme.colorScheme.onSurfaceVariant,
+              color: price.disputed ? theme.colorScheme.error : fresh ? null : theme.colorScheme.onSurfaceVariant,
               decoration: fresh ? null : TextDecoration.lineThrough,
             ),
           ),
           Icon(selected ? Icons.expand_less_rounded : Icons.show_chart_rounded, semanticLabel: l.priceHistory),
         ],
       ),
+    );
+  }
+}
+
+/// "This price looks wrong" for the selected fuel. One flag per user; three
+/// different users mark the price as disputed (counted by the server).
+class PriceFlagButton extends ConsumerWidget {
+  const PriceFlagButton({super.key, required this.stationId, required this.fuelType});
+
+  final String stationId;
+  final String fuelType;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l = context.l10n;
+    final flagged = ref.watch(myPriceFlagsProvider(stationId)).value?.contains(fuelType) ?? false;
+    final repo = ref.read(communityRepositoryProvider);
+    Future<void> run(Future<Result<void>> Function() action, String done) async {
+      final messenger = ScaffoldMessenger.of(context);
+      final result = await action();
+      messenger.showSnackBar(SnackBar(content: Text(switch (result) {
+        Ok() => done,
+        Err(:final failure) => describeFailure(failure, l),
+      })));
+    }
+
+    return Align(
+      alignment: AlignmentDirectional.centerStart,
+      child: flagged
+          ? TextButton.icon(
+              key: const Key('unflagPrice'),
+              onPressed: () => run(() => repo.unflagPrice(stationId, fuelType), l.priceFlagRemoved),
+              icon: const Icon(Icons.flag_rounded),
+              label: Text(l.priceFlaggedByYou),
+            )
+          : TextButton.icon(
+              key: const Key('flagPrice'),
+              onPressed: () => run(() => repo.flagPrice(stationId, fuelType), l.priceFlagSent),
+              icon: const Icon(Icons.outlined_flag_rounded),
+              label: Text(l.flagWrongPrice),
+            ),
     );
   }
 }

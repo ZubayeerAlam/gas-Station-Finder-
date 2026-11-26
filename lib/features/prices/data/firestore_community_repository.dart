@@ -106,6 +106,29 @@ class FirestoreCommunityRepository implements CommunityRepository {
         });
       });
 
+  @override
+  Stream<Set<String>> watchMyFlags(String stationId) => _signedIn(
+        (uid) => _station(stationId).collection('priceFlags').where('uid', isEqualTo: uid).snapshots().map(
+              (s) => {for (final d in s.docs) ?(d.data()['fuelType'] as String?)},
+            ),
+      );
+
+  @override
+  Future<Result<void>> flagPrice(String stationId, String fuelType) => _guard(() async {
+        final uid = await _uid();
+        await _station(stationId).collection('priceFlags').doc('${fuelType}_$uid').set({
+          'uid': uid,
+          'fuelType': fuelType,
+          'at': FieldValue.serverTimestamp(),
+        });
+      });
+
+  @override
+  Future<Result<void>> unflagPrice(String stationId, String fuelType) => _guard(() async {
+        final uid = await _uid();
+        await _station(stationId).collection('priceFlags').doc('${fuelType}_$uid').delete();
+      });
+
   CollectionReference<Map<String, dynamic>> _rules(String uid) =>
       _db.collection('users').doc(uid).collection('alertRules');
 
@@ -181,6 +204,8 @@ CommunityPrice? parseCommunityPrice(Map<String, dynamic> m) {
       confidence: (_num(m['confidence']) ?? 0).clamp(0.0, 1.0),
       lastReportAt: last,
       expiresAt: expires,
+      flagCount: (m['flagCount'] as num?)?.toInt() ?? 0,
+      disputed: m['disputed'] == true,
     );
   }
   return null;

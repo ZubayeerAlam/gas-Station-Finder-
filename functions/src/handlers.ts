@@ -1,6 +1,6 @@
 import { FieldValue, Timestamp, type Firestore } from 'firebase-admin/firestore';
 import {
-  ALERT_COOLDOWN_HOURS, PRICE_TTL_HOURS, VOTE_TTL_DAYS, alertMatches, consensus, dayKey, rateLimitReason,
+  ALERT_COOLDOWN_HOURS, PRICE_TTL_HOURS, VOTE_TTL_DAYS, alertMatches, consensus, dayKey, disputeState, rateLimitReason,
   reliability, trustScore, type AlertRule, type Report,
 } from './pricing';
 
@@ -208,4 +208,30 @@ async function sendAlerts(
     sent++;
   }
   return sent;
+}
+
+/**
+ * Recounts "wrong price" flags for one station + fuel and stores the result on
+ * the public aggregate (`flagCount`, `disputed`). Flags themselves stay
+ * private. A new report rewrites the aggregate without these fields, which
+ * clears the dispute (older flags no longer apply). Returns null when there is
+ * no aggregate to flag.
+ */
+export async function refreshDispute(db: Firestore, stationId: string, fuelType: string, nowMs = Date.now()):
+  Promise<{ flagCount: number; disputed: boolean } | null> {
+  const stationRef = db.collection('stations').doc(stationId);
+  const priceRef = stationRef.collection('prices').doc(fuelType);
+  const [price, flags] = await Promise.all([
+    priceRef.get(),
+    stationRef.collection('priceFlags').where('fuelType', '==', fuelType).get(),
+  ]);
+  const last = price.get('lastReportAt') as Timestamp | undefined;
+  if (!price.exists || !last) return null;
+  const state = disputeState(
+    flags.docs.map((d) => ({ uid: d.get('uid') as string, atMs: (d.get('at') as Timestamp).toMillis() })),
+    last.toMillis(),
+    nowMs,
+  );
+  await priceRef.set(state, { merge: true });
+  return state;
 }

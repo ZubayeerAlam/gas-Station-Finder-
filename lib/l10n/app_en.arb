@@ -563,5 +563,15 @@
   "priceSourceCommunityShort": "community",
   "@priceSourceCommunityShort": {"placeholders": {}},
   "priceSourceGoogleShort": "Google",
-  "@priceSourceGoogleShort": {"placeholders": {}}
+  "@priceSourceGoogleShort": {"placeholders": {}},
+  "flagWrongPrice": "This price looks wrong",
+  "@flagWrongPrice": {"placeholders": {}},
+  "priceFlaggedByYou": "You flagged this price · undo",
+  "@priceFlaggedByYou": {"placeholders": {}},
+  "priceFlagSent": "Thanks. Three different people flagging it marks the price as disputed.",
+  "@priceFlagSent": {"placeholders": {}},
+  "priceFlagRemoved": "Flag removed",
+  "@priceFlagRemoved": {"placeholders": {}},
+  "priceDisputed": "Disputed: {count} people say it is wrong",
+  "@priceDisputed": {"placeholders": {"count": {"type": "int"}}}
 }

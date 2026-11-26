@@ -30,6 +30,15 @@ class UnavailableCommunityRepository implements CommunityRepository {
   Stream<StationVote?> watchMyVote(String stationId) => Stream.value(null);
   @override
   Future<Result<void>> vote(String stationId, StationVote vote) async => _err();
+
+  @override
+  Stream<Set<String>> watchMyFlags(String stationId) => Stream.value(const {});
+
+  @override
+  Future<Result<void>> flagPrice(String stationId, String fuelType) async => _err();
+
+  @override
+  Future<Result<void>> unflagPrice(String stationId, String fuelType) async => _err();
   @override
   Stream<List<PriceAlertRule>> watchAlertRules() => Stream.value(const []);
   @override

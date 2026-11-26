@@ -119,7 +119,7 @@ Implementation history and evidence live in [BUILD.md](BUILD.md). Rule: work one
 - [-] Firebase Auth — anonymous sign-in on first community use (verified on iOS simulator against the Auth emulator); Google sign-in not done
 - [x] Firestore model: top-level `priceReports` (append-only) → `stations/{id}/prices/{fuel}` aggregates (function-written)
 - [-] Submit report (fuel type, price, currency; server timestamp) + live server verdict (accepted / outlier / duplicate / rate-limited) — widget-tested; on-device blocked because stations come from Places (key 403)
-- [ ] Upvote / flag reports (replaced for now by outlier rejection + open/closed/out-of-fuel votes)
+- [x] Flag reports: "This price looks wrong" per station + fuel (one private flag per user, undo); 3 distinct users since the last report → price shown as **disputed** and dropped from ranking until a new report replaces it — rules + unit + emulator-tested, widget-tested, **not deployed**
 - [x] Reporter reputation — Laplace trust (accepted+1)/(accepted+rejected+2); corroborated (±3 %, ≥ 2 reports) raises, outliers lower
 - [x] Cloud Function (TS) aggregation: TTL 72 h, majority currency (no conversion), leave-one-out outlier test (> 15 %), weighted median (trust × recency half-life 12 h), confidence
 - [x] Stale price expiry (72 h TTL, `expiresAt` on aggregate)
@@ -167,7 +167,7 @@ Implementation history and evidence live in [BUILD.md](BUILD.md). Rule: work one
 
 ### 1.12 Community Station Verification
 - [-] Open/closed + out-of-fuel votes (one private vote per user, 30-day window) — widget-tested; closures / EV connector status / facilities not done
-- [ ] Trust scoring, expiry, moderation
+- [x] Trust scoring, expiry, moderation — reporter trust + 72 h TTL (Phase 2) and community moderation via disputed prices (above); no human moderator queue (by design: no personal data to review)
 
 ### Phase 1 Acceptance
 - [ ] Nearby + destination route search work
