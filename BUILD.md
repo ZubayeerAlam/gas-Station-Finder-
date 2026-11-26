@@ -493,3 +493,27 @@ Plan: document-expiry and service reminders per vehicle (BRTA tax token, fitness
   4. The written file (read from the app container) had the BOM, CRLF and `"Meghna,"` quoted.
 - **Not verified:** Android share sheet; opening the file in Excel or Google Sheets.
 
+## Phase 5 — Batch 5.D.1: nearby list view (2026‑11‑27)
+*(implemented, unit + widget-tested; live list not checked: the old Google key in `config/dev.json` is rejected and there is no OCM key)*
+- **Why:** a map with many pins is hard to scan. A list answers "which is closest?" at a glance and is easier with large text or a screen reader.
+- `stations/domain/nearby_sort.dart`, pure:
+  - `nearestFirst` uses straight-line haversine distance and a stable sort.
+  - `sortChargers`: *nearest* or *fastest* (max kW, unknown power last, then distance). Out-of-service chargers always go to the end.
+  - Fuel stations are sorted by distance only: a nearby search carries no prices, and none are invented.
+- `stations/presentation/widgets/nearby_list.dart`:
+  - `NearbyStationList`: name, address and distance.
+  - `NearbyChargerList`: power, operator, "Out of service", and *Nearest / Fastest charging* chips.
+  - Tapping a row opens the same details sheet as the map marker.
+- **Map screen:**
+  - A list/map toggle in the status banner, shown only when there is something to list.
+  - The list covers the map, but the map stays alive underneath, so the camera and markers are kept.
+  - "Directions" from a sheet returns to the map so the route is visible.
+  - No extra API calls: the list reuses the already-loaded results.
+- EN/BN strings for the toggle, sort chips and "Out of service".
+- **Tests:**
+  - `nearby_sort_test.dart`, 4 tests.
+  - `nearby_list_test.dart`, 3 tests: order, distances and tap; charger details, sort switch and out-of-service last; Bengali at 200% text with the tap-target, label and contrast guidelines.
+  - Flutter **250 passed**, analyze clean, domain coverage **95.2%**.
+- **iOS Simulator:** launches fine. The banner shows the "API key rejected" message and, correctly, no list toggle (nothing to list).
+- **Not verified:** the list with real stations or chargers; it needs the new Google key, or the OCM key for chargers.
+

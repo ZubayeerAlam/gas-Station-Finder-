@@ -21,7 +21,9 @@ import '../../ev/presentation/widgets/charge_point_sheet.dart';
 import '../../ev/presentation/widgets/ev_filter_sheet.dart';
 import '../../ev/presentation/widgets/marker_icons.dart';
 import '../domain/entities/station.dart';
+import '../domain/nearby_sort.dart';
 import 'stations_controllers.dart';
+import 'widgets/nearby_list.dart';
 import 'widgets/station_details_sheet.dart';
 
 LatLng _latLng(GeoPoint p) => LatLng(p.latitude, p.longitude);
@@ -108,6 +110,10 @@ class _StationsMap extends ConsumerStatefulWidget {
 class _StationsMapState extends ConsumerState<_StationsMap> {
   GoogleMapController? _map;
 
+  /// List view instead of the map (the map stays alive underneath).
+  bool _list = false;
+  ChargerSort _chargerSort = ChargerSort.nearest;
+
   @override
   void didUpdateWidget(covariant _StationsMap oldWidget) {
     super.didUpdateWidget(oldWidget);
@@ -129,6 +135,7 @@ class _StationsMapState extends ConsumerState<_StationsMap> {
       origin: widget.origin,
       onDirections: () {
         Navigator.of(context).pop();
+        setState(() => _list = false);
         ref.read(routeControllerProvider.notifier).routeTo(station.location);
       },
     );
@@ -182,6 +189,7 @@ class _StationsMapState extends ConsumerState<_StationsMap> {
       origin: widget.origin,
       onDirections: () {
         Navigator.of(context).pop();
+        setState(() => _list = false);
         ref.read(routeControllerProvider.notifier).routeTo(p.location);
       },
     );
@@ -263,6 +271,10 @@ class _StationsMapState extends ConsumerState<_StationsMap> {
         ? () => ref.invalidate(nearbyChargePointsProvider)
         : () => ref.invalidate(nearbyStationsProvider);
 
+    final hasItems = ev ? (chargers.value?.isNotEmpty ?? false) : (stations.value?.isNotEmpty ?? false);
+    final showList = _list && hasItems;
+    final routeShown = route.isLoading || route.value != null;
+
     return Stack(
       children: [
         GoogleMap(
@@ -274,10 +286,12 @@ class _StationsMapState extends ConsumerState<_StationsMap> {
           markers: markers,
           polylines: polylines,
         ),
+        if (showList) Positioned.fill(child: ColoredBox(color: scheme.surface)),
         Positioned(
           top: AppSpacing.md,
           left: AppSpacing.md,
-          right: 72,
+          right: showList ? AppSpacing.md : 72,
+          bottom: showList ? 0 : null,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -288,16 +302,37 @@ class _StationsMapState extends ConsumerState<_StationsMap> {
                 onFilters: ev ? () => _openFilters(allChargers) : null,
               ),
               const SizedBox(height: AppSpacing.sm),
-              _StatusBanner(status: status, onRetry: retry),
+              _StatusBanner(
+                status: status,
+                onRetry: retry,
+                listShown: showList,
+                onToggleList: hasItems ? () => setState(() => _list = !showList) : null,
+              ),
               if (ev && (chargers.value?.isNotEmpty ?? false))
                 Padding(
                   padding: const EdgeInsets.only(top: AppSpacing.xs),
                   child: Text(kOcmAttribution, style: Theme.of(context).textTheme.labelSmall),
                 ),
+              if (showList)
+                Expanded(
+                  child: ev
+                      ? NearbyChargerList(
+                          chargers: sortChargers(chargers.value!, widget.origin, _chargerSort),
+                          sort: _chargerSort,
+                          onSort: (v) => setState(() => _chargerSort = v),
+                          onOpen: _openChargePoint,
+                          bottomPadding: routeShown ? 96 : 0,
+                        )
+                      : NearbyStationList(
+                          stations: nearestFirst(stations.value!, widget.origin, (s) => s.location),
+                          onOpen: _openStation,
+                          bottomPadding: routeShown ? 96 : 0,
+                        ),
+                ),
             ],
           ),
         ),
-        if (route.isLoading || route.value != null)
+        if (routeShown)
           Positioned(
             left: AppSpacing.md,
             right: AppSpacing.md,
@@ -418,10 +453,14 @@ class MapModeBar extends StatelessWidget {
 }
 
 class _StatusBanner extends StatelessWidget {
-  const _StatusBanner({required this.status, this.onRetry});
+  const _StatusBanner({required this.status, this.onRetry, this.onToggleList, this.listShown = false});
 
   final MapStatus status;
   final VoidCallback? onRetry;
+
+  /// Switches between the map and the nearby list; null when there is nothing to list.
+  final VoidCallback? onToggleList;
+  final bool listShown;
 
   @override
   Widget build(BuildContext context) {
@@ -436,6 +475,13 @@ class _StatusBanner extends StatelessWidget {
             const SizedBox(width: AppSpacing.sm),
             Expanded(child: Text(status.text, maxLines: 4, overflow: TextOverflow.ellipsis)),
             if (onRetry != null) TextButton(onPressed: onRetry, child: Text(context.l10n.retry)),
+            if (onToggleList != null)
+              IconButton(
+                key: const ValueKey('toggleNearbyList'),
+                tooltip: listShown ? context.l10n.nearbyShowMap : context.l10n.nearbyShowList,
+                onPressed: onToggleList,
+                icon: Icon(listShown ? Icons.map_outlined : Icons.view_list_rounded),
+              ),
           ],
         ),
       ),

@@ -1556,4 +1556,19 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get errorExport => 'ইতিহাস এক্সপোর্ট করা যায়নি। আবার চেষ্টা করুন।';
+
+  @override
+  String get nearbyShowList => 'তালিকা হিসেবে দেখুন';
+
+  @override
+  String get nearbyShowMap => 'ম্যাপ দেখুন';
+
+  @override
+  String get sortNearest => 'সবচেয়ে কাছে';
+
+  @override
+  String get sortFastest => 'দ্রুততম চার্জিং';
+
+  @override
+  String get chargerOutOfService => 'বন্ধ আছে';
 }

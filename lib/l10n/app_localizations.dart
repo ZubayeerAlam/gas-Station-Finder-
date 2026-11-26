@@ -2567,6 +2567,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not export the history. Please try again.'**
   String get errorExport;
+
+  /// No description provided for @nearbyShowList.
+  ///
+  /// In en, this message translates to:
+  /// **'Show as list'**
+  String get nearbyShowList;
+
+  /// No description provided for @nearbyShowMap.
+  ///
+  /// In en, this message translates to:
+  /// **'Show map'**
+  String get nearbyShowMap;
+
+  /// No description provided for @sortNearest.
+  ///
+  /// In en, this message translates to:
+  /// **'Nearest'**
+  String get sortNearest;
+
+  /// No description provided for @sortFastest.
+  ///
+  /// In en, this message translates to:
+  /// **'Fastest charging'**
+  String get sortFastest;
+
+  /// No description provided for @chargerOutOfService.
+  ///
+  /// In en, this message translates to:
+  /// **'Out of service'**
+  String get chargerOutOfService;
 }
 
 class _AppLocalizationsDelegate

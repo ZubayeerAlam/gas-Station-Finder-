@@ -1568,4 +1568,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errorExport => 'Could not export the history. Please try again.';
+
+  @override
+  String get nearbyShowList => 'Show as list';
+
+  @override
+  String get nearbyShowMap => 'Show map';
+
+  @override
+  String get sortNearest => 'Nearest';
+
+  @override
+  String get sortFastest => 'Fastest charging';
+
+  @override
+  String get chargerOutOfService => 'Out of service';
 }

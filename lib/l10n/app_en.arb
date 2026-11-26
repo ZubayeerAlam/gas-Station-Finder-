@@ -491,5 +491,15 @@
   "historyExportSubject": "FuelWise history: {vehicle}",
   "@historyExportSubject": {"placeholders": {"vehicle": {"type": "String"}}},
   "errorExport": "Could not export the history. Please try again.",
-  "@errorExport": {"placeholders": {}}
+  "@errorExport": {"placeholders": {}},
+  "nearbyShowList": "Show as list",
+  "@nearbyShowList": {"placeholders": {}},
+  "nearbyShowMap": "Show map",
+  "@nearbyShowMap": {"placeholders": {}},
+  "sortNearest": "Nearest",
+  "@sortNearest": {"placeholders": {}},
+  "sortFastest": "Fastest charging",
+  "@sortFastest": {"placeholders": {}},
+  "chargerOutOfService": "Out of service",
+  "@chargerOutOfService": {"placeholders": {}}
 }

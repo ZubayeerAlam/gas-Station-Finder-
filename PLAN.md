@@ -245,13 +245,15 @@ Problem: expired BRTA documents (tax token, fitness, insurance, route permit) me
 - [x] 5.A Privacy & data screen (Garage → shield icon): delete everything on this device; delete my community data and anonymous account (`deleteMyData` callable, emulator-tested, **not deployed**)
 - [x] 5.B Assistant on the Gemini API free tier: adapter, configurable model, 429 → "free daily limit" (no paid fallback); unit + emulator-tested, **no live call yet (no key), not deployed**
 - [x] 5.C Export fill-up history as CSV (History → share icon; system share sheet, Save to Files / Drive / email) — unit + widget-tested, iOS Simulator-checked
-- [ ] 5.D More keyless features (nearby list view, route alternatives, trip history)
+- [x] 5.D.1 Nearby list view (map ↔ list toggle in the status banner; stations nearest first; chargers nearest / fastest, out-of-service last) — unit + widget-tested; **live list not seen yet** (old Google key rejected, no OCM key)
+- [ ] 5.D.2 Route alternatives (OSRM `alternatives=true`)
+- [ ] 5.D.3 Trip history
 
 ### Pending physical-device verification (deferred by the user, Moto G96 / Android 16)
 Development continues without these; each stays unchecked until it is run on the phone.
 - [ ] Care notification permission prompt, delivery at 09:00, and rescheduling after reboot
 - [ ] Location permission + nearby stations on real GPS
-- [ ] Maps / Places with the new restricted Google key (key not provided yet)
+- [ ] Maps / Places with the new restricted Google key (key not provided yet), including the nearby list view with real stations
 - [ ] Bengali layout and 200% text on the real screen
 - [ ] CSV export share sheet on Android (only checked on the iOS Simulator)
 - [ ] Privacy screen: delete device data, delete online data against a deployed backend (needs deploy approval)
