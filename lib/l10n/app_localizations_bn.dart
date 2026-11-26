@@ -1640,4 +1640,28 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get goToMap => 'ম্যাপে যান';
+
+  @override
+  String get pickCommonVehicle => 'একটি প্রচলিত মডেল থেকে শুরু করুন';
+
+  @override
+  String get searchVehicleModel => 'ব্র্যান্ড বা মডেল খুঁজুন';
+
+  @override
+  String get catalogNoMatch =>
+      'মিল পাওয়া যায়নি। ফর্মে আপনার গাড়ির তথ্য দিন।';
+
+  @override
+  String get catalogCars => 'গাড়ি';
+
+  @override
+  String get catalogMotorbikes => 'মোটরসাইকেল';
+
+  @override
+  String get catalogElectric => 'ইলেকট্রিক';
+
+  @override
+  String catalogTypicalNote(String model) {
+    return '$model-এর সাধারণ মান, অফিসিয়াল তথ্য নয়। ম্যানুয়াল দেখে নিজের চালানোর সাথে মিলিয়ে ঠিক করুন।';
+  }
 }

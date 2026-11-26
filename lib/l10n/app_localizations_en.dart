@@ -1653,4 +1653,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get goToMap => 'Go to the map';
+
+  @override
+  String get pickCommonVehicle => 'Start from a common model';
+
+  @override
+  String get searchVehicleModel => 'Search make or model';
+
+  @override
+  String get catalogNoMatch =>
+      'No match. Enter your vehicle\'s details in the form.';
+
+  @override
+  String get catalogCars => 'Cars';
+
+  @override
+  String get catalogMotorbikes => 'Motorbikes';
+
+  @override
+  String get catalogElectric => 'Electric';
+
+  @override
+  String catalogTypicalNote(String model) {
+    return 'Typical values for $model, not official figures. Check your manual and adjust them to your own driving.';
+  }
 }

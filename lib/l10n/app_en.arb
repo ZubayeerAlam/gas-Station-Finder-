@@ -541,5 +541,19 @@
   "pageNotFoundBody": "This link does not open anything in FuelWise.",
   "@pageNotFoundBody": {"placeholders": {}},
   "goToMap": "Go to the map",
-  "@goToMap": {"placeholders": {}}
+  "@goToMap": {"placeholders": {}},
+  "pickCommonVehicle": "Start from a common model",
+  "@pickCommonVehicle": {"placeholders": {}},
+  "searchVehicleModel": "Search make or model",
+  "@searchVehicleModel": {"placeholders": {}},
+  "catalogNoMatch": "No match. Enter your vehicle's details in the form.",
+  "@catalogNoMatch": {"placeholders": {}},
+  "catalogCars": "Cars",
+  "@catalogCars": {"placeholders": {}},
+  "catalogMotorbikes": "Motorbikes",
+  "@catalogMotorbikes": {"placeholders": {}},
+  "catalogElectric": "Electric",
+  "@catalogElectric": {"placeholders": {}},
+  "catalogTypicalNote": "Typical values for {model}, not official figures. Check your manual and adjust them to your own driving.",
+  "@catalogTypicalNote": {"placeholders": {"model": {"type": "String"}}}
 }

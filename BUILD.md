@@ -574,3 +574,19 @@ Plan: document-expiry and service reminders per vehicle (BRTA tax token, fitness
 - **Privacy decision:** no Crashlytics or other crash service. Records stay in memory (last 20), each one line, message cut to 200 characters, no stack trace. Nothing leaves the device. A crash service would need a consent decision and a privacy-policy change, so it is left for "Privacy-conscious analytics".
 - **Router:** `errorBuilder` → `NotFoundScreen` (EN/BN "Page not found", "Go to the map") instead of go_router's English error page.
 - **Tests:** `test/core/crash_handler_test.dart`, 6 tests: ring buffer (order, cap, shortening, one line); async errors handled; framework errors recorded and still presented; provider observer; Bengali fallback card; unknown path → Not found → back to the map. Flutter **286 passed**, analyze clean, domain coverage **95.4%**.
+
+## Phase 3 follow-up — Make/model picker (2026‑11‑27)
+*(implemented, unit + widget-tested)*
+- **Why:** most people don't know their tank size or L/100 km offhand. Free-text entry was the main friction in adding a vehicle.
+- **Domain:** `garage/domain/vehicle_catalog.dart`.
+  - An offline list of 20 common Bangladesh vehicles: 13 cars, including the Toyota Axio/Allion/Premio/Noah, Honda Vezel/Grace hybrids and a diesel Hiace; 5 motorbikes (Pulsar 150, FZ-S V3, Hornet 160R, Apache RTR 160 4V, Gixxer 155); 2 EVs (BYD Atto 3, Dolphin).
+  - `searchCatalog`: every word must match, in any order and any case.
+- **Honesty:**
+  - The values are approximations written for this app, not official manufacturer figures and not taken from an API.
+  - The form says "Typical values for X, not official figures. Check your manual…", and every field stays editable.
+  - A test checks plausible ranges per kind, to catch unit mix-ups.
+- **UI:**
+  - "Start from a common model" (new vehicles only) opens a searchable sheet grouped by Cars / Motorbikes / Electric.
+  - Picking fills name, energy type, fuel type, capacity and consumption. The fuel dropdown re-reads its value via a key.
+  - EN/BN strings.
+- **Tests:** `vehicle_catalog_test.dart` (7 tests; 293 total pass, domain coverage 95.5 %): data validity + uniqueness, plausible ranges, search, diesel pick → edit → save, EV pick switches to electric, no-match message, Bengali at 200 % text with accessibility guidelines.

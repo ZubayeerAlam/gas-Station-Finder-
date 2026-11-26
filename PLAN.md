@@ -150,7 +150,7 @@ Implementation history and evidence live in [BUILD.md](BUILD.md). Rule: work one
 ### 1.9 My Garage
 - [x] Multiple vehicles (name, fuel/energy type, tank/battery, consumption in 7 units, preferred fuel, EV charging efficiency) — drift (SQLite) persistence, active vehicle, edit/delete + undo
 - [-] Range, trip cost, required fuel/energy, reachable stations — full-tank range shown in Garage; trip cost/reachability wired into along-route UI later (1.2)
-- [ ] Make/model picker (free-text name only for now)
+- [x] Make/model picker: "Start from a common model" on the add-vehicle form — 20 common Bangladesh cars, motorbikes and EVs, searchable, fills name / fuel / tank or battery / consumption as editable *typical* values with a "not official figures" note — unit + widget-tested (incl. Bengali 200 %)
 
 ### 1.10 Fill-up & Trip History
 - [x] Record fill-ups / charging sessions (date, amount, cost, currency, odometer, full/partial, station) — drift, delete + undo

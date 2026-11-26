@@ -2717,6 +2717,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Go to the map'**
   String get goToMap;
+
+  /// No description provided for @pickCommonVehicle.
+  ///
+  /// In en, this message translates to:
+  /// **'Start from a common model'**
+  String get pickCommonVehicle;
+
+  /// No description provided for @searchVehicleModel.
+  ///
+  /// In en, this message translates to:
+  /// **'Search make or model'**
+  String get searchVehicleModel;
+
+  /// No description provided for @catalogNoMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'No match. Enter your vehicle\'s details in the form.'**
+  String get catalogNoMatch;
+
+  /// No description provided for @catalogCars.
+  ///
+  /// In en, this message translates to:
+  /// **'Cars'**
+  String get catalogCars;
+
+  /// No description provided for @catalogMotorbikes.
+  ///
+  /// In en, this message translates to:
+  /// **'Motorbikes'**
+  String get catalogMotorbikes;
+
+  /// No description provided for @catalogElectric.
+  ///
+  /// In en, this message translates to:
+  /// **'Electric'**
+  String get catalogElectric;
+
+  /// No description provided for @catalogTypicalNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Typical values for {model}, not official figures. Check your manual and adjust them to your own driving.'**
+  String catalogTypicalNote(String model);
 }
 
 class _AppLocalizationsDelegate

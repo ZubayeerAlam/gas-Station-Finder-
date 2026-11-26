@@ -6,10 +6,12 @@ import 'package:go_router/go_router.dart';
 import '../../../core/router/app_routes.dart';
 import '../../../core/theme/app_theme.dart';
 import '../domain/consumption_unit.dart';
+import '../domain/vehicle_catalog.dart';
 import '../domain/vehicle_profile.dart';
 import '../../../l10n/domain_labels.dart';
 import '../../../l10n/l10n.dart';
 import 'garage_providers.dart';
+import 'vehicle_catalog_sheet.dart';
 
 const kFuelTypeChoices = [
   'REGULAR_UNLEADED', 'MIDGRADE', 'PREMIUM', 'DIESEL', 'LPG', 'METHANE', 'E85', //
@@ -42,6 +44,9 @@ class _VehicleFormScreenState extends ConsumerState<VehicleFormScreen> {
   late EnergyType _type;
   late ConsumptionUnit _unit;
   String? _fuelType;
+
+  /// The catalog entry the values came from (shows the "typical values" note).
+  CatalogVehicle? _picked;
   bool _saving = false;
 
   @override
@@ -82,6 +87,20 @@ class _VehicleFormScreenState extends ConsumerState<VehicleFormScreen> {
     });
   }
 
+  Future<void> _pickFromCatalog() async {
+    final v = await showVehicleCatalogSheet(context);
+    if (v == null || !mounted) return;
+    setState(() {
+      _picked = v;
+      _type = v.energyType;
+      _unit = ConsumptionUnit.defaultFor(v.energyType);
+      _name.text = v.name;
+      _consumption.text = _trim(_unit.fromPer100Km(v.consumptionPer100Km));
+      _capacity.text = _trim(v.capacity);
+      _fuelType = v.fuelType;
+    });
+  }
+
   Future<void> _save() async {
     if (!_form.currentState!.validate()) return;
     setState(() => _saving = true);
@@ -119,6 +138,27 @@ class _VehicleFormScreenState extends ConsumerState<VehicleFormScreen> {
         child: ListView(
           padding: const EdgeInsets.all(AppSpacing.md),
           children: [
+            if (widget.initial == null) ...[
+              OutlinedButton.icon(
+                key: const Key('pickCommonVehicle'),
+                onPressed: _pickFromCatalog,
+                icon: const Icon(Icons.list_alt_rounded),
+                label: Text(l.pickCommonVehicle),
+              ),
+              if (_picked case final p?)
+                Padding(
+                  padding: const EdgeInsets.only(top: AppSpacing.sm),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(Icons.info_outline_rounded, size: 20, color: Theme.of(context).colorScheme.primary),
+                      const SizedBox(width: AppSpacing.sm),
+                      Expanded(child: Text(l.catalogTypicalNote(p.name), key: const Key('catalogNote'))),
+                    ],
+                  ),
+                ),
+              const SizedBox(height: AppSpacing.md),
+            ],
             TextFormField(
               controller: _name,
               textCapitalization: TextCapitalization.words,
@@ -192,6 +232,7 @@ class _VehicleFormScreenState extends ConsumerState<VehicleFormScreen> {
             const SizedBox(height: AppSpacing.md),
             if (!ev)
               DropdownButtonFormField<String>(
+                key: ValueKey(_fuelType), // re-reads initialValue when a catalog pick changes it
                 isExpanded: true, // long labels at large text sizes ellipsize instead of overflowing
                 initialValue: _fuelType,
                 decoration: InputDecoration(labelText: l.fuelTypeLabel),

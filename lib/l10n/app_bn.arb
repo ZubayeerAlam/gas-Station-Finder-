@@ -434,5 +434,12 @@
   "errorPartNotShown": "স্ক্রিনের এই অংশটি দেখানো যায়নি।",
   "pageNotFoundTitle": "পেজটি পাওয়া যায়নি",
   "pageNotFoundBody": "এই লিংকটি FuelWise-এ কিছু খোলে না।",
-  "goToMap": "ম্যাপে যান"
+  "goToMap": "ম্যাপে যান",
+  "pickCommonVehicle": "একটি প্রচলিত মডেল থেকে শুরু করুন",
+  "searchVehicleModel": "ব্র্যান্ড বা মডেল খুঁজুন",
+  "catalogNoMatch": "মিল পাওয়া যায়নি। ফর্মে আপনার গাড়ির তথ্য দিন।",
+  "catalogCars": "গাড়ি",
+  "catalogMotorbikes": "মোটরসাইকেল",
+  "catalogElectric": "ইলেকট্রিক",
+  "catalogTypicalNote": "{model}-এর সাধারণ মান, অফিসিয়াল তথ্য নয়। ম্যানুয়াল দেখে নিজের চালানোর সাথে মিলিয়ে ঠিক করুন।"
 }
