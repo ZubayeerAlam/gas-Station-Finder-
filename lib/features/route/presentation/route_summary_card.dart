@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../l10n/l10n.dart';
+import '../domain/route_energy.dart';
 import '../domain/route_info.dart';
 
 /// Bottom card for the active route: distance and time of the selected route,
@@ -14,7 +15,11 @@ class RouteSummaryCard extends StatelessWidget {
     required this.loading,
     required this.onSelect,
     required this.onClear,
+    this.estimateFor,
   });
+
+  /// Fuel / cost for a route distance (null = no active vehicle).
+  final RouteEnergyEstimate Function(double meters)? estimateFor;
 
   final RoutePlan? plan;
   final bool loading;
@@ -49,6 +54,15 @@ class RouteSummaryCard extends StatelessWidget {
                 IconButton(tooltip: l.clearRoute, onPressed: onClear, icon: const Icon(Icons.close_rounded)),
               ],
             ),
+            if (!loading && p != null && estimateFor != null)
+              Padding(
+                padding: const EdgeInsets.only(left: 40, bottom: AppSpacing.xs),
+                child: Text(
+                  _estimateText(l, estimateFor!(p.selected.distanceMeters)),
+                  key: const Key('routeEstimate'),
+                  style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                ),
+              ),
             if (!loading && p != null && p.hasAlternatives)
               Wrap(
                 spacing: AppSpacing.sm,
@@ -67,6 +81,14 @@ class RouteSummaryCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  static String _estimateText(AppLocalizations l, RouteEnergyEstimate e) {
+    final units = '${e.units.toStringAsFixed(1)} ${e.unit}';
+    return switch ((e.cost, e.currencyCode)) {
+      (final c?, final cur?) => l.routeEnergyWithCost(units, Fmt.money(c, cur)),
+      _ => l.routeEnergyOnly(units),
+    };
   }
 
   static String _label(AppLocalizations l, RoutePlan p, int i) {

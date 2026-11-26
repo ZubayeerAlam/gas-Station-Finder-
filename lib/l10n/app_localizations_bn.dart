@@ -1694,4 +1694,14 @@ class AppLocalizationsBn extends AppLocalizations {
   String priceDisputed(int count) {
     return 'বিতর্কিত: $count জন বলেছেন এটি ভুল';
   }
+
+  @override
+  String routeEnergyWithCost(String units, String cost) {
+    return '≈ $units · আপনার শেষ ভরার দামে ≈ $cost';
+  }
+
+  @override
+  String routeEnergyOnly(String units) {
+    return 'এই রুটে ≈ $units';
+  }
 }

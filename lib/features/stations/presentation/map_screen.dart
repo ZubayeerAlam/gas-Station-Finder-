@@ -25,6 +25,8 @@ import '../domain/entities/station.dart';
 import '../domain/nearby_sort.dart';
 import '../../garage/presentation/garage_providers.dart';
 import '../../../l10n/domain_labels.dart';
+import '../../history/presentation/history_providers.dart';
+import '../../route/domain/route_energy.dart';
 import 'stations_controllers.dart';
 import 'widgets/nearby_list.dart';
 import 'widgets/station_details_sheet.dart';
@@ -130,6 +132,14 @@ class _StationsMapState extends ConsumerState<_StationsMap> {
   void dispose() {
     _map?.dispose();
     super.dispose();
+  }
+
+  /// Fuel / cost per route for the active vehicle, priced at its last fill-up.
+  RouteEnergyEstimate Function(double)? _routeEstimator() {
+    final vehicle = ref.watch(activeVehicleProvider).value;
+    if (vehicle == null) return null;
+    final last = ref.watch(fillUpsProvider(vehicle.id)).value?.firstOrNull;
+    return (m) => estimateRouteEnergy(m, vehicle, lastFillUp: last);
   }
 
   Widget _stationList(List<Station> stations, {required double bottomPadding}) {
@@ -368,6 +378,7 @@ class _StationsMapState extends ConsumerState<_StationsMap> {
                 loading: route.isLoading,
                 onSelect: (i) => ref.read(routeControllerProvider.notifier).select(i),
                 onClear: () => ref.read(routeControllerProvider.notifier).clear(),
+                estimateFor: _routeEstimator(),
               ),
             ),
           ),

@@ -1707,4 +1707,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String priceDisputed(int count) {
     return 'Disputed: $count people say it is wrong';
   }
+
+  @override
+  String routeEnergyWithCost(String units, String cost) {
+    return '≈ $units · ≈ $cost at your last fill-up price';
+  }
+
+  @override
+  String routeEnergyOnly(String units) {
+    return '≈ $units for this route';
+  }
 }

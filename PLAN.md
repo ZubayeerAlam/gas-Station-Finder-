@@ -111,7 +111,7 @@ Implementation history and evidence live in [BUILD.md](BUILD.md). Rule: work one
 
 ### 1.4 Smart Route Optimization
 - [x] Cheapest / Least detour / Best value strategies (re-ranked locally, no new requests)
-- [-] Compare time, distance, cost, detours, total trip cost — per-station detour km + min, total cost; trip-level comparison of route alternatives pending
+- [-] Compare time, distance, cost, detours, total trip cost — per-station detour km + min, total cost; route alternatives now show ≈ litres/kWh and ≈ cost at the user's last fill-up price for the selected route (no price guessed without a fill-up) — unit + widget-tested
 - [x] User strategy selection (segmented button) + fill-level slider
 - [x] Honest "heuristic" labelling (Best value documented; approximate detours flagged)
 

@@ -2813,6 +2813,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Disputed: {count} people say it is wrong'**
   String priceDisputed(int count);
+
+  /// No description provided for @routeEnergyWithCost.
+  ///
+  /// In en, this message translates to:
+  /// **'≈ {units} · ≈ {cost} at your last fill-up price'**
+  String routeEnergyWithCost(String units, String cost);
+
+  /// No description provided for @routeEnergyOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'≈ {units} for this route'**
+  String routeEnergyOnly(String units);
 }
 
 class _AppLocalizationsDelegate

@@ -623,3 +623,12 @@ Plan: document-expiry and service reminders per vehicle (BRTA tax token, fitness
   - functions: unit **26**, rules **8** (new flag rules test), assistant **8**, integration **7**. The integration suite has a new dispute test (2 flags → not disputed; same user again → still 2; 3rd → disputed; new report clears it), and the deletion test now covers flags.
   - Flutter: mapping defaults, disputed price excluded from ranking, flag + undo + disputed label, unavailable backend. **301 passed**, analyze clean, domain coverage **95.6%**.
 - **Pending:** deploying rules + functions (needs approval). App Check would make creating many anonymous accounts to mass-flag harder; it is blocked on a real Firebase project.
+
+## Phase 1.4 follow-up — Fuel and cost per route alternative (2026‑11‑27)
+*(implemented, unit + widget-tested; works offline with OSRM, so no key is needed, but not seen on the real map)*
+- **What:** the route card shows, under distance and time, "≈ 0.8 L · ≈ BDT 99.94 at your last fill-up price" for the selected route. Switching to an alternative updates it, so drivers can compare a shorter route against a faster one by fuel and money, not only minutes.
+- **Rules:**
+  - The quantity comes from the active vehicle (`unitsToBuyForDistance`, so EV charging losses are included).
+  - The price is the unit price of the vehicle's latest fill-up in History. Without a fill-up it shows "≈ 0.8 L for this route" and **no price is guessed**. Without an active vehicle the line is hidden.
+- **Code:** `route/domain/route_energy.dart` (`estimateRouteEnergy`), `RouteSummaryCard.estimateFor`, wired in `map_screen.dart`.
+- **Tests:** litres and cost, no price, EV losses, card text and update on switch, litres-only and hidden states.

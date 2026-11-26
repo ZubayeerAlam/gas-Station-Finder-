@@ -573,5 +573,9 @@
   "priceFlagRemoved": "Flag removed",
   "@priceFlagRemoved": {"placeholders": {}},
   "priceDisputed": "Disputed: {count} people say it is wrong",
-  "@priceDisputed": {"placeholders": {"count": {"type": "int"}}}
+  "@priceDisputed": {"placeholders": {"count": {"type": "int"}}},
+  "routeEnergyWithCost": "≈ {units} · ≈ {cost} at your last fill-up price",
+  "@routeEnergyWithCost": {"placeholders": {"units": {"type": "String"}, "cost": {"type": "String"}}},
+  "routeEnergyOnly": "≈ {units} for this route",
+  "@routeEnergyOnly": {"placeholders": {"units": {"type": "String"}}}
 }

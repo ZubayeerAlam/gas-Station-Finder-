@@ -450,5 +450,7 @@
   "priceFlaggedByYou": "আপনি এই দামটি ভুল বলেছেন · ফিরিয়ে নিন",
   "priceFlagSent": "ধন্যবাদ। তিনজন আলাদা মানুষ ভুল বললে দামটি বিতর্কিত হিসেবে দেখানো হবে।",
   "priceFlagRemoved": "ফ্ল্যাগ সরানো হয়েছে",
-  "priceDisputed": "বিতর্কিত: {count} জন বলেছেন এটি ভুল"
+  "priceDisputed": "বিতর্কিত: {count} জন বলেছেন এটি ভুল",
+  "routeEnergyWithCost": "≈ {units} · আপনার শেষ ভরার দামে ≈ {cost}",
+  "routeEnergyOnly": "এই রুটে ≈ {units}"
 }
