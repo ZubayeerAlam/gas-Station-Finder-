@@ -617,7 +617,7 @@ abstract class AppLocalizations {
   /// No description provided for @assistantDemoLabel.
   ///
   /// In en, this message translates to:
-  /// **'Offline demo — not Claude'**
+  /// **'Offline demo, not the AI'**
   String get assistantDemoLabel;
 
   /// No description provided for @assistantTooManySteps.

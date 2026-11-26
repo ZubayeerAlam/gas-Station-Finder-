@@ -1,6 +1,8 @@
 /**
- * FuelWise trip assistant: a Claude tool-use loop run server-side so the API
- * key never reaches the app.
+ * FuelWise trip assistant: a tool-use loop run server-side so the AI API key
+ * never reaches the app. The loop is provider-neutral: it speaks the Messages
+ * shape, and adapters (gemini_model.ts, claude_model.ts, the
+ * emulator demo) translate it for a concrete model.
  *
  * Tools are split by where their data lives:
  *  - client tools (`get_vehicle`, `plan_route_stops`) run in the app with the
@@ -15,8 +17,10 @@
 import type Anthropic from '@anthropic-ai/sdk';
 import { FieldValue, Timestamp, type Firestore } from 'firebase-admin/firestore';
 
-/** Claude Haiku 5.5 — ID verified against the installed @anthropic-ai/sdk 1.14 model list. */
-export const ASSISTANT_MODEL = 'claude-haiku-5-5';
+/** Claude Haiku 5.5 — ID verified against the installed @anthropic-ai/sdk 1.14 model list (optional provider). */
+export const CLAUDE_MODEL = 'claude-haiku-5-5';
+/** Default Gemini model: stable, free tier (verified on the Gemini pricing page 2026-11-27). */
+export const DEFAULT_GEMINI_MODEL = 'gemini-3.8-flash';
 /** Chat replies are short by design; also a cost cap per model call. */
 export const MAX_TOKENS = 4096;
 export const MAX_MODEL_CALLS_PER_REQUEST = 6;
@@ -31,10 +35,17 @@ export const CLIENT_TOOLS = ['get_vehicle', 'plan_route_stops'] as const;
 export const SERVER_TOOLS = ['get_community_prices', 'show_station_cards'] as const;
 const ALLOWED_TOOLS = new Set<string>([...CLIENT_TOOLS, ...SERVER_TOOLS]);
 
-/** Minimal model surface so tests and the emulator demo can swap the real client. */
+/** Minimal model surface so the provider, tests and the emulator demo can be swapped. */
 export interface ModelClient {
   readonly demo: boolean;
+  /** Provider model id, stored on the session for auditing. */
+  readonly modelId: string;
   create(params: Anthropic.MessageCreateParamsNonStreaming): Promise<Anthropic.Message>;
+}
+
+/** The provider's quota (e.g. the Gemini free tier) is used up. Never triggers a paid fallback. */
+export class ModelQuotaError extends Error {
+  constructor() { super('AI model quota exceeded'); this.name = 'ModelQuotaError'; }
 }
 
 export const SYSTEM_PROMPT = `You are the FuelWise trip assistant inside a fuel and EV-charging app.
@@ -234,7 +245,7 @@ function result(id: string, content: unknown, isError = false): Anthropic.ToolRe
 
 /**
  * One callable request: append the user's message (or the client's tool
- * results), then call Claude until it answers or needs client tools.
+ * results), then call the model until it answers or needs client tools.
  */
 export async function runAssistant(
   db: Firestore, uid: string, req: AssistantRequest, model: ModelClient, nowMs = Date.now(),
@@ -284,7 +295,7 @@ export async function runAssistant(
     let res: Anthropic.Message;
     try {
       res = await model.create({
-        model: ASSISTANT_MODEL,
+        model: model.modelId,
         max_tokens: MAX_TOKENS,
         system: SYSTEM_PROMPT,
         tools: TOOLS,
@@ -292,8 +303,11 @@ export async function runAssistant(
         output_config: { effort: 'medium' },
         cache_control: { type: 'ephemeral' },
       });
-    } catch {
+    } catch (e) {
       // Nothing was appended for this call, so the session stays consistent.
+      if (e instanceof ModelQuotaError) {
+        throw new AssistantError('resource-exhausted', 'The assistant has reached its free daily limit. Please try again tomorrow.');
+      }
       throw new AssistantError('unavailable', 'The assistant is unavailable right now. Please try again.');
     }
     // Append the full content (thinking blocks included) unchanged: history is append-only.
@@ -361,7 +375,7 @@ export async function runAssistant(
       knownStationIds: [...known].slice(-200),
       cards,
       userTurns: s.userTurns,
-      model: ASSISTANT_MODEL,
+      model: model.modelId,
       updatedAt: FieldValue.serverTimestamp(),
       ...(req.sessionId ? {} : { createdAt: FieldValue.serverTimestamp() }),
     }, { merge: true });

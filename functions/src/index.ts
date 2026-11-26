@@ -5,11 +5,11 @@ import { getMessaging } from 'firebase-admin/messaging';
 import { setGlobalOptions } from 'firebase-functions/v2';
 import { onDocumentCreated, onDocumentWritten } from 'firebase-functions/v2/firestore';
 import { HttpsError, onCall } from 'firebase-functions/v2/https';
-import { defineSecret } from 'firebase-functions/params';
-import Anthropic from '@anthropic-ai/sdk';
+import { defineSecret, defineString } from 'firebase-functions/params';
 import * as logger from 'firebase-functions/logger';
 import { processReport, refreshReliability, type Messenger } from './handlers';
-import { AssistantError, parseRequest, runAssistant, type ModelClient } from './assistant';
+import { AssistantError, DEFAULT_GEMINI_MODEL, parseRequest, runAssistant, type ModelClient } from './assistant';
+import { geminiModel } from './gemini_model';
 import { demoModel } from './demo_model';
 import { deleteUserData } from './account';
 
@@ -66,39 +66,46 @@ export const deleteMyData = onCall({ timeoutSeconds: 120, maxInstances: 5 }, asy
 
 // ---------- AI trip assistant ----------
 
-/** Server-side only (Secret Manager in production, functions/.secret.local in the emulator). */
-const anthropicKey = defineSecret('ANTHROPIC_API_KEY');
+/**
+ * Provider: Gemini API (free tier preferred). The key is server-side only:
+ * Secret Manager in production, functions/.secret.local in the emulator.
+ * The model id is a plain parameter (functions/.env or the deploy prompt),
+ * so it can change without code changes. To use Claude instead, bind
+ * ANTHROPIC_API_KEY and return `claudeModel(key)` from claude_model.ts.
+ */
+const geminiKey = defineSecret('GEMINI_API_KEY');
+const geminiModelId = defineString('GEMINI_MODEL', { default: DEFAULT_GEMINI_MODEL });
 
-let claude: ModelClient | undefined;
+let live: ModelClient | undefined;
 function model(): ModelClient {
   let key = '';
-  try { key = anthropicKey.value(); } catch { key = ''; }
+  try { key = geminiKey.value(); } catch { key = ''; }
   if (!key) {
     // Only the emulator may fall back to the clearly labelled offline demo.
     if (isEmulator) return demoModel;
     throw new HttpsError('failed-precondition', 'The assistant is not configured.');
   }
-  if (!claude) {
-    const client = new Anthropic({ apiKey: key, timeout: 60_000, maxRetries: 1 });
-    claude = {
+  if (!live) {
+    const inner = geminiModel(key, geminiModelId.value());
+    live = {
       demo: false,
+      modelId: inner.modelId,
       async create(params) {
         try {
-          return await client.messages.create(params);
+          return await inner.create(params);
         } catch (e) {
-          // Log the class/status only — never the request body or key.
-          const status = e instanceof Anthropic.APIError ? e.status : undefined;
-          logger.warn('claude call failed', { error: (e as Error).name, status });
+          // Log the error class/status only, never the request body or key.
+          logger.warn('model call failed', { error: (e as Error).name, status: (e as { status?: number }).status });
           throw e;
         }
       },
     };
   }
-  return claude;
+  return live;
 }
 
 export const assistantChat = onCall(
-  { secrets: [anthropicKey], timeoutSeconds: 120, maxInstances: 5 },
+  { secrets: [geminiKey], timeoutSeconds: 120, maxInstances: 5 },
   async (request) => {
     const uid = request.auth?.uid;
     if (!uid) throw new HttpsError('unauthenticated', 'Sign in to use the assistant.');

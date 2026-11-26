@@ -100,7 +100,7 @@
   "assistantPlanning": "Planning your route and ranking stations…",
   "assistantCheckingVehicle": "Checking your vehicle…",
   "assistantWorking": "Working…",
-  "assistantDemoLabel": "Offline demo — not Claude",
+  "assistantDemoLabel": "Offline demo, not the AI",
   "assistantTooManySteps": "That took too many steps. Please try a simpler question.",
   "errorNetwork": "No internet connection. Check your network and try again.",
   "errorTimeout": "The server took too long to respond. Please try again.",

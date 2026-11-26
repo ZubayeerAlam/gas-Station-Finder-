@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// NOTE: the Google Maps Platform key is a *client* key. It ships inside the app
 /// binary and is therefore NOT secret — it is protected only by Google Cloud
 /// application restrictions (Android package + SHA-1, iOS bundle ID) and API
-/// restrictions. True secrets (e.g. the Claude API key in Phase 2) must live
+/// restrictions. True secrets (e.g. the Gemini API key for the assistant) must live
 /// server-side in Cloud Functions and never in this class.
 class AppConfig {
   const AppConfig({

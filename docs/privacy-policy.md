@@ -22,7 +22,7 @@ This data is not uploaded. It is removed when you uninstall the app.
 | Open Charge Map (EV mode) | The map area being searched | Find chargers |
 | Firebase (Google) – Authentication | An anonymous user ID created on first use | Protect community features from abuse |
 | Firebase – Cloud Firestore | Price reports (station, fuel type, price, currency, time), station votes (open / closed / out of fuel), price alert rules (fuel, price limit, a location and radius) | Community prices and alerts |
-| FuelWise trip assistant (Cloud Functions + Anthropic Claude API) | Your chat messages and the results of on-device calculations (for example station names, prices, detours, and the trip's start and destination) | Answer trip-planning questions |
+| FuelWise trip assistant (Cloud Functions + Google Gemini API) | Your chat messages and the results of on-device calculations (for example station names, prices, detours, and the trip's start and destination) | Answer trip-planning questions. While FuelWise uses the Gemini API free tier, Google may use this content to improve its products, so do not type personal details into the chat. |
 
 Your anonymous user ID is linked to your reports, votes, alert rules and assistant conversations. The ID is not linked to your name, email or phone number.
 

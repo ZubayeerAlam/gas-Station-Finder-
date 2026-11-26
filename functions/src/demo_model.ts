@@ -1,9 +1,9 @@
 /**
  * Offline demo model for the Firebase emulator, used ONLY when no
- * ANTHROPIC_API_KEY is configured. It is a tiny scripted stand-in that speaks
+ * GEMINI_API_KEY is configured. It is a tiny scripted stand-in that speaks
  * the same tool-use protocol so the app's chat flow can be exercised end to
- * end without Claude. Every reply is labelled as a demo; it is not Claude and
- * never pretends to be.
+ * end without a real model. Every reply is labelled as a demo; it is not an AI
+ * model and never pretends to be.
  */
 import type Anthropic from '@anthropic-ai/sdk';
 import type { ModelClient } from './assistant';
@@ -24,7 +24,7 @@ function message(content: Anthropic.ContentBlock[], stop: Anthropic.StopReason):
   } as unknown as Anthropic.Message;
 }
 
-// Every response carries `demo: true`; the app labels it "Offline demo — not Claude".
+// Every response carries `demo: true`; the app labels it "Offline demo, not the AI".
 const text = (t: string): Anthropic.ContentBlock => ({ type: 'text', text: t, citations: null } as Anthropic.ContentBlock);
 const toolUse = (name: string, input: unknown): Anthropic.ContentBlock =>
   ({ type: 'tool_use', id: id(), name, input } as Anthropic.ContentBlock);
@@ -52,6 +52,7 @@ interface PlanStation { id: string; name?: string; total_cost?: string; detour?:
 
 export const demoModel: ModelClient = {
   demo: true,
+  modelId: 'offline-demo',
   async create(params) {
     const messages = params.messages;
     const last = messages[messages.length - 1];

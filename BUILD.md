@@ -445,3 +445,28 @@ Plan: document-expiry and service reminders per vehicle (BRTA tax token, fitness
   - `FirebaseCommunityAccount` itself has no unit test (no Firebase Auth mock); the callable it calls is emulator-tested.
 - **Needs your approval:** deploying `deleteMyData` and the updated `onVerificationWritten` (`firebase deploy --only functions`). Not done.
 - **Pending physical-device verification:** see PLAN.md, "Pending physical-device verification". Deferred by the user; development continues.
+
+## Phase 5 — Batch 5.B: assistant on the Gemini API free tier (2026‑11‑27)
+*(implemented, unit + emulator-tested with fakes; no live Gemini call yet (no key); not deployed)*
+- **Why:** the user prefers a free-tier model to a paid API. Checked on Google's official docs on 2026‑11‑27 (ai.google.dev now redirects to aistudio.google.com/docs):
+  - Stable text models: `gemini-3.8-flash`, `gemini-3.6-flash`, `gemini-3.5-flash-lite`, `gemini-3.1-flash-lite`. Free tier is "Free of charge" for 3.8-flash, 3.6-flash and 3.5-flash-lite. `gemini-2.5-flash` / `2.5-pro` are deprecated (rerouted on 1 Dec 2026), so they are avoided.
+  - On the free tier Google says content is **used to improve its products**; the privacy policy now says so.
+  - Bangladesh is in the supported-regions list.
+  - The docs give **no free-tier RPM/RPD numbers** for text models ("view in Google AI Studio"); limits are per project and reset at midnight Pacific. Not verified here: the actual quota for the chosen model.
+- **Default model:** `gemini-3.8-flash`, the newest stable Flash on the free tier, picked for reliable multi-step tool calling. If its free quota is too small, set `GEMINI_MODEL=gemini-3.5-flash-lite` with no code change.
+- **Design** (`functions/src/`):
+  - `assistant.ts` stays provider-neutral: `ModelClient` now carries `modelId`, and the session stores the model actually used. New `ModelQuotaError` maps to `resource-exhausted` "free daily limit". There is **never an automatic switch** to another or paid model.
+  - `gemini_model.ts`: translates the Messages shape ↔ `generateContent` REST.
+    - Tools become `functionDeclarations`, `additionalProperties` is stripped, `toolConfig` AUTO.
+    - `tool_use` / `tool_result` become `functionCall` / `functionResponse` (by id + name).
+    - Gemini `thoughtSignature`s are kept on the stored blocks and sent back.
+    - Thought parts are dropped; SAFETY / blocked becomes a refusal, MAX_TOKENS becomes a cut-short reply.
+    - The key goes only in the `x-goog-api-key` header; the model id is validated; HTTP errors carry the status only.
+  - `claude_model.ts`: the previous Claude client as an optional adapter (not bound).
+  - `index.ts`: binds `GEMINI_API_KEY` (secret) and `GEMINI_MODEL` (param, default above). Without a key the emulator keeps the labelled offline demo.
+  - Unchanged and still enforced: sign-in required, input validation, 20/h + 100/day per-user limits, 6 model calls and 4096 output tokens per request, 20 turns per session, server-only session storage.
+- **App:** demo label "Offline demo, not the AI" (EN/BN); comments and README now name Gemini.
+- **Tests:** `test/unit/gemini_model.test.ts`, 6 tests: schema stripping; request shape; history translation with signatures; response mapping and stop reasons; key only in the header; 429 → quota error and bad model ids rejected. Emulator: a quota error gives `resource-exhausted`. Functions unit 25, rules 7, assistant 8, integration 6, all passed; Flutter 234 passed, analyze clean.
+- **Not verified:** a real Gemini response (no key yet), so the request shape is checked only against the documented format, not the live API; free-tier quota numbers; answer quality in Bengali.
+- **Needs your approval:** creating the `GEMINI_API_KEY` secret in Secret Manager and deploying the function.
+

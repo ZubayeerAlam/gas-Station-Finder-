@@ -21,7 +21,7 @@ FuelWise finds fuel stations and EV chargers, then ranks them by the *true trip 
 | EV mode | Open Charge Map chargers, connector/power filters, kW markers, clustering | Built · needs a free OCM key |
 | Fill-up history | Fill-ups and charging sessions, full-to-full consumption, monthly charts | Built · simulator-tested |
 | Community prices | Crowdsourced reports with outlier rejection, trust scores, price history, reliability votes, price alerts | Built · Firebase **emulator**-tested |
-| AI trip assistant | Chat with Claude; it plans with the app's own ranking engine and shows tappable station cards | Built · tested with a fake model; needs an Anthropic key |
+| AI trip assistant | Chat with Gemini (free tier); it plans with the app's own ranking engine and shows tappable station cards | Built · tested with a fake model; needs a Gemini API key |
 | Offline | Saved station *positions* (place IDs + coordinates only, ≤ 30 days, per Google policy), local garage/history, Firestore offline cache | Built · unit-tested |
 | Languages | English and বাংলা (Bengali); follows the device or a manual choice | All screens and error messages · widget-tested |
 
@@ -46,7 +46,7 @@ flowchart LR
   DATA -->|SDK| FS[("Cloud Firestore")]
   DATA -->|callable| FN["Cloud Functions (TypeScript)"]
   FN -->|triggers| FS
-  FN -->|server-side key| CLAUDE["Claude API"]
+  FN -->|server-side key| CLAUDE["Gemini API"]
 ```
 
 ```
@@ -83,13 +83,13 @@ Keys live only in gitignored files (`config/dev.json`, `ios/Flutter/Secrets.xcco
 
 ```bash
 cd functions && npm ci && npm run build && cd ..
-# optional, real Claude in the emulator (never commit this file):
-#   echo 'ANTHROPIC_API_KEY=<your key>' > functions/.secret.local
+# optional, real Gemini in the emulator (never commit this file):
+#   echo 'GEMINI_API_KEY=<your key>' > functions/.secret.local
 firebase emulators:start --only auth,firestore,functions --project demo-fuelwise
 flutter run --dart-define-from-file=config/dev.json --dart-define=FIREBASE_MODE=emulator
 ```
 
-Without an Anthropic key the emulator answers with a clearly labelled *offline demo* (not Claude).
+Without a Gemini key the emulator answers with a clearly labelled *offline demo* (not the AI).
 
 ## Tests
 
@@ -110,7 +110,7 @@ Full draft policy: [docs/privacy-policy.md](docs/privacy-policy.md). Release ste
 - Anonymous Firebase sign-in only; no personal data is required.
 - Google Places content is not stored except place IDs and coordinates (deleted after 30 days).
 - Garage and history stay on the device.
-- The Claude API key is a server-side secret; the app only sends your message and the results of on-device calculations.
+- The Gemini API key is a server-side secret; the app only sends your message and the results of on-device calculations.
 
 ## Author
 

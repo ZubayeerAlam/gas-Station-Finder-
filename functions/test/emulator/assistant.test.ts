@@ -4,7 +4,7 @@ import type Anthropic from '@anthropic-ai/sdk';
 import { deleteApp, initializeApp, type App } from 'firebase-admin/app';
 import { getFirestore, Timestamp, type Firestore } from 'firebase-admin/firestore';
 import {
-  AssistantError, RATE_LIMIT_PER_HOUR, runAssistant, type ModelClient,
+  AssistantError, ModelQuotaError, RATE_LIMIT_PER_HOUR, runAssistant, type ModelClient,
 } from '../../src/assistant';
 
 // The loop against the Firestore emulator with a scripted fake Claude. No
@@ -34,7 +34,7 @@ const use = (id: string, name: string, input: unknown) => ({ type: 'tool_use', i
 function fake(...script: Anthropic.Message[]): ModelClient & { calls: Anthropic.MessageCreateParamsNonStreaming[] } {
   const calls: Anthropic.MessageCreateParamsNonStreaming[] = [];
   return {
-    demo: false, calls,
+    demo: false, modelId: 'fake-model', calls,
     async create(p) {
       calls.push(structuredClone(p));
       const next = script.shift();
@@ -96,7 +96,7 @@ test('full turn: client tool round-trip, server tool, cards from known ids only'
   assert.deepEqual(shown.rejected, ['evil']);
   // Every call used the verified model, strict tools and a token cap.
   for (const c of m.calls) {
-    assert.equal(c.model, 'claude-haiku-5-5');
+    assert.equal(c.model, 'fake-model'); // the client's own model id is sent
     assert.equal(c.max_tokens, 4096);
   }
   // History is append-only: each request extends the previous one.
@@ -121,8 +121,14 @@ test('refusal and max_tokens are handled', async () => {
 });
 
 test('model failure leaves the session consistent', async () => {
-  const failing: ModelClient = { demo: false, async create() { throw new Error('timeout'); } };
+  const failing: ModelClient = { demo: false, modelId: 'fake-model', async create() { throw new Error('timeout'); } };
   await assert.rejects(runAssistant(db, 'u1', { text: 'hi' }, failing), (e: AssistantError) => e.code === 'unavailable');
+});
+
+test('provider quota exhausted: resource-exhausted, session unchanged, no paid fallback', async () => {
+  const quota: ModelClient = { demo: false, modelId: 'fake-model', async create() { throw new ModelQuotaError(); } };
+  await assert.rejects(runAssistant(db, 'u1', { text: 'hi' }, quota),
+    (e: AssistantError) => e.code === 'resource-exhausted' && /free daily limit/.test(e.message));
 });
 
 test('message must not arrive while client tools are pending', async () => {

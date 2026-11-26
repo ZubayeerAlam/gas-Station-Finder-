@@ -6,7 +6,7 @@ import '../../../core/error/app_failure.dart';
 import '../../../core/error/result.dart';
 import '../domain/assistant_models.dart';
 
-/// Calls the `assistantChat` callable. The Claude API key lives only on the
+/// Calls the `assistantChat` callable. The AI (Gemini) API key lives only on the
 /// server; the app sends the user's text and tool results, nothing else.
 class FirebaseAssistantApi implements AssistantApi {
   FirebaseAssistantApi(this._functions, this._auth);

@@ -239,7 +239,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Fuel to Potsdam?'), findsOneWidget);
       expect(find.text('Here are the best stops.'), findsOneWidget);
-      expect(find.text('Offline demo — not Claude'), findsOneWidget);
+      expect(find.text('Offline demo, not the AI'), findsOneWidget);
       expect(find.text('C'), findsOneWidget);
       expect(find.text('A'), findsOneWidget);
       expect(tester.getTopLeft(find.text('C')).dy, lessThan(tester.getTopLeft(find.text('A')).dy));

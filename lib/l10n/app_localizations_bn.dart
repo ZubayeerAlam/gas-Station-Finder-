@@ -325,7 +325,7 @@ class AppLocalizationsBn extends AppLocalizations {
   String get assistantWorking => 'কাজ চলছে…';
 
   @override
-  String get assistantDemoLabel => 'অফলাইন ডেমো — Claude নয়';
+  String get assistantDemoLabel => 'অফলাইন ডেমো, আসল এআই নয়';
 
   @override
   String get assistantTooManySteps =>

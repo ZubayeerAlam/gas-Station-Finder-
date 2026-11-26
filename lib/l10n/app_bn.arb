@@ -86,7 +86,7 @@
   "assistantPlanning": "রুট পরিকল্পনা ও স্টেশন সাজানো হচ্ছে…",
   "assistantCheckingVehicle": "আপনার গাড়ির তথ্য দেখছি…",
   "assistantWorking": "কাজ চলছে…",
-  "assistantDemoLabel": "অফলাইন ডেমো — Claude নয়",
+  "assistantDemoLabel": "অফলাইন ডেমো, আসল এআই নয়",
   "assistantTooManySteps": "অনেক বেশি ধাপ লেগে গেছে। একটু সহজ প্রশ্ন করে দেখুন।",
   "errorNetwork": "ইন্টারনেট সংযোগ নেই। নেটওয়ার্ক দেখে আবার চেষ্টা করুন।",
   "errorTimeout": "সার্ভার সাড়া দিতে অনেক সময় নিয়েছে। আবার চেষ্টা করুন।",

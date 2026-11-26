@@ -183,7 +183,7 @@ Implementation history and evidence live in [BUILD.md](BUILD.md). Rule: work one
 
 ## Phase 2 — AI Trip Assistant (Week 5)
 - [x] Natural-language text chat UI (`/assistant`, sparkle button on the Map) — simulator-tested; voice not started (optional)
-- [-] Cloud Function (TS) `assistantChat` calling the Claude API via `@anthropic-ai/sdk`, key only in Secret Manager / `functions/.secret.local` — implemented and tested with a scripted fake model + the emulator's labelled offline demo; **no live Claude call yet (no `ANTHROPIC_API_KEY`), not deployed**
+- [-] Cloud Function (TS) `assistantChat`, provider-neutral loop. **Gemini API (free tier) is the default provider** since 5.B (`gemini_model.ts`, model `gemini-3.8-flash` via the `GEMINI_MODEL` param); Claude kept as an optional adapter. Key only in Secret Manager / `functions/.secret.local`. Tested with fakes + the emulator's labelled offline demo; **no live Gemini call yet (no `GEMINI_API_KEY`), not deployed**
 - [x] Verify exact Haiku model ID before use — `claude-haiku-5-5`, checked against the installed SDK 1.14 model list
 - [x] Tools (names adapted, same intent): `plan_route_stops` (= search stations along route, runs the app's own planner + `TripCostEngine` on the device), `get_community_prices` (= get prices, server, Firestore), `get_vehicle` (device garage), `show_station_cards` (display only)
 - [x] Structured responses → tappable station cards (reuses the trip screen's `StationResultCard`: price + source, detour, total cost, savings, reliability, open status, "Show on map" opens the trip)
@@ -193,7 +193,7 @@ Implementation history and evidence live in [BUILD.md](BUILD.md). Rule: work one
 
 ### Awaiting an Anthropic API key (no paid service authorised)
 - [ ] Put `ANTHROPIC_API_KEY` in `functions/.secret.local` (gitignored) and run one live emulator conversation
-- [ ] Check Claude's answers against the trip screen's ranking on a real route (needs the new Google key too)
+- [ ] Check the AI's answers against the trip screen's ranking on a real route (needs the new Google key too)
 
 ## Phase 3 — Production Quality, Offline & Release (Week 6+)
 
@@ -243,8 +243,9 @@ Problem: expired BRTA documents (tax token, fitness, insurance, route permit) me
 
 ## Phase 5 — Ownership & everyday use (2026‑11‑27)
 - [x] 5.A Privacy & data screen (Garage → shield icon): delete everything on this device; delete my community data and anonymous account (`deleteMyData` callable, emulator-tested, **not deployed**)
-- [ ] 5.B Export fill-up history (CSV)
-- [ ] 5.C More keyless features (nearby list view, route alternatives, trip history)
+- [x] 5.B Assistant on the Gemini API free tier: adapter, configurable model, 429 → "free daily limit" (no paid fallback); unit + emulator-tested, **no live call yet (no key), not deployed**
+- [ ] 5.C Export fill-up history (CSV)
+- [ ] 5.D More keyless features (nearby list view, route alternatives, trip history)
 
 ### Pending physical-device verification (deferred by the user, Moto G96 / Android 16)
 Development continues without these; each stays unchecked until it is run on the phone.

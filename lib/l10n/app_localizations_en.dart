@@ -328,7 +328,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get assistantWorking => 'Working…';
 
   @override
-  String get assistantDemoLabel => 'Offline demo — not Claude';
+  String get assistantDemoLabel => 'Offline demo, not the AI';
 
   @override
   String get assistantTooManySteps =>

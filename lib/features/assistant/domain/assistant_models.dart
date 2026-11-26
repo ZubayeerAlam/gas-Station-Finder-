@@ -41,7 +41,7 @@ class AssistantTurn {
   final List<String> cards;
   final List<ClientToolCall> toolCalls;
 
-  /// True when the emulator's scripted offline demo answered, not Claude.
+  /// True when the emulator's scripted offline demo answered, not the AI model.
   final bool demo;
 
   /// Parses the callable result. Throws [FormatException] on a bad shape.
