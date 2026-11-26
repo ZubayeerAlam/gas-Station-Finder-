@@ -86,7 +86,7 @@ Implementation history and evidence live in [BUILD.md](BUILD.md). Rule: work one
 ## Phase 1 — Core Product & Signature Features (Weeks 2–4)
 
 ### 1.1 Nearby Fuel Stations
-- [ ] Map + list views
+- [x] Map + list views — list view added in 5.D.1 (see Phase 5)
 - [ ] Details sheet: opening hours, ratings, fuel types, prices
 - [ ] Loading / empty / error / permission states
 
@@ -98,7 +98,7 @@ Implementation history and evidence live in [BUILD.md](BUILD.md). Rule: work one
 - [x] Deduplicate stations (by place id across pieces)
 - [x] Detour via one OSRM `/table` request: to + from − direct *(live-verified)*; straight-line fallback flagged as approximate
 - [x] Map + ranked list display (route polyline, top-3 markers, draggable sheet)
-- [ ] Route alternatives
+- [x] Route alternatives — done in 5.D.2 (see Phase 5)
 - [-] Request batching + caching + failure handling — table batching, details cache (10 min), partial-failure tolerance done; persistent cache in Phase 3
 
 ### 1.3 True Trip Cost Ranking
@@ -154,7 +154,7 @@ Implementation history and evidence live in [BUILD.md](BUILD.md). Rule: work one
 
 ### 1.10 Fill-up & Trip History
 - [x] Record fill-ups / charging sessions (date, amount, cost, currency, odometer, full/partial, station) — drift, delete + undo
-- [ ] Trip history (needs along-route trips, 1.2)
+- [x] Trip history → built as user-saved trips in 5.D.3 (a full log would store Google place data; see Phase 5)
 - [x] Monthly summaries (per currency, never converted), full-to-full consumption trend, cost per km, per-vehicle charts (fl_chart)
 - [ ] Daily summaries / exportable reports
 
@@ -265,7 +265,7 @@ Development continues without these; each stays unchecked until it is run on the
 - [x] Firestore Security Rules + automated rules tests (6 groups)
 - [ ] App Check
 - [x] Cloud Functions input validation + rate limiting (triggers only; no callable endpoints)
-- [ ] Spam / fake-report protection, abuse prevention
+- [-] Spam / fake-report protection, abuse prevention — rules + function rate limits, outlier rejection and reporter reputation exist (Phase 2); App Check (above) is the missing piece
 - [x] User data deletion: in-app, local + community (emulator-tested; callable not deployed)
 - [ ] Secure key management + API quota monitoring
 - [x] Crash recovery / error handling: global handlers (framework, uncaught async, failing providers) keep the app running and keep the last 20 errors in memory only (no crash service, nothing sent); release builds show a localized "this part could not be shown" card instead of a grey box; unknown paths get a localized "Page not found" with a way back — unit + widget-tested; release-mode fallback not seen on a device
