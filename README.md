@@ -77,7 +77,7 @@ cp ios/Flutter/Secrets.example.xcconfig ios/Flutter/Secrets.xcconfig
 flutter run --dart-define-from-file=config/dev.json
 ```
 
-Keys live only in gitignored files (`config/dev.json`, `ios/Flutter/Secrets.xcconfig`, `functions/.secret.local`). Restrict the Google key to the app's package/bundle ID (`com.fuelwise.app`) and to the APIs it needs (Maps SDK for Android/iOS, Places API (New)).
+Step-by-step key setup: [docs/KEY_SETUP.md](docs/KEY_SETUP.md); `./tool/check_keys.sh` checks them without printing values. Keys live only in gitignored files (`config/dev.json`, `ios/Flutter/Secrets.xcconfig`, `functions/.secret.local`). Restrict the Google key to the app's package/bundle ID (`com.fuelwise.app`) and to the APIs it needs (Maps SDK for Android/iOS, Places API (New)).
 
 ### Community prices and the AI assistant (no Firebase project needed)
 
