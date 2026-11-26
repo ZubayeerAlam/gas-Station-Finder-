@@ -38,6 +38,7 @@ enum FailureCode {
   historySaveFailed,
   garageSaveFailed,
   careSaveFailed,
+  dataDeletionFailed,
   locationServiceDisabled,
   locationDenied,
   locationDeniedForever,

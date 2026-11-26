@@ -1496,4 +1496,65 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get careChannelDescription =>
       'Document expiry and service reminders for your vehicles';
+
+  @override
+  String get privacyTitle => 'Privacy & data';
+
+  @override
+  String get privacyDeviceTitle => 'On this device';
+
+  @override
+  String get privacyDeviceBody =>
+      'Your vehicles, fill-up history, care reminders, saved station positions and settings are stored only on this phone.';
+
+  @override
+  String get privacyDeleteDevice => 'Delete data on this device';
+
+  @override
+  String get privacyDeleteDeviceConfirmTitle =>
+      'Delete all data on this device?';
+
+  @override
+  String get privacyDeleteDeviceConfirmBody =>
+      'Vehicles, history, reminders (and their notifications), saved station positions and settings will be erased. This cannot be undone.';
+
+  @override
+  String get privacyDeviceDeleted => 'Data on this device deleted';
+
+  @override
+  String get privacyCommunityTitle => 'Community (online)';
+
+  @override
+  String get privacyCommunityBody =>
+      'If you used community prices, votes, price alerts or the AI assistant, that data is stored online under an anonymous account.';
+
+  @override
+  String get privacyCommunityOff =>
+      'Community features are off in this build, so nothing is stored online.';
+
+  @override
+  String get privacyDeleteCommunity => 'Delete my online data';
+
+  @override
+  String get privacyDeleteCommunityConfirmTitle => 'Delete your online data?';
+
+  @override
+  String get privacyDeleteCommunityConfirmBody =>
+      'Your price reports, votes, price alerts, assistant conversations and anonymous account will be deleted. Station prices already calculated from many reports hold no personal data and expire within 72 hours. This cannot be undone.';
+
+  @override
+  String privacyCommunityDeleted(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count items deleted online',
+      one: '1 item deleted online',
+      zero: 'Nothing was stored online',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get errorDataDeletion =>
+      'Could not delete your online data. Check your connection and try again.';
 }

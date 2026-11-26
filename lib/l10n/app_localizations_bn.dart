@@ -1486,4 +1486,63 @@ class AppLocalizationsBn extends AppLocalizations {
   @override
   String get careChannelDescription =>
       'আপনার গাড়ির কাগজপত্রের মেয়াদ ও সার্ভিসের রিমাইন্ডার';
+
+  @override
+  String get privacyTitle => 'গোপনীয়তা ও ডেটা';
+
+  @override
+  String get privacyDeviceTitle => 'এই ফোনে';
+
+  @override
+  String get privacyDeviceBody =>
+      'আপনার গাড়ি, ফুয়েল নেওয়ার ইতিহাস, যত্নের রিমাইন্ডার, সংরক্ষিত স্টেশনের অবস্থান ও সেটিংস শুধু এই ফোনেই থাকে।';
+
+  @override
+  String get privacyDeleteDevice => 'এই ফোনের ডেটা মুছুন';
+
+  @override
+  String get privacyDeleteDeviceConfirmTitle => 'এই ফোনের সব ডেটা মুছবেন?';
+
+  @override
+  String get privacyDeleteDeviceConfirmBody =>
+      'গাড়ি, ইতিহাস, রিমাইন্ডার (ও তাদের নোটিফিকেশন), সংরক্ষিত স্টেশনের অবস্থান ও সেটিংস মুছে যাবে। এটি আর ফেরানো যাবে না।';
+
+  @override
+  String get privacyDeviceDeleted => 'এই ফোনের ডেটা মুছে ফেলা হয়েছে';
+
+  @override
+  String get privacyCommunityTitle => 'কমিউনিটি (অনলাইন)';
+
+  @override
+  String get privacyCommunityBody =>
+      'আপনি কমিউনিটি দাম, ভোট, দামের অ্যালার্ট বা AI সহকারী ব্যবহার করে থাকলে সেই ডেটা একটি নামহীন অ্যাকাউন্টে অনলাইনে থাকে।';
+
+  @override
+  String get privacyCommunityOff =>
+      'এই সংস্করণে কমিউনিটি ফিচার বন্ধ, তাই অনলাইনে কিছুই রাখা হয়নি।';
+
+  @override
+  String get privacyDeleteCommunity => 'আমার অনলাইন ডেটা মুছুন';
+
+  @override
+  String get privacyDeleteCommunityConfirmTitle => 'আপনার অনলাইন ডেটা মুছবেন?';
+
+  @override
+  String get privacyDeleteCommunityConfirmBody =>
+      'আপনার দামের রিপোর্ট, ভোট, দামের অ্যালার্ট, সহকারীর কথোপকথন ও নামহীন অ্যাকাউন্ট মুছে যাবে। অনেক রিপোর্ট থেকে হিসাব করা স্টেশনের দামে কোনো ব্যক্তিগত তথ্য নেই এবং তা ৭২ ঘণ্টার মধ্যে মেয়াদোত্তীর্ণ হয়। এটি আর ফেরানো যাবে না।';
+
+  @override
+  String privacyCommunityDeleted(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'অনলাইনে $countটি আইটেম মুছে ফেলা হয়েছে',
+      zero: 'অনলাইনে কিছুই রাখা ছিল না',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get errorDataDeletion =>
+      'আপনার অনলাইন ডেটা মোছা যায়নি। ইন্টারনেট সংযোগ দেখে আবার চেষ্টা করুন।';
 }

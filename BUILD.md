@@ -420,3 +420,28 @@ Plan: document-expiry and service reminders per vehicle (BRTA tax token, fitness
   - Android notification permission, delivery and reboot rescheduling (CI only builds the debug APK)
   - the Android channel name is English only (set once at creation; the notification text itself is localized)
 - **Batch 4.C pushed:** `0763927`. CI run [45651331824](https://github.com/ZubayeerAlam/gas-Station-Finder-/actions/runs/45651331824) is **green**: generated code, analyze, tests, the coverage gate, the debug APK build (so the desugaring and manifest changes compile), and Cloud Functions tests. GitHub created no run for `4056a3b` (4.B); its code is included in and covered by this run.
+
+## Phase 5 — Batch 5.A: Privacy & data, user data deletion (2026‑11‑27)
+*(implemented, unit/widget-tested, callable emulator-tested; not deployed, not run on a device)*
+- **Server (`functions/src/account.ts`, `index.ts`):**
+  - New callable `deleteMyData` (europe-west1, sign-in required). It deletes only the caller's price reports, votes, alert rules + alert log, assistant sessions + quota, and `users/{uid}` (recursive), then deletes the Auth user. Only counts are logged, never content.
+  - Votes are stored at `stations/{id}/verifications/{uid}`, so `onVerificationWritten` now also records `users/{uid}.votedStations` (arrayUnion) to find them.
+- **Client (`lib/features/account/`):**
+  - `CommunityAccount` / `LocalDataStore` interfaces.
+  - `FirebaseCommunityAccount`: calls the callable, then signs out. With no signed-in user there is nothing to delete.
+  - `DriftLocalDataStore` → `AppDatabase.wipeAll()`: one transaction over every table.
+  - `PrivacyScreen` at `/garage/privacy`, opened from a shield icon in the Garage app bar. Two cards (device / community), each delete behind a confirm dialog; results in a SnackBar; `FailureCode.dataDeletionFailed` with EN/BN text.
+  - Wiping the device also clears the care notifications, because the sync provider sees the empty data.
+- **Privacy policy** now describes in-app deletion.
+- **Tests:**
+  - `test/features/account/account_test.dart`, 7 tests: `wipeAll` empties every table; wipe cancels care notifications; summary parsing; device delete cancel/confirm; online delete success ("3 items deleted online") and failure; community off; Bengali at 200% text with accessibility guidelines.
+  - Emulator: "deleteMyData callable: removes only the caller's data and account". A second user's data is untouched.
+  - Flutter **234 passed**, analyze clean, domain coverage **94.8%**. Functions: unit 19, rules 7, assistant 7, integration 6, all passed.
+- **Known limitations:**
+  - Firestore's offline cache on the phone is not cleared by "delete online data".
+  - Station price aggregates keep the user's contribution until their 72 h TTL; they hold no user ID.
+  - Votes made before this version have no `votedStations` record, so they are not found. Nothing is deployed yet, so no real user has any.
+  - A report upload still in flight could recreate `users/{uid}` (trust score) just after deletion.
+  - `FirebaseCommunityAccount` itself has no unit test (no Firebase Auth mock); the callable it calls is emulator-tested.
+- **Needs your approval:** deploying `deleteMyData` and the updated `onVerificationWritten` (`firebase deploy --only functions`). Not done.
+- **Pending physical-device verification:** see PLAN.md, "Pending physical-device verification". Deferred by the user; development continues.

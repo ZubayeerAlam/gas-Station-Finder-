@@ -6,6 +6,7 @@ abstract final class AppRoutes {
   static const vehicleEdit = '/garage/edit';
   static const care = '/garage/care';
   static const careEdit = '/garage/care/edit';
+  static const privacy = '/garage/privacy';
   static const plan = '/plan';
   static const planRoute = '/plan/route';
   static const history = '/history';

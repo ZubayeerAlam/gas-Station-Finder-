@@ -1,5 +1,6 @@
 import { initializeApp } from 'firebase-admin/app';
-import { getFirestore } from 'firebase-admin/firestore';
+import { getAuth } from 'firebase-admin/auth';
+import { FieldValue, getFirestore } from 'firebase-admin/firestore';
 import { getMessaging } from 'firebase-admin/messaging';
 import { setGlobalOptions } from 'firebase-functions/v2';
 import { onDocumentCreated, onDocumentWritten } from 'firebase-functions/v2/firestore';
@@ -10,6 +11,7 @@ import * as logger from 'firebase-functions/logger';
 import { processReport, refreshReliability, type Messenger } from './handlers';
 import { AssistantError, parseRequest, runAssistant, type ModelClient } from './assistant';
 import { demoModel } from './demo_model';
+import { deleteUserData } from './account';
 
 initializeApp();
 // Cost control: a single small instance per function is plenty for this load.
@@ -32,7 +34,34 @@ export const onPriceReportCreated = onDocumentCreated('priceReports/{reportId}',
 });
 
 export const onVerificationWritten = onDocumentWritten('stations/{stationId}/verifications/{uid}', async (event) => {
-  await refreshReliability(getFirestore(), event.params.stationId);
+  const db = getFirestore();
+  // Remember where the user voted so "delete my data" can find the (uid-less) vote docs.
+  if (event.data?.after.exists) {
+    await db.collection('users').doc(event.params.uid)
+      .set({ votedStations: FieldValue.arrayUnion(event.params.stationId) }, { merge: true });
+  }
+  await refreshReliability(db, event.params.stationId);
+});
+
+// ---------- account ----------
+
+/** Deletes the caller's community data and their (anonymous) account. Idempotent. */
+export const deleteMyData = onCall({ timeoutSeconds: 120, maxInstances: 5 }, async (request) => {
+  const uid = request.auth?.uid;
+  if (!uid) throw new HttpsError('unauthenticated', 'Sign in first.');
+  try {
+    const summary = await deleteUserData(getFirestore(), uid);
+    try {
+      await getAuth().deleteUser(uid);
+    } catch (e) {
+      if ((e as { code?: string }).code !== 'auth/user-not-found') throw e;
+    }
+    logger.info('user data deleted', { summary }); // counts only, never the uid
+    return summary;
+  } catch (e) {
+    logger.error('data deletion failed', { error: (e as Error).message });
+    throw new HttpsError('internal', 'Could not delete your data. Please try again.');
+  }
 });
 
 // ---------- AI trip assistant ----------

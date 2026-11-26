@@ -34,7 +34,10 @@ Your anonymous user ID is linked to your reports, votes, alert rules and assista
 ## Your choices
 - You can deny location permission. The app then asks you to search for a place instead.
 - You can use the app without the community features or the assistant.
-- To ask for deletion of data linked to your anonymous ID, contact [your contact email]. (Deletion from inside the app is not built yet.)
+- **Delete from inside the app:** Garage → *Privacy & data*.
+  - *Delete everything on this device* removes your vehicles, fill-ups, reminders, saved station positions and settings from the phone.
+  - *Delete my community data* removes your price reports, votes, alert rules, assistant conversations and the anonymous account from the FuelWise server. Prices already combined into a station's average stay until they expire (about 72 hours) and are not linked to you.
+- You can also ask for deletion by contacting [your contact email].
 
 ## Children
 FuelWise is not directed at children under 13.

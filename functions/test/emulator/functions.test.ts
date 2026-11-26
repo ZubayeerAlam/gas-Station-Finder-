@@ -139,3 +139,69 @@ test('assistantChat callable: auth required, demo protocol round-trip', async ()
   assert.equal(r2.demo, true);
   assert.match(r2.reply, /Aral/);
 });
+
+test('deleteMyData callable: removes only the caller\'s data and account', async () => {
+  const fnUrl = 'http://127.0.0.1:5001/demo-fuelwise/europe-west1/deleteMyData';
+  const call = (token?: string) => fetch(fnUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+    body: JSON.stringify({ data: {} }),
+  }).then(async (r) => (await r.json()) as { result?: any; error?: { status: string } });
+
+  assert.equal((await call()).error?.status, 'UNAUTHENTICATED');
+
+  const signUp = await fetch(`http://${process.env.FIREBASE_AUTH_EMULATOR_HOST}/identitytoolkit.googleapis.com/v1/accounts:signUp?key=fake`,
+    { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ returnSecureToken: true }) });
+  const { idToken, localId: me } = await signUp.json() as { idToken: string; localId: string };
+  const other = 'someone-else';
+
+  // Mine: a report, a vote, an alert rule, a messaging token, an assistant session + quota, an alert log entry.
+  await report('del-mine', me, 1.75, { stationId: 'stDel' });
+  await report('del-other', other, 1.76, { stationId: 'stDel' });
+  await db.doc(`stations/stDel/verifications/${me}`).set({ open: true, at: Timestamp.now() });
+  await db.doc(`stations/stDel/verifications/${other}`).set({ open: true, at: Timestamp.now() });
+  await waitFor(async () => {
+    const voted = (await db.doc(`users/${me}`).get()).get('votedStations') as string[] | undefined;
+    return voted?.includes('stDel') ? true : undefined;
+  });
+  await db.doc(`users/${me}/alertRules/r1`).set({ uid: me, fuelType: 'DIESEL', currency: 'EUR', maxPrice: 1.5,
+    lat: 52.5, lng: 13.4, radiusKm: 10, enabled: true });
+  await db.doc(`users/${me}/private/messaging`).set({ token: 't', updatedAt: Timestamp.now() });
+  await db.doc(`users/${other}/alertRules/r2`).set({ uid: other, fuelType: 'DIESEL', currency: 'EUR', maxPrice: 1.5,
+    lat: 52.5, lng: 13.4, radiusKm: 10, enabled: true });
+  await db.doc('assistantSessions/s-mine').set({ uid: me, messagesJson: '[]' });
+  await db.doc('assistantSessions/s-other').set({ uid: other, messagesJson: '[]' });
+  await db.doc(`assistantQuota/${me}`).set({ count: 1 });
+  await db.doc(`alertLog/${me}_r1_stDel`).set({ uid: me, ruleId: 'r1' });
+
+  const res = await call(idToken);
+  assert.deepEqual(res.result, { priceReports: 1, votes: 1, alertRules: 1, assistantSessions: 1 });
+
+  const gone = await Promise.all([
+    db.doc('priceReports/del-mine').get(), db.doc(`stations/stDel/verifications/${me}`).get(),
+    db.doc(`users/${me}`).get(), db.doc(`users/${me}/alertRules/r1`).get(), db.doc(`users/${me}/private/messaging`).get(),
+    db.doc('assistantSessions/s-mine').get(), db.doc(`assistantQuota/${me}`).get(), db.doc(`alertLog/${me}_r1_stDel`).get(),
+  ]);
+  assert.deepEqual(gone.map((d) => d.exists), gone.map(() => false));
+
+  const kept = await Promise.all([
+    db.doc('priceReports/del-other').get(), db.doc(`stations/stDel/verifications/${other}`).get(),
+    db.doc(`users/${other}/alertRules/r2`).get(), db.doc('assistantSessions/s-other').get(),
+    db.doc('stations/stDel/prices/DIESEL').get(),
+  ]);
+  assert.deepEqual(kept.map((d) => d.exists), kept.map(() => true));
+
+  // Reliability recomputed without my vote (trigger on the vote delete).
+  await waitFor(async () => ((await db.doc('stations/stDel').get()).get('openVotes') === 1 ? true : undefined));
+
+  // The anonymous account is gone: its token no longer works.
+  const lookup = await fetch(`http://${process.env.FIREBASE_AUTH_EMULATOR_HOST}/identitytoolkit.googleapis.com/v1/accounts:lookup?key=fake`,
+    { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ idToken }) });
+  assert.notEqual(lookup.status, 200);
+
+  // Idempotent: a second call (fresh account, nothing stored) succeeds with zero counts.
+  const again = await fetch(`http://${process.env.FIREBASE_AUTH_EMULATOR_HOST}/identitytoolkit.googleapis.com/v1/accounts:signUp?key=fake`,
+    { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ returnSecureToken: true }) });
+  const empty = await call((await again.json() as { idToken: string }).idToken);
+  assert.deepEqual(empty.result, { priceReports: 0, votes: 0, alertRules: 0, assistantSessions: 0 });
+});

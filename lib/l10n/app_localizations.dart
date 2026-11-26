@@ -2459,6 +2459,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Document expiry and service reminders for your vehicles'**
   String get careChannelDescription;
+
+  /// No description provided for @privacyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy & data'**
+  String get privacyTitle;
+
+  /// No description provided for @privacyDeviceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'On this device'**
+  String get privacyDeviceTitle;
+
+  /// No description provided for @privacyDeviceBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your vehicles, fill-up history, care reminders, saved station positions and settings are stored only on this phone.'**
+  String get privacyDeviceBody;
+
+  /// No description provided for @privacyDeleteDevice.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete data on this device'**
+  String get privacyDeleteDevice;
+
+  /// No description provided for @privacyDeleteDeviceConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete all data on this device?'**
+  String get privacyDeleteDeviceConfirmTitle;
+
+  /// No description provided for @privacyDeleteDeviceConfirmBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Vehicles, history, reminders (and their notifications), saved station positions and settings will be erased. This cannot be undone.'**
+  String get privacyDeleteDeviceConfirmBody;
+
+  /// No description provided for @privacyDeviceDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Data on this device deleted'**
+  String get privacyDeviceDeleted;
+
+  /// No description provided for @privacyCommunityTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Community (online)'**
+  String get privacyCommunityTitle;
+
+  /// No description provided for @privacyCommunityBody.
+  ///
+  /// In en, this message translates to:
+  /// **'If you used community prices, votes, price alerts or the AI assistant, that data is stored online under an anonymous account.'**
+  String get privacyCommunityBody;
+
+  /// No description provided for @privacyCommunityOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Community features are off in this build, so nothing is stored online.'**
+  String get privacyCommunityOff;
+
+  /// No description provided for @privacyDeleteCommunity.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete my online data'**
+  String get privacyDeleteCommunity;
+
+  /// No description provided for @privacyDeleteCommunityConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete your online data?'**
+  String get privacyDeleteCommunityConfirmTitle;
+
+  /// No description provided for @privacyDeleteCommunityConfirmBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your price reports, votes, price alerts, assistant conversations and anonymous account will be deleted. Station prices already calculated from many reports hold no personal data and expire within 72 hours. This cannot be undone.'**
+  String get privacyDeleteCommunityConfirmBody;
+
+  /// No description provided for @privacyCommunityDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{Nothing was stored online} =1{1 item deleted online} other{{count} items deleted online}}'**
+  String privacyCommunityDeleted(int count);
+
+  /// No description provided for @errorDataDeletion.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not delete your online data. Check your connection and try again.'**
+  String get errorDataDeletion;
 }
 
 class _AppLocalizationsDelegate

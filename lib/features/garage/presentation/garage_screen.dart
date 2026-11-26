@@ -22,7 +22,17 @@ class GarageScreen extends ConsumerWidget {
     final activeId = ref.watch(activeVehicleIdProvider).value;
 
     return Scaffold(
-      appBar: AppBar(title: Text(context.l10n.garageTitle), actions: const [LanguageMenuButton()]),
+      appBar: AppBar(
+        title: Text(context.l10n.garageTitle),
+        actions: [
+          IconButton(
+            tooltip: context.l10n.privacyTitle,
+            icon: const Icon(Icons.privacy_tip_outlined),
+            onPressed: () => context.push(AppRoutes.privacy),
+          ),
+          const LanguageMenuButton(),
+        ],
+      ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => context.push(AppRoutes.vehicleNew),
         icon: const Icon(Icons.add_rounded),

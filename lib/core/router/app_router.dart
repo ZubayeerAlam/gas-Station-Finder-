@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../features/along_route/presentation/along_route_screen.dart';
 import '../../features/along_route/presentation/destination_search_screen.dart';
 import '../../features/assistant/presentation/assistant_screen.dart';
+import '../../features/account/presentation/privacy_screen.dart';
 import '../../features/care/presentation/care_form_screen.dart';
 import '../../features/care/presentation/care_screen.dart';
 import '../../features/garage/domain/vehicle_profile.dart';
@@ -94,6 +95,11 @@ GoRouter buildRouter({String initialLocation = AppRoutes.map}) => GoRouter(
           path: AppRoutes.vehicleEdit,
           parentNavigatorKey: _rootKey,
           builder: (_, state) => VehicleFormScreen(initial: state.extra as VehicleProfile?),
+        ),
+        GoRoute(
+          path: AppRoutes.privacy,
+          parentNavigatorKey: _rootKey,
+          builder: (_, _) => const PrivacyScreen(),
         ),
         GoRoute(
           path: AppRoutes.care,

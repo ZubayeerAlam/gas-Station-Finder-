@@ -106,6 +106,13 @@ class AppDatabase extends _$AppDatabase {
         },
       );
 
+  /// Erases every row the app keeps on the device ("delete my data").
+  Future<void> wipeAll() => transaction(() async {
+    for (final table in allTables) {
+      await delete(table).go();
+    }
+  });
+
   // ---- settings helpers ----
   Stream<String?> watchSetting(String key) =>
       (select(settings)..where((s) => s.key.equals(key))).watchSingleOrNull().map((r) => r?.value);
