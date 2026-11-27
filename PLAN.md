@@ -263,13 +263,13 @@ Development continues without these; each stays unchecked until it is run on the
 ---
 
 ## Cross-phase — Security, Reliability & Cost Management
-- [x] Firestore Security Rules + automated rules tests (6 groups)
+- [x] Firestore Security Rules + automated rules tests (9 tests: reports, aggregates read-only, votes incl. EV charger votes, price flags, alert rules, assistant, …)
 - [ ] App Check
-- [x] Cloud Functions input validation + rate limiting (triggers only; no callable endpoints)
+- [x] Cloud Functions input validation + rate limiting (triggers + the `deleteMyData` and `assistantChat` callables, both auth-checked; the assistant has per-user hourly/daily limits)
 - [-] Spam / fake-report protection, abuse prevention — rules + function rate limits, outlier rejection and reporter reputation exist (Phase 2); App Check (above) is the missing piece
 - [x] User data deletion: in-app, local + community (emulator-tested; callable not deployed)
-- [ ] Secure key management + API quota monitoring
+- [-] Secure key management + API quota monitoring — keys only in gitignored files (`config/*.json`, `ios/Flutter/Secrets.xcconfig`, `functions/.secret.local`), per-platform restricted Google keys, Gemini key server-side only, `tool/check_keys.sh` reports set/missing without printing values, setup in `docs/KEY_SETUP.md`. **Your action:** delete the old exposed Google key in Cloud Console (it is in git history; removing it from the code is not enough) and set Places quotas + a budget alert
 - [x] Crash recovery / error handling: global handlers (framework, uncaught async, failing providers) keep the app running and keep the last 20 errors in memory only (no crash service, nothing sent); release builds show a localized "this part could not be shown" card instead of a grey box; unknown paths get a localized "Page not found" with a way back — unit + widget-tested; release-mode fallback not seen on a device
 - [ ] Privacy-conscious analytics
 - [ ] Backend cost monitoring
-- [ ] Everything emulator-tested before any deploy request
+- [x] Everything emulator-tested before any deploy request — all 5 functions (`onPriceReportCreated`, `onVerificationWritten`, `onPriceFlagWritten`, `deleteMyData`, `assistantChat`) and the rules run in the Emulator Suite (`cd functions && npm test`: unit 26, rules 9, assistant 8, integration 8, all passing on 2026‑11‑27)

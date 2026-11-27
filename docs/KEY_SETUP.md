@@ -24,7 +24,17 @@ Add the release / Play App Signing SHA-1 to the same Android key later.
 Recommended in Cloud Console:
 - Set per-API daily quotas (Places API (New) → Quotas) so usage cannot run away.
 - Set a budget alert.
-- Delete the old exposed key; it is in git history.
+
+### Revoke the old exposed key (required)
+
+The previous Google key was committed to git history. Removing it from the code does **not** make it safe: anyone with a copy of the history can still use it until Google stops accepting it.
+
+1. Create and restrict the two new keys above, put them in the gitignored files, and run `./tool/check_keys.sh` (both show `set`).
+2. Run the app once on iOS and once on Android and check that the map and nearby stations load with the new keys.
+3. Cloud Console → APIs & Services → Credentials → open the **old** key (compare the last characters it shows with the old value; never paste the value anywhere) → **Delete API key**. Google gives a short grace period in which it can be restored; after that it is gone.
+4. Check APIs & Services → Metrics over the next days: requests from the old key should drop to zero.
+
+FuelWise cannot do this for you; it needs your Google account.
 
 Run:
 ```bash
