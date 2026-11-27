@@ -2927,6 +2927,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Currency'**
   String get currencyLabel;
+
+  /// No description provided for @routeChargersTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Chargers on this route'**
+  String get routeChargersTitle;
+
+  /// No description provided for @routeChargersSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Charge Map, within 5 km of the route'**
+  String get routeChargersSubtitle;
+
+  /// No description provided for @routeChargerPosition.
+  ///
+  /// In en, this message translates to:
+  /// **'After {along} · {off} off the route'**
+  String routeChargerPosition(String along, String off);
+
+  /// No description provided for @routeChargerPower.
+  ///
+  /// In en, this message translates to:
+  /// **'up to {kw} kW'**
+  String routeChargerPower(String kw);
+
+  /// No description provided for @routeChargersNone.
+  ///
+  /// In en, this message translates to:
+  /// **'No chargers found within 5 km of this route.'**
+  String get routeChargersNone;
+
+  /// No description provided for @routeChargersPartial.
+  ///
+  /// In en, this message translates to:
+  /// **'Part of the route could not be searched, so there may be more chargers.'**
+  String get routeChargersPartial;
+
+  /// No description provided for @routeChargersStraightLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Distances are straight-line, not driving detours.'**
+  String get routeChargersStraightLine;
 }
 
 class _AppLocalizationsDelegate

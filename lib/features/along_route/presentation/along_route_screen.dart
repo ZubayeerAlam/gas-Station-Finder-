@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import '../../ev/presentation/widgets/route_chargers_section.dart';
 import '../../trips/presentation/saved_trips_section.dart';
 
 import '../../../core/location/geo_point.dart';
@@ -268,6 +269,7 @@ class _ResultsList {
               for (final u in r.unpriced) tile(u, null),
             ],
           ],
+          const RouteChargersSection(),
         ],
       );
     },

@@ -1785,4 +1785,33 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get currencyLabel => 'Currency';
+
+  @override
+  String get routeChargersTitle => 'Chargers on this route';
+
+  @override
+  String get routeChargersSubtitle =>
+      'Open Charge Map, within 5 km of the route';
+
+  @override
+  String routeChargerPosition(String along, String off) {
+    return 'After $along · $off off the route';
+  }
+
+  @override
+  String routeChargerPower(String kw) {
+    return 'up to $kw kW';
+  }
+
+  @override
+  String get routeChargersNone =>
+      'No chargers found within 5 km of this route.';
+
+  @override
+  String get routeChargersPartial =>
+      'Part of the route could not be searched, so there may be more chargers.';
+
+  @override
+  String get routeChargersStraightLine =>
+      'Distances are straight-line, not driving detours.';
 }

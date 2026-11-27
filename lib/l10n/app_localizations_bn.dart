@@ -1772,4 +1772,32 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get currencyLabel => 'মুদ্রা';
+
+  @override
+  String get routeChargersTitle => 'এই রুটের চার্জার';
+
+  @override
+  String get routeChargersSubtitle => 'Open Charge Map, রুট থেকে ৫ কিমির মধ্যে';
+
+  @override
+  String routeChargerPosition(String along, String off) {
+    return '$along পরে · রুট থেকে $off দূরে';
+  }
+
+  @override
+  String routeChargerPower(String kw) {
+    return 'সর্বোচ্চ $kw kW';
+  }
+
+  @override
+  String get routeChargersNone =>
+      'এই রুটের ৫ কিমির মধ্যে কোনো চার্জার পাওয়া যায়নি।';
+
+  @override
+  String get routeChargersPartial =>
+      'রুটের কিছু অংশ খোঁজা যায়নি, তাই আরও চার্জার থাকতে পারে।';
+
+  @override
+  String get routeChargersStraightLine =>
+      'দূরত্বগুলো সরলরেখায়, গাড়ি চালিয়ে ঘুরপথ নয়।';
 }

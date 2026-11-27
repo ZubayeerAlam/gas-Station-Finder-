@@ -601,5 +601,14 @@
   "@fuelSavingMonthly": {"placeholders": {"km": {"type": "String"}, "saving": {"type": "String"}}},
   "fuelSavingNoHistory": "Add fill-ups with odometer readings to see a monthly saving.",
   "enterBothPrices": "Enter both prices to compare.",
-  "currencyLabel": "Currency"
+  "currencyLabel": "Currency",
+  "routeChargersTitle": "Chargers on this route",
+  "routeChargersSubtitle": "Open Charge Map, within 5 km of the route",
+  "routeChargerPosition": "After {along} · {off} off the route",
+  "@routeChargerPosition": {"placeholders": {"along": {"type": "String"}, "off": {"type": "String"}}},
+  "routeChargerPower": "up to {kw} kW",
+  "@routeChargerPower": {"placeholders": {"kw": {"type": "String"}}},
+  "routeChargersNone": "No chargers found within 5 km of this route.",
+  "routeChargersPartial": "Part of the route could not be searched, so there may be more chargers.",
+  "routeChargersStraightLine": "Distances are straight-line, not driving detours."
 }

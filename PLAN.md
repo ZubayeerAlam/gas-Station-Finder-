@@ -142,7 +142,7 @@ Implementation history and evidence live in [BUILD.md](BUILD.md). Rule: work one
 - [x] Places `evChargeOptions` data (details sheet, Phase 0) + EV along-route search uses `electric_vehicle_charging_station`
 - [x] Connectors, kW, AC/DC, quantity, operational status, last verified/status-update dates (community data labelled)
 - [-] Charging cost estimate — OCM free-text cost shown verbatim, never parsed; community `EV_KWH` prices now feed EV along-route ranking (unit-tested); OCM chargers have OCM ids, so community reports for them are not wired yet
-- [-] Route-based charger discovery — via Places along route (1.D); OCM along-route not implemented
+- [-] Route-based charger discovery — via Places along route (1.D) and, for EVs, Open Charge Map along the route: up to 8 radius searches that cover a 5 km corridor, exact corridor filter, ordered by distance along the route, partial-failure notice — fixture-tested (unit + widget, Bengali 200 %); **no live OCM call yet (no `OCM_API_KEY`)**
 - [x] Marker clustering (google_maps_flutter `ClusterManager`, fuel + EV)
 - [-] Custom markers with price/kW — kW pill markers (fast / slow / not operational colours) done; fuel price markers need prices (1.5)
 - [x] Client-side filters: min power (Any/22/50/150 kW), connector types present nearby, operational only

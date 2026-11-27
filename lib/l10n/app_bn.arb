@@ -469,5 +469,12 @@
   "fuelSavingMonthly": "আপনার সাধারণ মাসিক {km} হিসেবে প্রায় {saving}।",
   "fuelSavingNoHistory": "মাসিক সাশ্রয় দেখতে ওডোমিটার রিডিংসহ রিফুয়েল যোগ করুন।",
   "enterBothPrices": "তুলনা করতে দুটো দামই লিখুন।",
-  "currencyLabel": "মুদ্রা"
+  "currencyLabel": "মুদ্রা",
+  "routeChargersTitle": "এই রুটের চার্জার",
+  "routeChargersSubtitle": "Open Charge Map, রুট থেকে ৫ কিমির মধ্যে",
+  "routeChargerPosition": "{along} পরে · রুট থেকে {off} দূরে",
+  "routeChargerPower": "সর্বোচ্চ {kw} kW",
+  "routeChargersNone": "এই রুটের ৫ কিমির মধ্যে কোনো চার্জার পাওয়া যায়নি।",
+  "routeChargersPartial": "রুটের কিছু অংশ খোঁজা যায়নি, তাই আরও চার্জার থাকতে পারে।",
+  "routeChargersStraightLine": "দূরত্বগুলো সরলরেখায়, গাড়ি চালিয়ে ঘুরপথ নয়।"
 }
