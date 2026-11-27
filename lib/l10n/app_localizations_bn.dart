@@ -1800,4 +1800,56 @@ class AppLocalizationsBn extends AppLocalizations {
   @override
   String get routeChargersStraightLine =>
       'দূরত্বগুলো সরলরেখায়, গাড়ি চালিয়ে ঘুরপথ নয়।';
+
+  @override
+  String get reportTitle => 'খরচের রিপোর্ট';
+
+  @override
+  String get reportLast7Days => 'গত ৭ দিন';
+
+  @override
+  String get reportLast30Days => 'গত ৩০ দিন';
+
+  @override
+  String get reportThisMonth => 'এই মাস';
+
+  @override
+  String get reportLastMonth => 'গত মাস';
+
+  @override
+  String get reportThisYear => 'এই বছর';
+
+  @override
+  String reportRange(String start, String end) {
+    return '$start থেকে $end';
+  }
+
+  @override
+  String get reportEmpty => 'এই সময়ে কিছু লেখা হয়নি।';
+
+  @override
+  String reportTotalLine(String amount, int count, String price) {
+    return '$amount · $countটি রিফুয়েল · গড় $price';
+  }
+
+  @override
+  String reportDistance(String km) {
+    return 'প্রায় $km চালানো হয়েছে (ওডোমিটার রিডিং)';
+  }
+
+  @override
+  String get reportDailyTitle => 'দিন অনুযায়ী';
+
+  @override
+  String reportDayLine(String amount, int count) {
+    return '$amount · $countটি রিফুয়েল';
+  }
+
+  @override
+  String get reportExport => 'দৈনিক CSV এক্সপোর্ট';
+
+  @override
+  String reportExportSubject(String vehicle) {
+    return 'FuelWise দৈনিক রিপোর্ট: $vehicle';
+  }
 }

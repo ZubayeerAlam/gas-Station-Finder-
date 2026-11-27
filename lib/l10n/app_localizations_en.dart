@@ -1814,4 +1814,68 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get routeChargersStraightLine =>
       'Distances are straight-line, not driving detours.';
+
+  @override
+  String get reportTitle => 'Spending report';
+
+  @override
+  String get reportLast7Days => 'Last 7 days';
+
+  @override
+  String get reportLast30Days => 'Last 30 days';
+
+  @override
+  String get reportThisMonth => 'This month';
+
+  @override
+  String get reportLastMonth => 'Last month';
+
+  @override
+  String get reportThisYear => 'This year';
+
+  @override
+  String reportRange(String start, String end) {
+    return '$start to $end';
+  }
+
+  @override
+  String get reportEmpty => 'Nothing recorded in this period.';
+
+  @override
+  String reportTotalLine(String amount, int count, String price) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count fill-ups',
+      one: '1 fill-up',
+    );
+    return '$amount · $_temp0 · average $price';
+  }
+
+  @override
+  String reportDistance(String km) {
+    return 'About $km driven (odometer readings)';
+  }
+
+  @override
+  String get reportDailyTitle => 'By day';
+
+  @override
+  String reportDayLine(String amount, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count fill-ups',
+      one: '1 fill-up',
+    );
+    return '$amount · $_temp0';
+  }
+
+  @override
+  String get reportExport => 'Export daily CSV';
+
+  @override
+  String reportExportSubject(String vehicle) {
+    return 'FuelWise daily report: $vehicle';
+  }
 }

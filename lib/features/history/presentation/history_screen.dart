@@ -17,6 +17,7 @@ import '../domain/history_analytics.dart';
 import '../../../l10n/failure_text.dart';
 import '../../../l10n/l10n.dart';
 import 'history_providers.dart';
+import 'history_report_sheet.dart';
 
 class HistoryScreen extends ConsumerWidget {
   const HistoryScreen({super.key, this.now});
@@ -35,8 +36,16 @@ class HistoryScreen extends ConsumerWidget {
       appBar: AppBar(
         title: Text(v == null ? l.historyTitle : l.historyTitleFor(v.name)),
         actions: [
-          if (v != null && (fillUps?.value?.isNotEmpty ?? false))
+          if (v != null && (fillUps?.value?.isNotEmpty ?? false)) ...[
+            IconButton(
+              key: const ValueKey('openReport'),
+              tooltip: l.reportTitle,
+              icon: const Icon(Icons.summarize_outlined),
+              onPressed: () =>
+                  showHistoryReportSheet(context, vehicle: v, fillUps: fillUps!.value!, now: now ?? DateTime.now()),
+            ),
             _ExportButton(vehicle: v, fillUps: fillUps!.value!, now: now),
+          ],
         ],
       ),
       floatingActionButton: v == null

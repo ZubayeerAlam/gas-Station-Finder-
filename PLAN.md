@@ -87,8 +87,8 @@ Implementation history and evidence live in [BUILD.md](BUILD.md). Rule: work one
 
 ### 1.1 Nearby Fuel Stations
 - [x] Map + list views — list view added in 5.D.1 (see Phase 5)
-- [ ] Details sheet: opening hours, ratings, fuel types, prices
-- [ ] Loading / empty / error / permission states
+- [-] Details sheet: opening hours, ratings, fuel types, prices — implemented (Places details field mask, mapper, sheet) and widget-tested with fixtures, incl. Bengali 200 %; not seen with live Places data (needs the new Google key)
+- [-] Loading / empty / error / permission states — implemented (location denied / denied forever / services off with settings buttons, loading, empty radius, retry banner) and widget-tested; real permission prompts pending on the device
 
 ### 1.2 Stations Along My Route ⭐
 - [x] Destination selection — Places Autocomplete (New) with debounce + session tokens *(mocked; live call reaches Google → 403 until key)*
@@ -157,7 +157,7 @@ Implementation history and evidence live in [BUILD.md](BUILD.md). Rule: work one
 - [x] Record fill-ups / charging sessions (date, amount, cost, currency, odometer, full/partial, station) — drift, delete + undo
 - [x] Trip history → built as user-saved trips in 5.D.3 (a full log would store Google place data; see Phase 5)
 - [x] Monthly summaries (per currency, never converted), full-to-full consumption trend, cost per km, per-vehicle charts (fl_chart)
-- [ ] Daily summaries / exportable reports
+- [x] Daily summaries / exportable reports — History → "Spending report": last 7 / 30 days, this / last month, this year; totals per currency (never converted) with amount, fill-up count and average price; distance from odometer readings; per-day list; "Export daily CSV" through the same share sheet as the full CSV — unit + widget-tested (incl. Bengali 200 %)
 
 ### 1.11 Price Alerts
 - [x] Threshold alerts by fuel type, currency, radius around current location (station-specific supported by backend, no UI yet) — created on iOS simulator, matched server-side
@@ -192,8 +192,8 @@ Implementation history and evidence live in [BUILD.md](BUILD.md). Rule: work one
 - [-] Acceptance: AI results match the ranking algorithm — guaranteed structurally and tested (every figure comes from the app's engine; cards show only ids from the app's own plan) · live Claude wording not verified (no key)
 - [x] Acceptance: credentials never in client — key is a function secret; the app only sends text + tool results
 
-### Awaiting an Anthropic API key (no paid service authorised)
-- [ ] Put `ANTHROPIC_API_KEY` in `functions/.secret.local` (gitignored) and run one live emulator conversation
+### Awaiting a Gemini API key (free tier only; no paid service authorised)
+- [ ] Put `GEMINI_API_KEY` in `functions/.secret.local` (gitignored; see `docs/KEY_SETUP.md`) and run one live emulator conversation with `gemini-3.8-flash`
 - [ ] Check the AI's answers against the trip screen's ranking on a real route (needs the new Google key too)
 
 ## Phase 3 — Production Quality, Offline & Release (Week 6+)

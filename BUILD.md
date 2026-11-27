@@ -667,3 +667,13 @@ Plan: document-expiry and service reminders per vehicle (BRTA tax token, fitness
 - **Testability:** the map screen now honours `mapsEnabledProvider` (already used by the along-route screen) so tests can skip the Google Maps platform view; the app's default is unchanged (map on).
 - **Tests:** 12 new accessibility tests; 338 pass, analyze clean, domain coverage 95.9 %.
 - **Not done:** keyboard focus order and a real screen-reader pass on the Moto G96 / iPhone (added to the device checklist).
+
+## Phase 1.10 follow-up — Spending report with daily summaries (2026‑11‑27)
+*(implemented, unit + widget-tested; offline, no key needed; not checked on a device)*
+- **What:** History → report icon ("Spending report"). Choose last 7 days, last 30 days, this month (default), last month or this year. It shows:
+  - totals per currency (never converted), with amount, number of fill-ups and average unit price;
+  - "About N km driven" from the highest minus lowest odometer reading in the period (hidden with fewer than two readings);
+  - a per-day list (one line per day and currency, newest first);
+  - "Export daily CSV" (`fuelwise_<vehicle>_daily_<start>_<end>.csv`, oldest day first, same BOM / quoting / formula-defusing rules as the full CSV) through the existing share sheet.
+- **Code:** `history/domain/history_report.dart` (`ReportPeriod`, `HistoryReport.range/build/csv/fileName`), `presentation/history_report_sheet.dart`, the History AppBar action.
+- **Tests:** `test/features/history/history_report_test.dart`, 7 tests: period ranges incl. January → December, day/currency grouping and totals, month boundaries, odometer span, CSV lines and file name, the sheet (period switch, export call), empty period, Bengali at 200 % text with accessibility guidelines. 345 tests pass, analyze clean, domain coverage 96.3 %.

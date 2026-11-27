@@ -2969,6 +2969,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Distances are straight-line, not driving detours.'**
   String get routeChargersStraightLine;
+
+  /// No description provided for @reportTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Spending report'**
+  String get reportTitle;
+
+  /// No description provided for @reportLast7Days.
+  ///
+  /// In en, this message translates to:
+  /// **'Last 7 days'**
+  String get reportLast7Days;
+
+  /// No description provided for @reportLast30Days.
+  ///
+  /// In en, this message translates to:
+  /// **'Last 30 days'**
+  String get reportLast30Days;
+
+  /// No description provided for @reportThisMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'This month'**
+  String get reportThisMonth;
+
+  /// No description provided for @reportLastMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Last month'**
+  String get reportLastMonth;
+
+  /// No description provided for @reportThisYear.
+  ///
+  /// In en, this message translates to:
+  /// **'This year'**
+  String get reportThisYear;
+
+  /// No description provided for @reportRange.
+  ///
+  /// In en, this message translates to:
+  /// **'{start} to {end}'**
+  String reportRange(String start, String end);
+
+  /// No description provided for @reportEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing recorded in this period.'**
+  String get reportEmpty;
+
+  /// No description provided for @reportTotalLine.
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} · {count, plural, =1{1 fill-up} other{{count} fill-ups}} · average {price}'**
+  String reportTotalLine(String amount, int count, String price);
+
+  /// No description provided for @reportDistance.
+  ///
+  /// In en, this message translates to:
+  /// **'About {km} driven (odometer readings)'**
+  String reportDistance(String km);
+
+  /// No description provided for @reportDailyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'By day'**
+  String get reportDailyTitle;
+
+  /// No description provided for @reportDayLine.
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} · {count, plural, =1{1 fill-up} other{{count} fill-ups}}'**
+  String reportDayLine(String amount, int count);
+
+  /// No description provided for @reportExport.
+  ///
+  /// In en, this message translates to:
+  /// **'Export daily CSV'**
+  String get reportExport;
+
+  /// No description provided for @reportExportSubject.
+  ///
+  /// In en, this message translates to:
+  /// **'FuelWise daily report: {vehicle}'**
+  String reportExportSubject(String vehicle);
 }
 
 class _AppLocalizationsDelegate

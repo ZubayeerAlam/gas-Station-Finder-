@@ -476,5 +476,19 @@
   "routeChargerPower": "সর্বোচ্চ {kw} kW",
   "routeChargersNone": "এই রুটের ৫ কিমির মধ্যে কোনো চার্জার পাওয়া যায়নি।",
   "routeChargersPartial": "রুটের কিছু অংশ খোঁজা যায়নি, তাই আরও চার্জার থাকতে পারে।",
-  "routeChargersStraightLine": "দূরত্বগুলো সরলরেখায়, গাড়ি চালিয়ে ঘুরপথ নয়।"
+  "routeChargersStraightLine": "দূরত্বগুলো সরলরেখায়, গাড়ি চালিয়ে ঘুরপথ নয়।",
+  "reportTitle": "খরচের রিপোর্ট",
+  "reportLast7Days": "গত ৭ দিন",
+  "reportLast30Days": "গত ৩০ দিন",
+  "reportThisMonth": "এই মাস",
+  "reportLastMonth": "গত মাস",
+  "reportThisYear": "এই বছর",
+  "reportRange": "{start} থেকে {end}",
+  "reportEmpty": "এই সময়ে কিছু লেখা হয়নি।",
+  "reportTotalLine": "{amount} · {count}টি রিফুয়েল · গড় {price}",
+  "reportDistance": "প্রায় {km} চালানো হয়েছে (ওডোমিটার রিডিং)",
+  "reportDailyTitle": "দিন অনুযায়ী",
+  "reportDayLine": "{amount} · {count}টি রিফুয়েল",
+  "reportExport": "দৈনিক CSV এক্সপোর্ট",
+  "reportExportSubject": "FuelWise দৈনিক রিপোর্ট: {vehicle}"
 }
