@@ -53,6 +53,40 @@ Future<void> pump(
 }
 
 void main() {
+  group('tripReach', () {
+    const car = VehicleProfile(
+      id: 'c',
+      name: 'Car',
+      energyType: EnergyType.fuel,
+      consumptionPer100Km: 8,
+      capacity: 40,
+    ); // 500 km full
+    test('reaches with the level left on arrival', () {
+      final r = tripReach(car, level: 0.5, routeMeters: 100000);
+      expect(r.rangeMeters, closeTo(250000, 1e-6));
+      expect(r.arrivalLevel, closeTo(0.3, 1e-9));
+      expect(r.reachesDestination, isTrue);
+      expect(r.shortfallMeters, 0);
+    });
+    test('runs out first: shortfall is route minus range', () {
+      final r = tripReach(car, level: 0.1, routeMeters: 80000);
+      expect(r.reachesDestination, isFalse);
+      expect(r.shortfallMeters, closeTo(30000, 1e-6));
+    });
+    test('level is clamped; EV range ignores charging losses', () {
+      expect(tripReach(car, level: 2, routeMeters: 0).arrivalLevel, 1);
+      const ev = VehicleProfile(
+        id: 'e',
+        name: 'EV',
+        energyType: EnergyType.electric,
+        consumptionPer100Km: 15,
+        capacity: 60,
+        chargingEfficiency: 0.8,
+      );
+      expect(tripReach(ev, level: 1, routeMeters: 400000).arrivalLevel, closeTo(0, 1e-9));
+    });
+  });
+
   final plan = RoutePlan([route(12300, 1500), route(11800, 1740), route(14000, 1520)]);
 
   testWidgets('single route: no chips', (tester) async {

@@ -24,3 +24,30 @@ RouteEnergyEstimate estimateRouteEnergy(double meters, VehicleProfile vehicle, {
     currencyCode: lastFillUp?.currencyCode,
   );
 }
+
+/// Whether the vehicle reaches the end of a route from a tank / battery level.
+class TripReach {
+  const TripReach({required this.rangeMeters, required this.routeMeters, required this.arrivalLevel});
+
+  /// Range at the starting level.
+  final double rangeMeters;
+  final double routeMeters;
+
+  /// Level left on arrival in [0, 1]; negative means it runs out first.
+  final double arrivalLevel;
+
+  bool get reachesDestination => arrivalLevel >= 0;
+
+  /// How far short of the destination it runs out (0 when it reaches).
+  double get shortfallMeters => reachesDestination ? 0 : routeMeters - rangeMeters;
+}
+
+/// Driving consumption only (charging losses affect what is bought, not range).
+TripReach tripReach(VehicleProfile vehicle, {required double level, required double routeMeters}) {
+  final l = level.clamp(0.0, 1.0);
+  return TripReach(
+    rangeMeters: vehicle.rangeMeters(l),
+    routeMeters: routeMeters,
+    arrivalLevel: l - vehicle.unitsForDistance(routeMeters) / vehicle.capacity,
+  );
+}

@@ -3053,6 +3053,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'FuelWise daily report: {vehicle}'**
   String reportExportSubject(String vehicle);
+
+  /// No description provided for @tripReaches.
+  ///
+  /// In en, this message translates to:
+  /// **'Reaches the destination with about {percent}% left.'**
+  String tripReaches(int percent);
+
+  /// No description provided for @tripShortfall.
+  ///
+  /// In en, this message translates to:
+  /// **'Range at this level is about {range}, about {short} short of the destination: stop on the way.'**
+  String tripShortfall(String range, String short);
 }
 
 class _AppLocalizationsDelegate

@@ -677,3 +677,12 @@ Plan: document-expiry and service reminders per vehicle (BRTA tax token, fitness
   - "Export daily CSV" (`fuelwise_<vehicle>_daily_<start>_<end>.csv`, oldest day first, same BOM / quoting / formula-defusing rules as the full CSV) through the existing share sheet.
 - **Code:** `history/domain/history_report.dart` (`ReportPeriod`, `HistoryReport.range/build/csv/fileName`), `presentation/history_report_sheet.dart`, the History AppBar action.
 - **Tests:** `test/features/history/history_report_test.dart`, 7 tests: period ranges incl. January → December, day/currency grouping and totals, month boundaries, odometer span, CSV lines and file name, the sheet (period switch, export call), empty period, Bengali at 200 % text with accessibility guidelines. 345 tests pass, analyze clean, domain coverage 96.3 %.
+
+## Phase 1.9 follow-up — Trip fuel and reach in the along-route view (2026‑11‑27)
+*(implemented, unit + widget-tested; offline)*
+- **What:** under the tank / battery slider on the along-route screen:
+  - fuel or energy for the whole route, priced at the last fill-up when there is one (the same wording and "no guessed price" rule as the route card);
+  - "Reaches the destination with about N % left", or "Range at this level is about X, about Y short of the destination: stop on the way." It updates as the slider moves.
+- **Rules:** range uses driving consumption only (EV charging losses change what you buy, not how far you get). The existing "unreachable" caveat on individual stations is unchanged.
+- **Code:** `tripReach` / `TripReach` in `route/domain/route_energy.dart`; `RouteSummaryCard.estimateText` is now shared.
+- **Tests:** 3 unit tests (arrival level, shortfall, clamping and EV losses) and 1 widget test (litres, arrival %, empty-tank shortfall). The along-route test harnesses now fake the fill-up repository. 349 tests pass, analyze clean, domain coverage 96.3 %.

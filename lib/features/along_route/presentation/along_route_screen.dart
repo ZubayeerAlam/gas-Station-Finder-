@@ -18,6 +18,9 @@ import '../../../l10n/failure_text.dart';
 import '../../../l10n/l10n.dart';
 import '../../stations/domain/entities/station.dart';
 import '../domain/along_route_models.dart';
+import '../../history/presentation/history_providers.dart';
+import '../../route/domain/route_energy.dart';
+import '../../route/presentation/route_summary_card.dart';
 import 'along_route_providers.dart';
 import 'ranking_explanation.dart';
 
@@ -245,7 +248,7 @@ class _ResultsList {
               text: l.skippedForDetour(plan.skippedForDetour),
             ),
           const SizedBox(height: AppSpacing.sm),
-          _VehicleControls(vehicle: vehicle),
+          _VehicleControls(vehicle: vehicle, routeMeters: plan.route.distanceMeters),
           const SizedBox(height: AppSpacing.sm),
           SegmentedButton<RankingStrategy>(
             showSelectedIcon: false,
@@ -296,9 +299,10 @@ class _Notice extends StatelessWidget {
 }
 
 class _VehicleControls extends ConsumerWidget {
-  const _VehicleControls({required this.vehicle});
+  const _VehicleControls({required this.vehicle, required this.routeMeters});
 
   final VehicleProfile? vehicle;
+  final double routeMeters;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -316,6 +320,11 @@ class _VehicleControls extends ConsumerWidget {
       );
     }
     final level = ref.watch(fillLevelProvider);
+    final theme = Theme.of(context);
+    final lastFillUp = ref.watch(fillUpsProvider(v.id)).value?.firstOrNull;
+    final need = estimateRouteEnergy(routeMeters, v, lastFillUp: lastFillUp);
+    final reach = tripReach(v, level: level, routeMeters: routeMeters);
+    final muted = theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant);
     return Card(
       margin: EdgeInsets.zero,
       child: Padding(
@@ -338,6 +347,30 @@ class _VehicleControls extends ConsumerWidget {
               label: '${(level * 100).round()}%',
               semanticFormatterCallback: (x) => (v.isElectric ? l.percentCharge : l.percentFuel)((x * 100).round()),
               onChanged: (x) => ref.read(fillLevelProvider.notifier).set(x),
+            ),
+            Text(RouteSummaryCard.estimateText(l, need), key: const Key('tripNeed'), style: muted),
+            Padding(
+              padding: const EdgeInsets.only(top: AppSpacing.xs, bottom: AppSpacing.sm),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(
+                    reach.reachesDestination ? Icons.flag_rounded : Icons.warning_amber_rounded,
+                    size: 18,
+                    color: reach.reachesDestination ? theme.colorScheme.primary : theme.colorScheme.error,
+                  ),
+                  const SizedBox(width: AppSpacing.xs),
+                  Expanded(
+                    child: Text(
+                      reach.reachesDestination
+                          ? l.tripReaches((reach.arrivalLevel * 100).floor())
+                          : l.tripShortfall(Fmt.distance(reach.rangeMeters), Fmt.distance(reach.shortfallMeters)),
+                      key: const Key('tripReach'),
+                      style: theme.textTheme.bodySmall,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),

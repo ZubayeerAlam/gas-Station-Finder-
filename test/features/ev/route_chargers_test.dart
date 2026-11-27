@@ -15,9 +15,11 @@ import 'package:gas_station_finder/features/ev/domain/charge_point.dart';
 import 'package:gas_station_finder/features/ev/domain/charge_points_repository.dart';
 import 'package:gas_station_finder/features/ev/domain/route_chargers.dart';
 import 'package:gas_station_finder/features/garage/data/drift_garage_repository.dart';
+import 'package:gas_station_finder/features/history/data/drift_fill_up_repository.dart';
 import 'package:gas_station_finder/features/garage/domain/vehicle_profile.dart';
 import 'package:gas_station_finder/l10n/app_localizations.dart';
 
+import '../../helpers/fake_fill_up_repository.dart';
 import '../../helpers/fake_garage_repository.dart';
 import '../along_route/along_route_fakes.dart';
 
@@ -155,6 +157,7 @@ void main() {
           overrides: [
             mapsEnabledProvider.overrideWithValue(false),
             garageRepositoryProvider.overrideWithValue(FakeGarageRepository([vehicle])),
+            fillUpRepositoryProvider.overrideWithValue(FakeFillUpRepository()),
             locationServiceProvider.overrideWithValue(_Location()),
             nowProvider.overrideWithValue(() => DateTime(2026, 11, 25)),
             alongRouteControllerProvider.overrideWith(() => _FixedPlan(widgetPlan.copyWith(fuelType: null))),

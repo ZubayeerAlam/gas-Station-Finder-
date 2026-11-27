@@ -12,8 +12,10 @@ import 'package:gas_station_finder/features/along_route/domain/along_route_model
 import 'package:gas_station_finder/features/along_route/domain/along_route_planner.dart';
 import 'package:gas_station_finder/features/along_route/presentation/along_route_providers.dart';
 import 'package:gas_station_finder/features/garage/data/drift_garage_repository.dart';
+import 'package:gas_station_finder/features/history/data/drift_fill_up_repository.dart';
 import 'package:gas_station_finder/features/garage/domain/vehicle_profile.dart';
 
+import '../../helpers/fake_fill_up_repository.dart';
 import '../../helpers/fake_garage_repository.dart';
 import 'along_route_fakes.dart';
 
@@ -48,6 +50,7 @@ void main() {
         overrides: [
           mapsEnabledProvider.overrideWithValue(false),
           garageRepositoryProvider.overrideWithValue(FakeGarageRepository(vehicles)),
+          fillUpRepositoryProvider.overrideWithValue(FakeFillUpRepository()),
           locationServiceProvider.overrideWithValue(_Location()),
           nowProvider.overrideWithValue(() => DateTime(2026, 11, 25)),
           ...overrides,
@@ -130,5 +133,21 @@ void main() {
     expect(find.text('To Potsdam-ish'), findsOneWidget);
     expect(find.textContaining('2 stations on the way'), findsOneWidget);
     expect(find.text('C'), findsOneWidget);
+  });
+
+  testWidgets('trip line: fuel for the route and whether the tank reaches the destination', (tester) async {
+    await pump(tester, AppRoutes.planRoute, [alongRouteControllerProvider.overrideWith(() => _FixedPlan(widgetPlan))]);
+    // 20.3 km at 6.5 L/100 km ≈ 1.3 L; no fill-up in History → no price guessed.
+    expect(find.text('≈ 1.3 L for this route'), findsOneWidget);
+    // 25 % of 50 L = 192 km range → arrives with 25 % − 2.6 % ≈ 22 %.
+    expect(find.text('Reaches the destination with about 22% left.'), findsOneWidget);
+
+    await tester.drag(find.byType(Slider), const Offset(-1000, 0));
+    await tester.pumpAndSettle();
+    // Empty tank: range 0 m, the whole 20 km route is the shortfall.
+    expect(
+      find.text('Range at this level is about 0 m, about 20 km short of the destination: stop on the way.'),
+      findsOneWidget,
+    );
   });
 }

@@ -629,5 +629,9 @@
   "@reportDayLine": {"placeholders": {"amount": {"type": "String"}, "count": {"type": "int"}}},
   "reportExport": "Export daily CSV",
   "reportExportSubject": "FuelWise daily report: {vehicle}",
-  "@reportExportSubject": {"placeholders": {"vehicle": {"type": "String"}}}
+  "@reportExportSubject": {"placeholders": {"vehicle": {"type": "String"}}},
+  "tripReaches": "Reaches the destination with about {percent}% left.",
+  "@tripReaches": {"placeholders": {"percent": {"type": "int"}}},
+  "tripShortfall": "Range at this level is about {range}, about {short} short of the destination: stop on the way.",
+  "@tripShortfall": {"placeholders": {"range": {"type": "String"}, "short": {"type": "String"}}}
 }

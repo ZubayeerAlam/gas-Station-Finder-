@@ -1852,4 +1852,14 @@ class AppLocalizationsBn extends AppLocalizations {
   String reportExportSubject(String vehicle) {
     return 'FuelWise দৈনিক রিপোর্ট: $vehicle';
   }
+
+  @override
+  String tripReaches(int percent) {
+    return 'প্রায় $percent% বাকি রেখে গন্তব্যে পৌঁছাবে।';
+  }
+
+  @override
+  String tripShortfall(String range, String short) {
+    return 'এই লেভেলে রেঞ্জ প্রায় $range, গন্তব্যের প্রায় $short আগে শেষ হবে: পথে থামুন।';
+  }
 }

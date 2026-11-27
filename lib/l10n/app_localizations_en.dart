@@ -1878,4 +1878,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String reportExportSubject(String vehicle) {
     return 'FuelWise daily report: $vehicle';
   }
+
+  @override
+  String tripReaches(int percent) {
+    return 'Reaches the destination with about $percent% left.';
+  }
+
+  @override
+  String tripShortfall(String range, String short) {
+    return 'Range at this level is about $range, about $short short of the destination: stop on the way.';
+  }
 }

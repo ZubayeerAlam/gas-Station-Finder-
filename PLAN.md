@@ -149,7 +149,7 @@ Implementation history and evidence live in [BUILD.md](BUILD.md). Rule: work one
 
 ### 1.9 My Garage
 - [x] Multiple vehicles (name, fuel/energy type, tank/battery, consumption in 7 units, preferred fuel, EV charging efficiency) — drift (SQLite) persistence, active vehicle, edit/delete + undo
-- [-] Range, trip cost, required fuel/energy, reachable stations — full-tank range shown in Garage; trip cost/reachability wired into along-route UI later (1.2)
+- [x] Range, trip cost, required fuel/energy, reachable stations — full-tank range in Garage; along-route: stations beyond the current range flagged "unreachable", plus a trip line ("≈ 1.3 L · ≈ BDT … at your last fill-up price") and "Reaches the destination with about N % left" / "… short of the destination: stop on the way" that follows the tank slider — unit + widget-tested
 - [x] Dual-fuel vehicles (e.g. petrol converted to CNG): optional second fuel + km per L/m³ on the form (drift v6, upgrade keeps existing vehicles); Garage → "Compare fuel costs": cost per 100 km on each fuel from prices the user types (never guessed), cheaper fuel, saving per 100 km and per month from odometer history — unit, migration and widget-tested (incl. Bengali 200 %); prices are not remembered between openings
 - [x] Make/model picker: "Start from a common model" on the add-vehicle form — 20 common Bangladesh cars, motorbikes and EVs, searchable, fills name / fuel / tank or battery / consumption as editable *typical* values with a "not official figures" note — unit + widget-tested (incl. Bengali 200 %)
 

@@ -58,7 +58,7 @@ class RouteSummaryCard extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(left: 40, bottom: AppSpacing.xs),
                 child: Text(
-                  _estimateText(l, estimateFor!(p.selected.distanceMeters)),
+                  estimateText(l, estimateFor!(p.selected.distanceMeters)),
                   key: const Key('routeEstimate'),
                   style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
                 ),
@@ -83,7 +83,7 @@ class RouteSummaryCard extends StatelessWidget {
     );
   }
 
-  static String _estimateText(AppLocalizations l, RouteEnergyEstimate e) {
+  static String estimateText(AppLocalizations l, RouteEnergyEstimate e) {
     final units = '${e.units.toStringAsFixed(1)} ${e.unit}';
     return switch ((e.cost, e.currencyCode)) {
       (final c?, final cur?) => l.routeEnergyWithCost(units, Fmt.money(c, cur)),

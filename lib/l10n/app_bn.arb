@@ -490,5 +490,7 @@
   "reportDailyTitle": "দিন অনুযায়ী",
   "reportDayLine": "{amount} · {count}টি রিফুয়েল",
   "reportExport": "দৈনিক CSV এক্সপোর্ট",
-  "reportExportSubject": "FuelWise দৈনিক রিপোর্ট: {vehicle}"
+  "reportExportSubject": "FuelWise দৈনিক রিপোর্ট: {vehicle}",
+  "tripReaches": "প্রায় {percent}% বাকি রেখে গন্তব্যে পৌঁছাবে।",
+  "tripShortfall": "এই লেভেলে রেঞ্জ প্রায় {range}, গন্তব্যের প্রায় {short} আগে শেষ হবে: পথে থামুন।"
 }
