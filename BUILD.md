@@ -601,7 +601,7 @@ Plan: document-expiry and service reminders per vehicle (BRTA tax token, fitness
   - `nearbyQuotesProvider` (autoDispose family keyed by station ids + fuel) reuses `stationQuoteLookupProvider`: Google price first, else a fresh community consensus. This is the same rule as trip ranking.
   - It is watched only while Cheapest is selected, so the default list adds no Places requests (cost).
 - **Tests:** 2 domain tests (order, currency, ties, no prices) and 2 widget tests (chips, label, price + source, no-price row; loading spinner). Flutter **297 passed**, analyze clean, domain coverage **95.6%**.
-- **Not done:** comparing fuel types against each other (e.g. petrol vs CNG cost per 100 km for dual-fuel cars). It needs a dual-fuel vehicle model and is left open in PLAN.md.
+- **Not done here:** comparing fuel types against each other. Done later in the dual-fuel batch below.
 
 ## Phase 2 follow-up — "Wrong price" flags and community moderation (2026‑11‑27)
 *(implemented; unit, Firestore rules, Functions emulator and widget-tested; **nothing deployed**)*
@@ -632,3 +632,14 @@ Plan: document-expiry and service reminders per vehicle (BRTA tax token, fitness
   - The price is the unit price of the vehicle's latest fill-up in History. Without a fill-up it shows "≈ 0.8 L for this route" and **no price is guessed**. Without an active vehicle the line is hidden.
 - **Code:** `route/domain/route_energy.dart` (`estimateRouteEnergy`), `RouteSummaryCard.estimateFor`, wired in `map_screen.dart`.
 - **Tests:** litres and cost, no price, EV losses, card text and update on switch, litres-only and hidden states.
+
+## Phase 1.9 follow-up — Dual-fuel vehicles: petrol vs CNG cost (2026‑11‑27)
+
+- **Problem:** many Bangladesh cars run on petrol and CNG. Drivers want to know what each fuel costs per km and how much CNG saves.
+- **Model:** `VehicleProfile` gains `secondaryFuelType` and `secondaryConsumptionPer100Km` (in that fuel's unit: m³ for CNG, L otherwise) and `isDualFuel`. EVs never keep a second fuel.
+- **Database:** schema v6 adds the two nullable columns to `vehicles`. The upgrade adds a column only if it is missing, so it is safe to rerun; existing vehicles are kept unchanged.
+- **Form:** "Dual-fuel (optional)" section: "Also runs on" (any other fuel) and the distance per m³ or L on it. The Save button is now pinned to the bottom of the form so it stays reachable.
+- **Comparison:** `fuel_comparison.dart` (`compareFuels`, `FuelCostLine`, `FuelComparison`). The Garage menu shows "Compare fuel costs" for dual-fuel vehicles only. The sheet takes today's price for each fuel (typed by the user; FuelWise never guesses), shows km per unit and cost per 100 km for each, the cheaper fuel with its saving per 100 km and percentage, and a monthly saving from the odometer history (km/day × 30) or a hint when there is none. The currency defaults to the latest fill-up's (else BDT) and can be changed.
+- **Accessibility:** the first draft put the cost in a ListTile trailing slot, which overflowed in Bengali at 200 % text; the test caught it and the cost now wraps under the fuel name.
+- **Tests:** `test/features/garage/dual_fuel_test.dart`, 12 tests: comparison maths, invalid/missing prices, equal cost, either fuel cheaper, non-dual vehicles, assertion; drift round-trip; v5 → v6 upgrade with an existing vehicle; form saves km/m³ as per-100 km and blocks a missing distance; sheet results and monthly saving; menu only for dual-fuel; Bengali at 200 % text with accessibility guidelines. Older migration tests now expect `user_version` 6. All 317 tests pass, analyze clean.
+- **Not done:** prices typed in the sheet are not remembered; fill-ups do not record which of the two fuels was bought (consumption stats stay per vehicle). Not checked on a device.

@@ -161,7 +161,7 @@ void main() {
     final repo = DriftSavedTripRepository(db);
     expect((await repo.save(trip('a'))).isOk, isTrue);
     expect(await repo.watchAll().first, hasLength(1));
-    expect(await db.customSelect('PRAGMA user_version').map((r) => r.read<int>('user_version')).getSingle(), 5);
+    expect(await db.customSelect('PRAGMA user_version').map((r) => r.read<int>('user_version')).getSingle(), 6);
   });
 
   group('controller', () {

@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/router/app_routes.dart';
 import '../../../core/theme/app_theme.dart';
 import '../domain/consumption_unit.dart';
+import '../domain/fuel_comparison.dart';
 import '../domain/vehicle_catalog.dart';
 import '../domain/vehicle_profile.dart';
 import '../../../l10n/domain_labels.dart';
@@ -41,9 +42,13 @@ class _VehicleFormScreenState extends ConsumerState<VehicleFormScreen> {
   late final TextEditingController _consumption;
   late final TextEditingController _capacity;
   late final TextEditingController _efficiency;
+  late final TextEditingController _secondKmPerUnit;
   late EnergyType _type;
   late ConsumptionUnit _unit;
   String? _fuelType;
+
+  /// Dual-fuel: the second fuel (null = single fuel).
+  String? _secondFuel;
 
   /// The catalog entry the values came from (shows the "typical values" note).
   CatalogVehicle? _picked;
@@ -60,11 +65,14 @@ class _VehicleFormScreenState extends ConsumerState<VehicleFormScreen> {
     _capacity = TextEditingController(text: v == null ? '' : _trim(v.capacity));
     _efficiency = TextEditingController(text: _trim((v?.chargingEfficiency ?? 1.0) * 100));
     _fuelType = v?.preferredFuelType ?? (_type == EnergyType.fuel ? 'REGULAR_UNLEADED' : null);
+    _secondFuel = v?.secondaryFuelType;
+    final secondPer100 = v?.secondaryConsumptionPer100Km;
+    _secondKmPerUnit = TextEditingController(text: secondPer100 == null ? '' : _trim(100 / secondPer100));
   }
 
   @override
   void dispose() {
-    for (final c in [_name, _consumption, _capacity, _efficiency]) {
+    for (final c in [_name, _consumption, _capacity, _efficiency, _secondKmPerUnit]) {
       c.dispose();
     }
     super.dispose();
@@ -106,6 +114,7 @@ class _VehicleFormScreenState extends ConsumerState<VehicleFormScreen> {
     setState(() => _saving = true);
     final controller = ref.read(garageControllerProvider);
     final ev = _type == EnergyType.electric;
+    final dual = !ev && _secondFuel != null && _secondFuel != _fuelType;
     final vehicle = VehicleProfile(
       id: widget.initial?.id ?? controller.newId(),
       name: _name.text.trim(),
@@ -114,6 +123,8 @@ class _VehicleFormScreenState extends ConsumerState<VehicleFormScreen> {
       capacity: parsePositive(_capacity.text)!,
       preferredFuelType: ev ? null : _fuelType,
       chargingEfficiency: ev ? parsePositive(_efficiency.text)! / 100 : 1.0,
+      secondaryFuelType: dual ? _secondFuel : null,
+      secondaryConsumptionPer100Km: dual ? 100 / parsePositive(_secondKmPerUnit.text)! : null,
     );
     final result = await controller.save(vehicle);
     if (!mounted) return;
@@ -126,6 +137,50 @@ class _VehicleFormScreenState extends ConsumerState<VehicleFormScreen> {
     }
   }
 
+  List<Widget> _dualFuelFields(AppLocalizations l, List<TextInputFormatter> decimal) {
+    final choices = [
+      for (final f in kFuelTypeChoices)
+        if (f != _fuelType) f,
+    ];
+    final second = choices.contains(_secondFuel) ? _secondFuel : null;
+    return [
+      const SizedBox(height: AppSpacing.lg),
+      Text(l.dualFuelSection, style: Theme.of(context).textTheme.titleSmall),
+      const SizedBox(height: AppSpacing.xs),
+      Text(l.dualFuelHelper, style: Theme.of(context).textTheme.bodySmall),
+      const SizedBox(height: AppSpacing.sm),
+      DropdownButtonFormField<String?>(
+        key: ValueKey('secondFuel-$_fuelType-$second'),
+        isExpanded: true,
+        initialValue: second,
+        decoration: InputDecoration(labelText: l.alsoRunsOn),
+        items: [
+          DropdownMenuItem<String?>(value: null, child: Text(l.secondFuelNone, overflow: TextOverflow.ellipsis)),
+          for (final f in choices)
+            DropdownMenuItem<String?>(
+              value: f,
+              child: Text(localizedFuelType(f, l), overflow: TextOverflow.ellipsis),
+            ),
+        ],
+        onChanged: (f) => setState(() => _secondFuel = f),
+      ),
+      if (second != null) ...[
+        const SizedBox(height: AppSpacing.md),
+        TextFormField(
+          key: const Key('secondKmPerUnit'),
+          controller: _secondKmPerUnit,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          inputFormatters: decimal,
+          decoration: InputDecoration(
+            labelText: l.secondFuelDistance(purchaseUnitForFuel(second)),
+            suffixText: 'km/${purchaseUnitForFuel(second)}',
+          ),
+          validator: (v) => parsePositive(v) == null ? l.enterPositiveNumber : null,
+        ),
+      ],
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
     final ev = _type == EnergyType.electric;
@@ -133,6 +188,13 @@ class _VehicleFormScreenState extends ConsumerState<VehicleFormScreen> {
     final l = context.l10n;
     return Scaffold(
       appBar: AppBar(title: Text(widget.initial == null ? l.addVehicle : l.editVehicle)),
+      // Pinned so it stays reachable however long the form gets.
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.md),
+          child: FilledButton(onPressed: _saving ? null : _save, child: Text(_saving ? l.saving : l.saveVehicle)),
+        ),
+      ),
       body: Form(
         key: _form,
         child: ListView(
@@ -261,8 +323,7 @@ class _VehicleFormScreenState extends ConsumerState<VehicleFormScreen> {
                   return p == null || p > 100 ? l.efficiencyRangeError : null;
                 },
               ),
-            const SizedBox(height: AppSpacing.lg),
-            FilledButton(onPressed: _saving ? null : _save, child: Text(_saving ? l.saving : l.saveVehicle)),
+            if (!ev) ..._dualFuelFields(l, decimal),
           ],
         ),
       ),

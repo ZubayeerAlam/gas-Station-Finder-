@@ -2825,6 +2825,108 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'≈ {units} for this route'**
   String routeEnergyOnly(String units);
+
+  /// No description provided for @dualFuelSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Dual-fuel (optional)'**
+  String get dualFuelSection;
+
+  /// No description provided for @dualFuelHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'For cars that also run on a second fuel, such as a petrol car converted to CNG.'**
+  String get dualFuelHelper;
+
+  /// No description provided for @alsoRunsOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Also runs on'**
+  String get alsoRunsOn;
+
+  /// No description provided for @secondFuelNone.
+  ///
+  /// In en, this message translates to:
+  /// **'No second fuel'**
+  String get secondFuelNone;
+
+  /// No description provided for @secondFuelDistance.
+  ///
+  /// In en, this message translates to:
+  /// **'Distance per {unit} on the second fuel'**
+  String secondFuelDistance(String unit);
+
+  /// No description provided for @compareFuelsMenu.
+  ///
+  /// In en, this message translates to:
+  /// **'Compare fuel costs'**
+  String get compareFuelsMenu;
+
+  /// No description provided for @compareFuelsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{first} vs {second}'**
+  String compareFuelsTitle(String first, String second);
+
+  /// No description provided for @compareFuelsIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter today\'s price for each fuel. FuelWise uses your vehicle\'s consumption and never guesses prices.'**
+  String get compareFuelsIntro;
+
+  /// No description provided for @pricePerUnitLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{fuel} price per {unit}'**
+  String pricePerUnitLabel(String fuel, String unit);
+
+  /// No description provided for @costPer100Km.
+  ///
+  /// In en, this message translates to:
+  /// **'{cost} per 100 km'**
+  String costPer100Km(String cost);
+
+  /// No description provided for @kmPerUnitValue.
+  ///
+  /// In en, this message translates to:
+  /// **'{km} km/{unit}'**
+  String kmPerUnitValue(String km, String unit);
+
+  /// No description provided for @fuelCheaperBy.
+  ///
+  /// In en, this message translates to:
+  /// **'{fuel} is cheaper by {saving} per 100 km ({percent}% less).'**
+  String fuelCheaperBy(String fuel, String saving, String percent);
+
+  /// No description provided for @fuelsCostSame.
+  ///
+  /// In en, this message translates to:
+  /// **'Both fuels cost the same per km.'**
+  String get fuelsCostSame;
+
+  /// No description provided for @fuelSavingMonthly.
+  ///
+  /// In en, this message translates to:
+  /// **'At your usual {km} a month that is about {saving}.'**
+  String fuelSavingMonthly(String km, String saving);
+
+  /// No description provided for @fuelSavingNoHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Add fill-ups with odometer readings to see a monthly saving.'**
+  String get fuelSavingNoHistory;
+
+  /// No description provided for @enterBothPrices.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter both prices to compare.'**
+  String get enterBothPrices;
+
+  /// No description provided for @currencyLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Currency'**
+  String get currencyLabel;
 }
 
 class _AppLocalizationsDelegate

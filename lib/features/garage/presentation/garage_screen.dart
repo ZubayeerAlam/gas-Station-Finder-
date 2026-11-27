@@ -8,6 +8,7 @@ import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/state_views.dart';
 import '../../care/presentation/care_providers.dart';
 import '../domain/vehicle_profile.dart';
+import 'fuel_comparison_sheet.dart';
 import 'garage_providers.dart';
 import '../../../l10n/domain_labels.dart';
 import '../../../l10n/l10n.dart';
@@ -40,18 +41,18 @@ class GarageScreen extends ConsumerWidget {
       ),
       body: switch (vehicles) {
         AsyncData(:final value) when value.isEmpty => AppMessageView(
-            icon: Icons.directions_car_filled_outlined,
-            title: context.l10n.noVehiclesTitle,
-            message: context.l10n.noVehiclesMessage,
-            primaryLabel: context.l10n.addVehicle,
-            onPrimary: () => context.push(AppRoutes.vehicleNew),
-          ),
+          icon: Icons.directions_car_filled_outlined,
+          title: context.l10n.noVehiclesTitle,
+          message: context.l10n.noVehiclesMessage,
+          primaryLabel: context.l10n.addVehicle,
+          onPrimary: () => context.push(AppRoutes.vehicleNew),
+        ),
         AsyncData(:final value) => ListView.separated(
-            padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.md, AppSpacing.md, 96),
-            itemCount: value.length,
-            separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
-            itemBuilder: (context, i) => VehicleCard(vehicle: value[i], active: value[i].id == activeId),
-          ),
+          padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.md, AppSpacing.md, 96),
+          itemCount: value.length,
+          separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
+          itemBuilder: (context, i) => VehicleCard(vehicle: value[i], active: value[i].id == activeId),
+        ),
         AsyncError() => AppErrorView(message: context.l10n.couldNotLoadGarage),
         _ => const AppLoading(),
       },
@@ -81,12 +82,14 @@ class VehicleCard extends ConsumerWidget {
     final controller = ref.read(garageControllerProvider);
     final result = await controller.delete(vehicle.id);
     if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text(result.isOk ? context.l10n.vehicleDeleted(vehicle.name) : context.l10n.couldNotDeleteVehicle),
-      action: result.isOk
-          ? SnackBarAction(label: context.l10n.undo, onPressed: () => controller.save(vehicle))
-          : null,
-    ));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(result.isOk ? context.l10n.vehicleDeleted(vehicle.name) : context.l10n.couldNotDeleteVehicle),
+        action: result.isOk
+            ? SnackBarAction(label: context.l10n.undo, onPressed: () => controller.save(vehicle))
+            : null,
+      ),
+    );
   }
 
   @override
@@ -99,7 +102,10 @@ class VehicleCard extends ConsumerWidget {
       ev
           ? context.l10n.batteryCapacity('${vehicle.capacity.toStringAsFixed(0)} ${vehicle.unit}')
           : context.l10n.tankCapacity('${vehicle.capacity.toStringAsFixed(0)} ${vehicle.unit}'),
-      if (vehicle.preferredFuelType != null) localizedFuelType(vehicle.preferredFuelType!, context.l10n),
+      if (vehicle.preferredFuelType != null)
+        vehicle.isDualFuel
+            ? '${localizedFuelType(vehicle.preferredFuelType!, context.l10n)} + ${localizedFuelType(vehicle.secondaryFuelType!, context.l10n)}'
+            : localizedFuelType(vehicle.preferredFuelType!, context.l10n),
     ].join(' · ');
 
     return Card(
@@ -120,18 +126,28 @@ class VehicleCard extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(children: [
-                      Flexible(child: Text(vehicle.name, style: theme.textTheme.titleMedium)),
-                      if (active) ...[
-                        const SizedBox(width: AppSpacing.sm),
-                        Icon(Icons.check_circle_rounded, size: 18, color: theme.colorScheme.primary,
-                            semanticLabel: context.l10n.activeVehicle),
+                    Row(
+                      children: [
+                        Flexible(child: Text(vehicle.name, style: theme.textTheme.titleMedium)),
+                        if (active) ...[
+                          const SizedBox(width: AppSpacing.sm),
+                          Icon(
+                            Icons.check_circle_rounded,
+                            size: 18,
+                            color: theme.colorScheme.primary,
+                            semanticLabel: context.l10n.activeVehicle,
+                          ),
+                        ],
                       ],
-                    ]),
+                    ),
                     const SizedBox(height: AppSpacing.xs),
                     Text(details, style: theme.textTheme.bodySmall),
-                    Text(ev ? context.l10n.fullChargeRange(Fmt.distance(vehicle.rangeMeters(1))) : context.l10n.fullTankRange(Fmt.distance(vehicle.rangeMeters(1))),
-                        style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+                    Text(
+                      ev
+                          ? context.l10n.fullChargeRange(Fmt.distance(vehicle.rangeMeters(1)))
+                          : context.l10n.fullTankRange(Fmt.distance(vehicle.rangeMeters(1))),
+                      style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                    ),
                     if (attention > 0)
                       Padding(
                         padding: const EdgeInsets.only(top: AppSpacing.xs),
@@ -156,11 +172,13 @@ class VehicleCard extends ConsumerWidget {
                 tooltip: context.l10n.vehicleOptions,
                 onSelected: (v) => switch (v) {
                   'care' => context.push(AppRoutes.care, extra: vehicle),
+                  'compare' => showFuelComparisonSheet(context, vehicle),
                   'edit' => context.push(AppRoutes.vehicleEdit, extra: vehicle),
                   _ => _delete(context, ref),
                 },
                 itemBuilder: (_) => [
                   PopupMenuItem(value: 'care', child: Text(context.l10n.careMenu)),
+                  if (vehicle.isDualFuel) PopupMenuItem(value: 'compare', child: Text(context.l10n.compareFuelsMenu)),
                   PopupMenuItem(value: 'edit', child: Text(context.l10n.edit)),
                   PopupMenuItem(value: 'delete', child: Text(context.l10n.delete)),
                 ],

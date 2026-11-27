@@ -1717,4 +1717,72 @@ class AppLocalizationsEn extends AppLocalizations {
   String routeEnergyOnly(String units) {
     return '≈ $units for this route';
   }
+
+  @override
+  String get dualFuelSection => 'Dual-fuel (optional)';
+
+  @override
+  String get dualFuelHelper =>
+      'For cars that also run on a second fuel, such as a petrol car converted to CNG.';
+
+  @override
+  String get alsoRunsOn => 'Also runs on';
+
+  @override
+  String get secondFuelNone => 'No second fuel';
+
+  @override
+  String secondFuelDistance(String unit) {
+    return 'Distance per $unit on the second fuel';
+  }
+
+  @override
+  String get compareFuelsMenu => 'Compare fuel costs';
+
+  @override
+  String compareFuelsTitle(String first, String second) {
+    return '$first vs $second';
+  }
+
+  @override
+  String get compareFuelsIntro =>
+      'Enter today\'s price for each fuel. FuelWise uses your vehicle\'s consumption and never guesses prices.';
+
+  @override
+  String pricePerUnitLabel(String fuel, String unit) {
+    return '$fuel price per $unit';
+  }
+
+  @override
+  String costPer100Km(String cost) {
+    return '$cost per 100 km';
+  }
+
+  @override
+  String kmPerUnitValue(String km, String unit) {
+    return '$km km/$unit';
+  }
+
+  @override
+  String fuelCheaperBy(String fuel, String saving, String percent) {
+    return '$fuel is cheaper by $saving per 100 km ($percent% less).';
+  }
+
+  @override
+  String get fuelsCostSame => 'Both fuels cost the same per km.';
+
+  @override
+  String fuelSavingMonthly(String km, String saving) {
+    return 'At your usual $km a month that is about $saving.';
+  }
+
+  @override
+  String get fuelSavingNoHistory =>
+      'Add fill-ups with odometer readings to see a monthly saving.';
+
+  @override
+  String get enterBothPrices => 'Enter both prices to compare.';
+
+  @override
+  String get currencyLabel => 'Currency';
 }

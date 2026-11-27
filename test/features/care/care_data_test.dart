@@ -99,6 +99,6 @@ void main() {
     final repo = DriftCareRepository(db);
     expect((await repo.save(reminder)).isOk, isTrue);
     expect(await repo.watchAll().first, hasLength(1));
-    expect(await db.customSelect('PRAGMA user_version').map((r) => r.read<int>('user_version')).getSingle(), 5);
+    expect(await db.customSelect('PRAGMA user_version').map((r) => r.read<int>('user_version')).getSingle(), 6);
   });
 }

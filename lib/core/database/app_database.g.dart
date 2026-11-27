@@ -87,6 +87,29 @@ class $VehiclesTable extends Vehicles with TableInfo<$VehiclesTable, Vehicle> {
         requiredDuringInsert: false,
         defaultValue: const Constant(1.0),
       );
+  static const VerificationMeta _secondaryFuelTypeMeta = const VerificationMeta(
+    'secondaryFuelType',
+  );
+  @override
+  late final GeneratedColumn<String> secondaryFuelType =
+      GeneratedColumn<String>(
+        'secondary_fuel_type',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _secondaryConsumptionPer100KmMeta =
+      const VerificationMeta('secondaryConsumptionPer100Km');
+  @override
+  late final GeneratedColumn<double> secondaryConsumptionPer100Km =
+      GeneratedColumn<double>(
+        'secondary_consumption_per100_km',
+        aliasedName,
+        true,
+        type: DriftSqlType.double,
+        requiredDuringInsert: false,
+      );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
   );
@@ -107,6 +130,8 @@ class $VehiclesTable extends Vehicles with TableInfo<$VehiclesTable, Vehicle> {
     capacity,
     preferredFuelType,
     chargingEfficiency,
+    secondaryFuelType,
+    secondaryConsumptionPer100Km,
     createdAt,
   ];
   @override
@@ -179,6 +204,24 @@ class $VehiclesTable extends Vehicles with TableInfo<$VehiclesTable, Vehicle> {
         ),
       );
     }
+    if (data.containsKey('secondary_fuel_type')) {
+      context.handle(
+        _secondaryFuelTypeMeta,
+        secondaryFuelType.isAcceptableOrUnknown(
+          data['secondary_fuel_type']!,
+          _secondaryFuelTypeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('secondary_consumption_per100_km')) {
+      context.handle(
+        _secondaryConsumptionPer100KmMeta,
+        secondaryConsumptionPer100Km.isAcceptableOrUnknown(
+          data['secondary_consumption_per100_km']!,
+          _secondaryConsumptionPer100KmMeta,
+        ),
+      );
+    }
     if (data.containsKey('created_at')) {
       context.handle(
         _createdAtMeta,
@@ -224,6 +267,14 @@ class $VehiclesTable extends Vehicles with TableInfo<$VehiclesTable, Vehicle> {
         DriftSqlType.double,
         data['${effectivePrefix}charging_efficiency'],
       )!,
+      secondaryFuelType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}secondary_fuel_type'],
+      ),
+      secondaryConsumptionPer100Km: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}secondary_consumption_per100_km'],
+      ),
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
@@ -247,6 +298,8 @@ class Vehicle extends DataClass implements Insertable<Vehicle> {
   final double capacity;
   final String? preferredFuelType;
   final double chargingEfficiency;
+  final String? secondaryFuelType;
+  final double? secondaryConsumptionPer100Km;
   final DateTime createdAt;
   const Vehicle({
     required this.id,
@@ -256,6 +309,8 @@ class Vehicle extends DataClass implements Insertable<Vehicle> {
     required this.capacity,
     this.preferredFuelType,
     required this.chargingEfficiency,
+    this.secondaryFuelType,
+    this.secondaryConsumptionPer100Km,
     required this.createdAt,
   });
   @override
@@ -270,6 +325,14 @@ class Vehicle extends DataClass implements Insertable<Vehicle> {
       map['preferred_fuel_type'] = Variable<String>(preferredFuelType);
     }
     map['charging_efficiency'] = Variable<double>(chargingEfficiency);
+    if (!nullToAbsent || secondaryFuelType != null) {
+      map['secondary_fuel_type'] = Variable<String>(secondaryFuelType);
+    }
+    if (!nullToAbsent || secondaryConsumptionPer100Km != null) {
+      map['secondary_consumption_per100_km'] = Variable<double>(
+        secondaryConsumptionPer100Km,
+      );
+    }
     map['created_at'] = Variable<DateTime>(createdAt);
     return map;
   }
@@ -285,6 +348,13 @@ class Vehicle extends DataClass implements Insertable<Vehicle> {
           ? const Value.absent()
           : Value(preferredFuelType),
       chargingEfficiency: Value(chargingEfficiency),
+      secondaryFuelType: secondaryFuelType == null && nullToAbsent
+          ? const Value.absent()
+          : Value(secondaryFuelType),
+      secondaryConsumptionPer100Km:
+          secondaryConsumptionPer100Km == null && nullToAbsent
+          ? const Value.absent()
+          : Value(secondaryConsumptionPer100Km),
       createdAt: Value(createdAt),
     );
   }
@@ -308,6 +378,12 @@ class Vehicle extends DataClass implements Insertable<Vehicle> {
       chargingEfficiency: serializer.fromJson<double>(
         json['chargingEfficiency'],
       ),
+      secondaryFuelType: serializer.fromJson<String?>(
+        json['secondaryFuelType'],
+      ),
+      secondaryConsumptionPer100Km: serializer.fromJson<double?>(
+        json['secondaryConsumptionPer100Km'],
+      ),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
     );
   }
@@ -322,6 +398,10 @@ class Vehicle extends DataClass implements Insertable<Vehicle> {
       'capacity': serializer.toJson<double>(capacity),
       'preferredFuelType': serializer.toJson<String?>(preferredFuelType),
       'chargingEfficiency': serializer.toJson<double>(chargingEfficiency),
+      'secondaryFuelType': serializer.toJson<String?>(secondaryFuelType),
+      'secondaryConsumptionPer100Km': serializer.toJson<double?>(
+        secondaryConsumptionPer100Km,
+      ),
       'createdAt': serializer.toJson<DateTime>(createdAt),
     };
   }
@@ -334,6 +414,8 @@ class Vehicle extends DataClass implements Insertable<Vehicle> {
     double? capacity,
     Value<String?> preferredFuelType = const Value.absent(),
     double? chargingEfficiency,
+    Value<String?> secondaryFuelType = const Value.absent(),
+    Value<double?> secondaryConsumptionPer100Km = const Value.absent(),
     DateTime? createdAt,
   }) => Vehicle(
     id: id ?? this.id,
@@ -345,6 +427,12 @@ class Vehicle extends DataClass implements Insertable<Vehicle> {
         ? preferredFuelType.value
         : this.preferredFuelType,
     chargingEfficiency: chargingEfficiency ?? this.chargingEfficiency,
+    secondaryFuelType: secondaryFuelType.present
+        ? secondaryFuelType.value
+        : this.secondaryFuelType,
+    secondaryConsumptionPer100Km: secondaryConsumptionPer100Km.present
+        ? secondaryConsumptionPer100Km.value
+        : this.secondaryConsumptionPer100Km,
     createdAt: createdAt ?? this.createdAt,
   );
   Vehicle copyWithCompanion(VehiclesCompanion data) {
@@ -364,6 +452,12 @@ class Vehicle extends DataClass implements Insertable<Vehicle> {
       chargingEfficiency: data.chargingEfficiency.present
           ? data.chargingEfficiency.value
           : this.chargingEfficiency,
+      secondaryFuelType: data.secondaryFuelType.present
+          ? data.secondaryFuelType.value
+          : this.secondaryFuelType,
+      secondaryConsumptionPer100Km: data.secondaryConsumptionPer100Km.present
+          ? data.secondaryConsumptionPer100Km.value
+          : this.secondaryConsumptionPer100Km,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
     );
   }
@@ -378,6 +472,10 @@ class Vehicle extends DataClass implements Insertable<Vehicle> {
           ..write('capacity: $capacity, ')
           ..write('preferredFuelType: $preferredFuelType, ')
           ..write('chargingEfficiency: $chargingEfficiency, ')
+          ..write('secondaryFuelType: $secondaryFuelType, ')
+          ..write(
+            'secondaryConsumptionPer100Km: $secondaryConsumptionPer100Km, ',
+          )
           ..write('createdAt: $createdAt')
           ..write(')'))
         .toString();
@@ -392,6 +490,8 @@ class Vehicle extends DataClass implements Insertable<Vehicle> {
     capacity,
     preferredFuelType,
     chargingEfficiency,
+    secondaryFuelType,
+    secondaryConsumptionPer100Km,
     createdAt,
   );
   @override
@@ -405,6 +505,9 @@ class Vehicle extends DataClass implements Insertable<Vehicle> {
           other.capacity == this.capacity &&
           other.preferredFuelType == this.preferredFuelType &&
           other.chargingEfficiency == this.chargingEfficiency &&
+          other.secondaryFuelType == this.secondaryFuelType &&
+          other.secondaryConsumptionPer100Km ==
+              this.secondaryConsumptionPer100Km &&
           other.createdAt == this.createdAt);
 }
 
@@ -416,6 +519,8 @@ class VehiclesCompanion extends UpdateCompanion<Vehicle> {
   final Value<double> capacity;
   final Value<String?> preferredFuelType;
   final Value<double> chargingEfficiency;
+  final Value<String?> secondaryFuelType;
+  final Value<double?> secondaryConsumptionPer100Km;
   final Value<DateTime> createdAt;
   final Value<int> rowid;
   const VehiclesCompanion({
@@ -426,6 +531,8 @@ class VehiclesCompanion extends UpdateCompanion<Vehicle> {
     this.capacity = const Value.absent(),
     this.preferredFuelType = const Value.absent(),
     this.chargingEfficiency = const Value.absent(),
+    this.secondaryFuelType = const Value.absent(),
+    this.secondaryConsumptionPer100Km = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
@@ -437,6 +544,8 @@ class VehiclesCompanion extends UpdateCompanion<Vehicle> {
     required double capacity,
     this.preferredFuelType = const Value.absent(),
     this.chargingEfficiency = const Value.absent(),
+    this.secondaryFuelType = const Value.absent(),
+    this.secondaryConsumptionPer100Km = const Value.absent(),
     required DateTime createdAt,
     this.rowid = const Value.absent(),
   }) : id = Value(id),
@@ -453,6 +562,8 @@ class VehiclesCompanion extends UpdateCompanion<Vehicle> {
     Expression<double>? capacity,
     Expression<String>? preferredFuelType,
     Expression<double>? chargingEfficiency,
+    Expression<String>? secondaryFuelType,
+    Expression<double>? secondaryConsumptionPer100Km,
     Expression<DateTime>? createdAt,
     Expression<int>? rowid,
   }) {
@@ -465,6 +576,9 @@ class VehiclesCompanion extends UpdateCompanion<Vehicle> {
       if (capacity != null) 'capacity': capacity,
       if (preferredFuelType != null) 'preferred_fuel_type': preferredFuelType,
       if (chargingEfficiency != null) 'charging_efficiency': chargingEfficiency,
+      if (secondaryFuelType != null) 'secondary_fuel_type': secondaryFuelType,
+      if (secondaryConsumptionPer100Km != null)
+        'secondary_consumption_per100_km': secondaryConsumptionPer100Km,
       if (createdAt != null) 'created_at': createdAt,
       if (rowid != null) 'rowid': rowid,
     });
@@ -478,6 +592,8 @@ class VehiclesCompanion extends UpdateCompanion<Vehicle> {
     Value<double>? capacity,
     Value<String?>? preferredFuelType,
     Value<double>? chargingEfficiency,
+    Value<String?>? secondaryFuelType,
+    Value<double?>? secondaryConsumptionPer100Km,
     Value<DateTime>? createdAt,
     Value<int>? rowid,
   }) {
@@ -489,6 +605,9 @@ class VehiclesCompanion extends UpdateCompanion<Vehicle> {
       capacity: capacity ?? this.capacity,
       preferredFuelType: preferredFuelType ?? this.preferredFuelType,
       chargingEfficiency: chargingEfficiency ?? this.chargingEfficiency,
+      secondaryFuelType: secondaryFuelType ?? this.secondaryFuelType,
+      secondaryConsumptionPer100Km:
+          secondaryConsumptionPer100Km ?? this.secondaryConsumptionPer100Km,
       createdAt: createdAt ?? this.createdAt,
       rowid: rowid ?? this.rowid,
     );
@@ -520,6 +639,14 @@ class VehiclesCompanion extends UpdateCompanion<Vehicle> {
     if (chargingEfficiency.present) {
       map['charging_efficiency'] = Variable<double>(chargingEfficiency.value);
     }
+    if (secondaryFuelType.present) {
+      map['secondary_fuel_type'] = Variable<String>(secondaryFuelType.value);
+    }
+    if (secondaryConsumptionPer100Km.present) {
+      map['secondary_consumption_per100_km'] = Variable<double>(
+        secondaryConsumptionPer100Km.value,
+      );
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -539,6 +666,10 @@ class VehiclesCompanion extends UpdateCompanion<Vehicle> {
           ..write('capacity: $capacity, ')
           ..write('preferredFuelType: $preferredFuelType, ')
           ..write('chargingEfficiency: $chargingEfficiency, ')
+          ..write('secondaryFuelType: $secondaryFuelType, ')
+          ..write(
+            'secondaryConsumptionPer100Km: $secondaryConsumptionPer100Km, ',
+          )
           ..write('createdAt: $createdAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -3088,6 +3219,8 @@ typedef $$VehiclesTableCreateCompanionBuilder = VehiclesCompanion Function({
   required double capacity,
   Value<String?> preferredFuelType,
   Value<double> chargingEfficiency,
+  Value<String?> secondaryFuelType,
+  Value<double?> secondaryConsumptionPer100Km,
   required DateTime createdAt,
   Value<int> rowid,
 });
@@ -3099,6 +3232,8 @@ typedef $$VehiclesTableUpdateCompanionBuilder = VehiclesCompanion Function({
   Value<double> capacity,
   Value<String?> preferredFuelType,
   Value<double> chargingEfficiency,
+  Value<String?> secondaryFuelType,
+  Value<double?> secondaryConsumptionPer100Km,
   Value<DateTime> createdAt,
   Value<int> rowid,
 });
@@ -3144,6 +3279,16 @@ class $$VehiclesTableFilterComposer
 
   ColumnFilters<double> get chargingEfficiency => $composableBuilder(
     column: $table.chargingEfficiency,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get secondaryFuelType => $composableBuilder(
+    column: $table.secondaryFuelType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get secondaryConsumptionPer100Km => $composableBuilder(
+    column: $table.secondaryConsumptionPer100Km,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -3197,6 +3342,17 @@ class $$VehiclesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get secondaryFuelType => $composableBuilder(
+    column: $table.secondaryFuelType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get secondaryConsumptionPer100Km =>
+      $composableBuilder(
+        column: $table.secondaryConsumptionPer100Km,
+        builder: (column) => ColumnOrderings(column),
+      );
+
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
@@ -3241,6 +3397,17 @@ class $$VehiclesTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<String> get secondaryFuelType => $composableBuilder(
+    column: $table.secondaryFuelType,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get secondaryConsumptionPer100Km =>
+      $composableBuilder(
+        column: $table.secondaryConsumptionPer100Km,
+        builder: (column) => column,
+      );
+
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
 }
@@ -3280,6 +3447,9 @@ class $$VehiclesTableTableManager
                 Value<double> capacity = const Value.absent(),
                 Value<String?> preferredFuelType = const Value.absent(),
                 Value<double> chargingEfficiency = const Value.absent(),
+                Value<String?> secondaryFuelType = const Value.absent(),
+                Value<double?> secondaryConsumptionPer100Km =
+                    const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => VehiclesCompanion(
@@ -3290,6 +3460,8 @@ class $$VehiclesTableTableManager
                 capacity: capacity,
                 preferredFuelType: preferredFuelType,
                 chargingEfficiency: chargingEfficiency,
+                secondaryFuelType: secondaryFuelType,
+                secondaryConsumptionPer100Km: secondaryConsumptionPer100Km,
                 createdAt: createdAt,
                 rowid: rowid,
               ),
@@ -3302,6 +3474,9 @@ class $$VehiclesTableTableManager
                 required double capacity,
                 Value<String?> preferredFuelType = const Value.absent(),
                 Value<double> chargingEfficiency = const Value.absent(),
+                Value<String?> secondaryFuelType = const Value.absent(),
+                Value<double?> secondaryConsumptionPer100Km =
+                    const Value.absent(),
                 required DateTime createdAt,
                 Value<int> rowid = const Value.absent(),
               }) => VehiclesCompanion.insert(
@@ -3312,6 +3487,8 @@ class $$VehiclesTableTableManager
                 capacity: capacity,
                 preferredFuelType: preferredFuelType,
                 chargingEfficiency: chargingEfficiency,
+                secondaryFuelType: secondaryFuelType,
+                secondaryConsumptionPer100Km: secondaryConsumptionPer100Km,
                 createdAt: createdAt,
                 rowid: rowid,
               ),

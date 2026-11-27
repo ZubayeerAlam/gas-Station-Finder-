@@ -23,6 +23,10 @@ abstract class VehicleProfile with _$VehicleProfile {
   @Assert('consumptionPer100Km > 0', 'consumption must be positive')
   @Assert('capacity > 0', 'capacity must be positive')
   @Assert('chargingEfficiency > 0 && chargingEfficiency <= 1', 'efficiency must be in (0, 1]')
+  @Assert(
+    'secondaryConsumptionPer100Km == null || secondaryConsumptionPer100Km > 0',
+    'secondary consumption must be positive',
+  )
   const factory VehicleProfile({
     required String id,
     required String name,
@@ -37,7 +41,18 @@ abstract class VehicleProfile with _$VehicleProfile {
     /// Share of bought energy that reaches the battery (charging losses).
     /// Defaults to 1.0 (no assumption); set e.g. 0.9 if the user knows it.
     @Default(1.0) double chargingEfficiency,
+
+    /// Dual-fuel vehicles (e.g. petrol converted to CNG): the second fuel's
+    /// Places code. Null for single-fuel vehicles and EVs.
+    String? secondaryFuelType,
+
+    /// Consumption on [secondaryFuelType], per 100 km in that fuel's purchase
+    /// unit (m³ for CNG, L otherwise). See `purchaseUnitForFuel`.
+    double? secondaryConsumptionPer100Km,
   }) = _VehicleProfile;
+
+  /// Runs on two fuels and both consumptions are known.
+  bool get isDualFuel => !isElectric && secondaryFuelType != null && secondaryConsumptionPer100Km != null;
 
   bool get isElectric => energyType == EnergyType.electric;
 

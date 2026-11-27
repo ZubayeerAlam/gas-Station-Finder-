@@ -128,7 +128,7 @@ Implementation history and evidence live in [BUILD.md](BUILD.md). Rule: work one
 
 ### 1.6 Price History & Analytics
 - [-] 7-day / 30-day trends (fl_chart: consensus close line + daily min–max band, single currency) — widget-tested, not seen on device (needs Places stations)
-- [-] Station and fuel-type comparisons — nearby list "Cheapest" sort compares stations for the active vehicle's fuel (Google price, else fresh community consensus; one currency only; no-price stations last; lookups only when chosen) — unit + widget-tested, **not seen live** (needs the new Google key); per-station all-fuel prices are in the details sheet; a cross-fuel cost comparison (e.g. petrol vs CNG per 100 km) not done
+- [-] Station and fuel-type comparisons — nearby list "Cheapest" sort compares stations for the active vehicle's fuel (Google price, else fresh community consensus; one currency only; no-price stations last; lookups only when chosen) — unit + widget-tested, **not seen live** (needs the new Google key); per-station all-fuel prices are in the details sheet; cross-fuel comparison for dual-fuel vehicles done (Garage → Compare fuel costs, see 1.9)
 - [-] Verified vs unverified distinction — community prices labelled with report count, age, "outdated" after TTL; Google prices labelled Google
 
 ### 1.7 Station Reliability Score
@@ -150,6 +150,7 @@ Implementation history and evidence live in [BUILD.md](BUILD.md). Rule: work one
 ### 1.9 My Garage
 - [x] Multiple vehicles (name, fuel/energy type, tank/battery, consumption in 7 units, preferred fuel, EV charging efficiency) — drift (SQLite) persistence, active vehicle, edit/delete + undo
 - [-] Range, trip cost, required fuel/energy, reachable stations — full-tank range shown in Garage; trip cost/reachability wired into along-route UI later (1.2)
+- [x] Dual-fuel vehicles (e.g. petrol converted to CNG): optional second fuel + km per L/m³ on the form (drift v6, upgrade keeps existing vehicles); Garage → "Compare fuel costs": cost per 100 km on each fuel from prices the user types (never guessed), cheaper fuel, saving per 100 km and per month from odometer history — unit, migration and widget-tested (incl. Bengali 200 %); prices are not remembered between openings
 - [x] Make/model picker: "Start from a common model" on the add-vehicle form — 20 common Bangladesh cars, motorbikes and EVs, searchable, fills name / fuel / tank or battery / consumption as editable *typical* values with a "not official figures" note — unit + widget-tested (incl. Bengali 200 %)
 
 ### 1.10 Fill-up & Trip History

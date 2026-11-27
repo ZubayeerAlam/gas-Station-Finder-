@@ -452,5 +452,22 @@
   "priceFlagRemoved": "ফ্ল্যাগ সরানো হয়েছে",
   "priceDisputed": "বিতর্কিত: {count} জন বলেছেন এটি ভুল",
   "routeEnergyWithCost": "≈ {units} · আপনার শেষ ভরার দামে ≈ {cost}",
-  "routeEnergyOnly": "এই রুটে ≈ {units}"
+  "routeEnergyOnly": "এই রুটে ≈ {units}",
+  "dualFuelSection": "ডুয়াল-ফুয়েল (ঐচ্ছিক)",
+  "dualFuelHelper": "যে গাড়ি দ্বিতীয় জ্বালানিতেও চলে, যেমন CNG-তে রূপান্তরিত পেট্রল গাড়ি।",
+  "alsoRunsOn": "এটাতেও চলে",
+  "secondFuelNone": "দ্বিতীয় জ্বালানি নেই",
+  "secondFuelDistance": "দ্বিতীয় জ্বালানিতে প্রতি {unit}-এ দূরত্ব",
+  "compareFuelsMenu": "জ্বালানি খরচ তুলনা",
+  "compareFuelsTitle": "{first} বনাম {second}",
+  "compareFuelsIntro": "প্রতিটি জ্বালানির আজকের দাম লিখুন। FuelWise আপনার গাড়ির খরচের হার ব্যবহার করে, কখনো দাম অনুমান করে না।",
+  "pricePerUnitLabel": "প্রতি {unit} {fuel}-এর দাম",
+  "costPer100Km": "প্রতি ১০০ কিমি-তে {cost}",
+  "kmPerUnitValue": "{km} কিমি/{unit}",
+  "fuelCheaperBy": "{fuel} প্রতি ১০০ কিমি-তে {saving} সস্তা ({percent}% কম)।",
+  "fuelsCostSame": "দুই জ্বালানিতেই প্রতি কিমি খরচ সমান।",
+  "fuelSavingMonthly": "আপনার সাধারণ মাসিক {km} হিসেবে প্রায় {saving}।",
+  "fuelSavingNoHistory": "মাসিক সাশ্রয় দেখতে ওডোমিটার রিডিংসহ রিফুয়েল যোগ করুন।",
+  "enterBothPrices": "তুলনা করতে দুটো দামই লিখুন।",
+  "currencyLabel": "মুদ্রা"
 }

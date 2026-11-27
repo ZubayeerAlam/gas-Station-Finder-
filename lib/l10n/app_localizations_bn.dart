@@ -1704,4 +1704,72 @@ class AppLocalizationsBn extends AppLocalizations {
   String routeEnergyOnly(String units) {
     return 'এই রুটে ≈ $units';
   }
+
+  @override
+  String get dualFuelSection => 'ডুয়াল-ফুয়েল (ঐচ্ছিক)';
+
+  @override
+  String get dualFuelHelper =>
+      'যে গাড়ি দ্বিতীয় জ্বালানিতেও চলে, যেমন CNG-তে রূপান্তরিত পেট্রল গাড়ি।';
+
+  @override
+  String get alsoRunsOn => 'এটাতেও চলে';
+
+  @override
+  String get secondFuelNone => 'দ্বিতীয় জ্বালানি নেই';
+
+  @override
+  String secondFuelDistance(String unit) {
+    return 'দ্বিতীয় জ্বালানিতে প্রতি $unit-এ দূরত্ব';
+  }
+
+  @override
+  String get compareFuelsMenu => 'জ্বালানি খরচ তুলনা';
+
+  @override
+  String compareFuelsTitle(String first, String second) {
+    return '$first বনাম $second';
+  }
+
+  @override
+  String get compareFuelsIntro =>
+      'প্রতিটি জ্বালানির আজকের দাম লিখুন। FuelWise আপনার গাড়ির খরচের হার ব্যবহার করে, কখনো দাম অনুমান করে না।';
+
+  @override
+  String pricePerUnitLabel(String fuel, String unit) {
+    return 'প্রতি $unit $fuel-এর দাম';
+  }
+
+  @override
+  String costPer100Km(String cost) {
+    return 'প্রতি ১০০ কিমি-তে $cost';
+  }
+
+  @override
+  String kmPerUnitValue(String km, String unit) {
+    return '$km কিমি/$unit';
+  }
+
+  @override
+  String fuelCheaperBy(String fuel, String saving, String percent) {
+    return '$fuel প্রতি ১০০ কিমি-তে $saving সস্তা ($percent% কম)।';
+  }
+
+  @override
+  String get fuelsCostSame => 'দুই জ্বালানিতেই প্রতি কিমি খরচ সমান।';
+
+  @override
+  String fuelSavingMonthly(String km, String saving) {
+    return 'আপনার সাধারণ মাসিক $km হিসেবে প্রায় $saving।';
+  }
+
+  @override
+  String get fuelSavingNoHistory =>
+      'মাসিক সাশ্রয় দেখতে ওডোমিটার রিডিংসহ রিফুয়েল যোগ করুন।';
+
+  @override
+  String get enterBothPrices => 'তুলনা করতে দুটো দামই লিখুন।';
+
+  @override
+  String get currencyLabel => 'মুদ্রা';
 }

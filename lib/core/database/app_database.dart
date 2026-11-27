@@ -15,6 +15,9 @@ class Vehicles extends Table {
   RealColumn get capacity => real()();
   TextColumn get preferredFuelType => text().nullable()();
   RealColumn get chargingEfficiency => real().withDefault(const Constant(1.0))();
+  // v6: dual-fuel vehicles.
+  TextColumn get secondaryFuelType => text().nullable()();
+  RealColumn get secondaryConsumptionPer100Km => real().nullable()();
   DateTimeColumn get createdAt => dateTime()();
 
   @override
@@ -113,18 +116,30 @@ class AppDatabase extends _$AppDatabase {
   factory AppDatabase.onDevice() => AppDatabase(driftDatabase(name: 'fuelwise'));
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
-        onCreate: (m) => m.createAll(),
-        onUpgrade: (m, from, to) async {
-          if (from < 2) await m.createTable(fillUps);
-          if (from < 3) await m.createTable(placeLocations);
-          if (from < 4) await m.createTable(careReminders);
-          if (from < 5) await m.createTable(savedTrips);
-        },
-      );
+    onCreate: (m) => m.createAll(),
+    onUpgrade: (m, from, to) async {
+      if (from < 2) await m.createTable(fillUps);
+      if (from < 3) await m.createTable(placeLocations);
+      if (from < 4) await m.createTable(careReminders);
+      if (from < 5) await m.createTable(savedTrips);
+      if (from < 6) {
+        await _addColumnIfMissing(m, vehicles, vehicles.secondaryFuelType);
+        await _addColumnIfMissing(m, vehicles, vehicles.secondaryConsumptionPer100Km);
+      }
+    },
+  );
+
+  /// Adds [column] unless the table already has it, so an upgrade never fails
+  /// on a database that was created with the newer table definition.
+  Future<void> _addColumnIfMissing(Migrator m, TableInfo table, GeneratedColumn column) async {
+    final existing = await customSelect('PRAGMA table_info("${table.actualTableName}")').get();
+    if (existing.any((r) => r.read<String>('name') == column.name)) return;
+    await m.addColumn(table, column);
+  }
 
   /// Erases every row the app keeps on the device ("delete my data").
   Future<void> wipeAll() => transaction(() async {
