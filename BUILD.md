@@ -654,3 +654,16 @@ Plan: document-expiry and service reminders per vehicle (BRTA tax token, fitness
 - **Cost and privacy:** OCM is free; requests run only for EV trips (none for fuel vehicles, checked by a test). Distances are straight-line and the UI says so.
 - **Tests:** `test/features/ev/route_chargers_test.dart`, 9 tests: corridor coverage and the query cap, circle counts, corridor filter + de-duplication + order, partial and total failure, empty route, the screen for an EV, no section or requests for a fuel car, missing-key message, Bengali at 200 % text with accessibility guidelines. 326 tests pass, analyze clean, domain coverage 95.9 %.
 - **Not verified:** a live OCM response along a real Bangladesh route; Bangladesh OCM coverage may be thin.
+
+## Phase 3.4 follow-up — Accessibility audit: map and EV sheets (2026‑11‑27)
+*(implemented, widget-tested with fixtures; not checked with TalkBack/VoiceOver on a device)*
+- **Audit:** `meetsGuideline` (Android tap-target size, labelled tap targets, text contrast) plus "no overflow" at **200 % text** in **English and Bengali** on:
+  - the map screen in fuel mode, EV mode and with the charger filter sheet open (`ev_test.dart`);
+  - the station details sheet with and without prices (`stations_widgets_test.dart`);
+  - the charger sheet (operational, and unknown status) scrolled to the attribution, and the EV filter sheet scrolled to the last switch (`ev_test.dart`).
+  The route card, nearby list and along-route chargers were already covered.
+- **Found on the map screen (Bengali, 200 %):** the AppBar's labelled "Plan trip" button squeezed the title to about 1 px (which also failed the contrast check) and overflowed by 136 px; the Fuel/EV switch with the filter button overflowed by 53 px; the status banner's buttons overflowed by 41 px.
+- **Fixed:** above about 130 % text (`isLargeText`), "Plan trip" becomes an icon button with the same tooltip, the Fuel/EV segments show icons only with tooltip and semantics labels, and the banner's Retry / list buttons move under the message. Normal text sizes look exactly as before.
+- **Testability:** the map screen now honours `mapsEnabledProvider` (already used by the along-route screen) so tests can skip the Google Maps platform view; the app's default is unchanged (map on).
+- **Tests:** 12 new accessibility tests; 338 pass, analyze clean, domain coverage 95.9 %.
+- **Not done:** keyboard focus order and a real screen-reader pass on the Moto G96 / iPhone (added to the device checklist).

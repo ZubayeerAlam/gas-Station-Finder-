@@ -215,7 +215,7 @@ Implementation history and evidence live in [BUILD.md](BUILD.md). Rule: work one
 - [x] No automatic production deploys (CI has no deploy step and no secrets)
 
 ### 3.4 Accessibility & Localization
-- [-] Semantics, text scaling, contrast, focus — automated guideline tests (tap targets, labelled targets, text contrast) at 200 % text on Garage, Assistant (EN + BN), History, fill-up form, vehicle form, Alerts (BN); found + fixed dropdown overflow at large text. Map/route/EV sheets (need live data) and keyboard focus order not audited yet
+- [-] Semantics, text scaling, contrast, focus — automated guideline tests (tap targets, labelled targets, text contrast) at 200 % text on Garage, Assistant (EN + BN), History, fill-up form, vehicle form, Alerts (BN); found + fixed dropdown overflow at large text. Map screen (fuel + EV + charger filters), station details sheet (with/without prices), charger sheet (known/unknown status), EV filter sheet, route card, nearby list, along-route chargers — all EN + BN at 200 % with fixture data; the map audit found 3 overflows + a squeezed title and they are fixed (icon-only controls with tooltips at large text). Keyboard focus order and TalkBack/VoiceOver on a device not audited yet
 - [x] English + Bengali; extensible l10n — `flutter gen-l10n` (327 keys each, parity test-enforced) + language menu persisted in drift; every screen, error messages (via `FailureCode`), fuel/connector labels, ranking badges and explanations, relative times and month names. Units (km, L, kWh) and digits stay Latin by choice. Bengali wording drafted by Claude — native review pending
 
 ### 3.5 Monitoring
@@ -255,7 +255,7 @@ Development continues without these; each stays unchecked until it is run on the
 - [ ] Care notification permission prompt, delivery at 09:00, and rescheduling after reboot
 - [ ] Location permission + nearby stations on real GPS
 - [ ] Maps / Places with the new restricted Google key (key not provided yet), including the nearby list view with real stations and route alternatives drawn on the real map
-- [ ] Bengali layout and 200% text on the real screen
+- [ ] Bengali layout and 200% text on the real screen, plus a TalkBack / VoiceOver pass on the map, station and charger sheets
 - [ ] CSV export share sheet on Android (only checked on the iOS Simulator)
 - [ ] Saved trips on the phone: save, re-plan, re-lookup of a trip older than 30 days with the new Google key
 - [ ] Privacy screen: delete device data, delete online data against a deployed backend (needs deploy approval)

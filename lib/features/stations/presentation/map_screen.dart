@@ -27,6 +27,7 @@ import '../../garage/presentation/garage_providers.dart';
 import '../../../l10n/domain_labels.dart';
 import '../../history/presentation/history_providers.dart';
 import '../../route/domain/route_energy.dart';
+import '../../along_route/presentation/along_route_providers.dart' show mapsEnabledProvider;
 import 'stations_controllers.dart';
 import 'widgets/nearby_list.dart';
 import 'widgets/station_details_sheet.dart';
@@ -39,6 +40,7 @@ class MapScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final location = ref.watch(locationControllerProvider);
+    final largeText = isLargeText(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -54,14 +56,25 @@ class MapScreen extends ConsumerWidget {
             onPressed: () => context.push(AppRoutes.alerts),
             icon: const Icon(Icons.notifications_none_rounded),
           ),
-          Padding(
-            padding: const EdgeInsets.only(right: AppSpacing.sm),
-            child: FilledButton.tonalIcon(
+          // At large text sizes the labelled button would squeeze the title
+          // to nothing, so it becomes an icon button with the same tooltip.
+          if (largeText)
+            IconButton(
+              key: const ValueKey('planTripButton'),
+              tooltip: context.l10n.planTrip,
               onPressed: () => context.push(AppRoutes.plan),
               icon: const Icon(Icons.alt_route_rounded),
-              label: Text(context.l10n.planTrip),
+            )
+          else
+            Padding(
+              padding: const EdgeInsets.only(right: AppSpacing.sm),
+              child: FilledButton.tonalIcon(
+                key: const ValueKey('planTripButton'),
+                onPressed: () => context.push(AppRoutes.plan),
+                icon: const Icon(Icons.alt_route_rounded),
+                label: Text(context.l10n.planTrip),
+              ),
             ),
-          ),
         ],
       ),
       body: switch (location) {
@@ -316,15 +329,18 @@ class _StationsMapState extends ConsumerState<_StationsMap> {
 
     return Stack(
       children: [
-        GoogleMap(
-          initialCameraPosition: CameraPosition(target: _latLng(widget.origin), zoom: 14),
-          onMapCreated: (c) => _map = c,
-          myLocationEnabled: true,
-          myLocationButtonEnabled: true,
-          clusterManagers: {const ClusterManager(clusterManagerId: _cluster)},
-          markers: markers,
-          polylines: polylines,
-        ),
+        if (ref.watch(mapsEnabledProvider))
+          GoogleMap(
+            initialCameraPosition: CameraPosition(target: _latLng(widget.origin), zoom: 14),
+            onMapCreated: (c) => _map = c,
+            myLocationEnabled: true,
+            myLocationButtonEnabled: true,
+            clusterManagers: {const ClusterManager(clusterManagerId: _cluster)},
+            markers: markers,
+            polylines: polylines,
+          )
+        else
+          Positioned.fill(child: ColoredBox(color: scheme.surfaceContainerLow)),
         if (showList) Positioned.fill(child: ColoredBox(color: scheme.surface)),
         Positioned(
           top: AppSpacing.md,
@@ -451,6 +467,10 @@ class MapModeBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    // Large text: icons only (each segment keeps its name as tooltip and
+    // semantics label), so the switch and the filter button fit.
+    final labels = !isLargeText(context);
+    final l = context.l10n;
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -462,11 +482,17 @@ class MapModeBar extends StatelessWidget {
             showSelectedIcon: false,
             segments: [
               ButtonSegment(
-                  value: MapMode.fuel,
-                  icon: const Icon(Icons.local_gas_station_rounded),
-                  label: Text(context.l10n.modeFuel)),
+                value: MapMode.fuel,
+                icon: Icon(Icons.local_gas_station_rounded, semanticLabel: labels ? null : l.modeFuel),
+                label: labels ? Text(l.modeFuel) : null,
+                tooltip: labels ? null : l.modeFuel,
+              ),
               ButtonSegment(
-                  value: MapMode.ev, icon: const Icon(Icons.ev_station_rounded), label: Text(context.l10n.modeEv)),
+                value: MapMode.ev,
+                icon: Icon(Icons.ev_station_rounded, semanticLabel: labels ? null : l.modeEv),
+                label: labels ? Text(l.modeEv) : null,
+                tooltip: labels ? null : l.modeEv,
+              ),
             ],
             selected: {mode},
             onSelectionChanged: (s) => onMode(s.first),
@@ -489,6 +515,10 @@ class MapModeBar extends StatelessWidget {
   }
 }
 
+/// True when the user's text size is large enough that labelled controls
+/// in a row would overflow (roughly 130 % and above).
+bool isLargeText(BuildContext context) => MediaQuery.textScalerOf(context).scale(10) > 13;
+
 class _StatusBanner extends StatelessWidget {
   const _StatusBanner({required this.status, this.onRetry, this.onToggleList, this.listShown = false});
 
@@ -499,6 +529,43 @@ class _StatusBanner extends StatelessWidget {
   final VoidCallback? onToggleList;
   final bool listShown;
 
+  Widget _layout(BuildContext context) {
+    final message = Row(
+      children: [
+        Icon(status.icon, size: 20),
+        const SizedBox(width: AppSpacing.sm),
+        Expanded(child: Text(status.text, maxLines: 4, overflow: TextOverflow.ellipsis)),
+      ],
+    );
+    final actions = [
+      if (onRetry != null) TextButton(onPressed: onRetry, child: Text(context.l10n.retry)),
+      if (onToggleList != null)
+        IconButton(
+          key: const ValueKey('toggleNearbyList'),
+          tooltip: listShown ? context.l10n.nearbyShowMap : context.l10n.nearbyShowList,
+          onPressed: onToggleList,
+          icon: Icon(listShown ? Icons.map_outlined : Icons.view_list_rounded),
+        ),
+    ];
+    if (actions.isEmpty) return message;
+    // Large text: the buttons go under the message instead of squeezing it.
+    if (isLargeText(context)) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          message,
+          Wrap(alignment: WrapAlignment.end, children: actions),
+        ],
+      );
+    }
+    return Row(
+      children: [
+        Expanded(child: message),
+        ...actions,
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -506,21 +573,7 @@ class _StatusBanner extends StatelessWidget {
       margin: EdgeInsets.zero,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm),
-        child: Row(
-          children: [
-            Icon(status.icon, size: 20),
-            const SizedBox(width: AppSpacing.sm),
-            Expanded(child: Text(status.text, maxLines: 4, overflow: TextOverflow.ellipsis)),
-            if (onRetry != null) TextButton(onPressed: onRetry, child: Text(context.l10n.retry)),
-            if (onToggleList != null)
-              IconButton(
-                key: const ValueKey('toggleNearbyList'),
-                tooltip: listShown ? context.l10n.nearbyShowMap : context.l10n.nearbyShowList,
-                onPressed: onToggleList,
-                icon: Icon(listShown ? Icons.map_outlined : Icons.view_list_rounded),
-              ),
-          ],
-        ),
+        child: _layout(context),
       ),
     );
   }

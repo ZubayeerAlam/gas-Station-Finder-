@@ -9,6 +9,8 @@ import 'package:gas_station_finder/core/error/app_failure.dart';
 import 'package:gas_station_finder/core/error/result.dart';
 import 'package:gas_station_finder/core/location/geo_point.dart';
 import 'package:gas_station_finder/core/theme/app_theme.dart';
+import 'package:gas_station_finder/features/along_route/presentation/along_route_providers.dart'
+    show mapsEnabledProvider;
 import 'package:gas_station_finder/features/ev/data/open_charge_map_repository.dart';
 import 'package:gas_station_finder/core/location/location_service.dart';
 import 'package:gas_station_finder/features/ev/domain/charge_point.dart';
@@ -24,6 +26,8 @@ import 'package:gas_station_finder/features/garage/presentation/garage_providers
 import 'package:gas_station_finder/features/stations/domain/entities/station.dart';
 import 'package:gas_station_finder/features/stations/presentation/map_screen.dart';
 
+import 'package:gas_station_finder/l10n/app_localizations.dart';
+
 import '../../helpers/fake_garage_repository.dart';
 import '../along_route/along_route_fakes.dart' show CountingStations;
 
@@ -31,6 +35,7 @@ List<ChargePoint> fixture() =>
     OpenChargeMapRepository.parse(jsonDecode(File('test/fixtures/ocm_poi_berlin.json').readAsStringSync()));
 
 void main() {
+  a11yMain();
   group('Open Charge Map parsing', () {
     test('maps fields, skips invalid and duplicate entries', () {
       final points = fixture();
@@ -173,7 +178,6 @@ void main() {
       });
     });
 
-
     testWidgets('charge point sheet shows connectors, cost caveat and attribution', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
@@ -230,6 +234,50 @@ void main() {
     });
   });
 
+  for (final locale in [const Locale('en'), const Locale('bn')]) {
+    testWidgets('map screen at 200 % text (${locale.languageCode}): fuel, EV and charger filters', (tester) async {
+      final handle = tester.ensureSemantics();
+      final l = lookupAppLocalizations(locale);
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            garageRepositoryProvider.overrideWithValue(FakeGarageRepository()),
+            locationServiceProvider.overrideWithValue(_Here()),
+            chargePointsRepositoryProvider.overrideWithValue(_FakeChargers()),
+            stationsRepositoryProvider.overrideWithValue(_NearbyCounter()),
+            mapsEnabledProvider.overrideWithValue(false),
+          ],
+          retry: (_, _) => null,
+          child: MediaQuery(
+            data: const MediaQueryData(textScaler: TextScaler.linear(2)),
+            child: MaterialApp(
+              theme: AppTheme.light(),
+              locale: locale,
+              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              supportedLocales: AppLocalizations.supportedLocales,
+              home: const MapScreen(),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await _expectAccessible(tester);
+
+      // Large text: icon-only segments, named by tooltip.
+      expect(find.text(l.modeEv), findsNothing);
+      expect(find.byTooltip(l.planTrip), findsOneWidget);
+      await tester.tap(find.byTooltip(l.modeEv));
+      await tester.pumpAndSettle();
+      expect(find.text(kOcmAttribution), findsOneWidget);
+      await _expectAccessible(tester);
+
+      await tester.tap(find.byTooltip(l.chargerFilters));
+      await tester.pumpAndSettle();
+      await _expectAccessible(tester);
+      handle.dispose();
+    });
+  }
+
   testWidgets('map: switching to EV loads chargers once, fuel search is not repeated', (tester) async {
     final chargers = _FakeChargers();
     final stations = _NearbyCounter();
@@ -263,6 +311,73 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('1 charger nearby (filtered)'), findsOneWidget);
     expect(chargers.calls, 1); // filtering is local
+  });
+}
+
+Widget _a11yHost(Widget child, {required Locale locale}) => ProviderScope(
+  retry: (_, _) => null,
+  child: MediaQuery(
+    data: const MediaQueryData(textScaler: TextScaler.linear(2)),
+    child: MaterialApp(
+      theme: AppTheme.light(),
+      locale: locale,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: Scaffold(body: child),
+    ),
+  ),
+);
+
+Future<void> _expectAccessible(WidgetTester tester) async {
+  expect(tester.takeException(), isNull);
+  await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
+  await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
+  await expectLater(tester, meetsGuideline(textContrastGuideline));
+}
+
+void a11yMain() {
+  group('accessibility at 200 % text', () {
+    for (final locale in [const Locale('en'), const Locale('bn')]) {
+      testWidgets('charge point sheet (${locale.languageCode})', (tester) async {
+        final handle = tester.ensureSemantics();
+        await tester.pumpWidget(
+          _a11yHost(
+            ChargePointSheet(point: fixture().first, onDirections: () {}, now: DateTime.utc(2026, 11, 25, 9)),
+            locale: locale,
+          ),
+        );
+        await tester.pumpAndSettle();
+        await _expectAccessible(tester);
+        await tester.scrollUntilVisible(find.text(kOcmAttribution), 200);
+        await _expectAccessible(tester);
+        handle.dispose();
+      });
+
+      testWidgets('charge point sheet with unknown status (${locale.languageCode})', (tester) async {
+        final handle = tester.ensureSemantics();
+        await tester.pumpWidget(
+          _a11yHost(
+            ChargePointSheet(point: fixture()[2], onDirections: () {}),
+            locale: locale,
+          ),
+        );
+        await tester.pumpAndSettle();
+        await _expectAccessible(tester);
+        handle.dispose();
+      });
+
+      testWidgets('EV filter sheet (${locale.languageCode})', (tester) async {
+        final handle = tester.ensureSemantics();
+        await tester.pumpWidget(
+          _a11yHost(EvFilterSheet(availableConnectors: connectorTypesOf(fixture())), locale: locale),
+        );
+        await tester.pumpAndSettle();
+        await _expectAccessible(tester);
+        await tester.scrollUntilVisible(find.byType(SwitchListTile), 200, scrollable: find.byType(Scrollable).first);
+        await _expectAccessible(tester);
+        handle.dispose();
+      });
+    }
   });
 }
 
