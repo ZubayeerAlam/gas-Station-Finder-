@@ -695,3 +695,13 @@ Plan: document-expiry and service reminders per vehicle (BRTA tax token, fitness
   - backend: a rules test (own vote on `ocm:42` allowed, other users can't read it, the aggregate can't be written) and an integration test (1 working + 2 not working → counts on `stations/ocm:4242`, user's `votedStations` updated). Unit 26, rules **9**, assistant 8, integration **8**: all pass.
   - Flutter: `charger_community_test.dart` (vote, change vote, shared counts, Bengali 200 % with accessibility guidelines); the older charger sheet tests now run inside a `ProviderScope` and confirm the section is hidden with the backend off.
 - **Pending:** deploying rules + functions (needs your approval); a real vote against a deployed backend on the device.
+
+## Phase 1 acceptance — cost ranking verified mathematically (2026‑11‑27)
+- **Added:** `test/features/ranking/trip_cost_engine_property_test.dart`: 500 seeded random scenarios (fuel and EV vehicles, 1–8 stations, missing prices, a second currency, open / closed / unknown, near and far stations, all three strategies). Each result is checked against an independent re-computation:
+  - purchase units = capacity × (1 − level) ÷ charging efficiency; detour units = detour km × consumption ÷ 100 ÷ efficiency; costs = units × price; total = purchase + detour;
+  - "unreachable" exactly when the station is beyond the range at the current level; "closed" exactly when reported closed;
+  - eligible stations first, each group ordered by the chosen strategy;
+  - savings are exact differences to the least-detour eligible station; the "cheapest" badge sits on an eligible station with the minimum total;
+  - unpriced and other-currency offers never get a cost; currencies are never mixed.
+  Counters assert the branches really occur (> 90 % of scenarios ranked, > 50 with closed, unreachable and other-currency stations), so the test cannot pass vacuously. It passed on the first run: no engine change was needed.
+- PLAN.md Phase 1 acceptance "Cost ranking mathematically verified" is now checked.

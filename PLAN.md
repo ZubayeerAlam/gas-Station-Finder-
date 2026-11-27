@@ -173,7 +173,7 @@ Implementation history and evidence live in [BUILD.md](BUILD.md). Rule: work one
 ### Phase 1 Acceptance
 - [ ] Nearby + destination route search work
 - [x] Along-route discovery + tested detours (detours live-verified via OSRM; Places search mocked)
-- [ ] Cost ranking mathematically verified
+- [x] Cost ranking mathematically verified — hand-computed cases (`trip_cost_engine_test.dart`) plus 500 seeded random scenarios (`trip_cost_engine_property_test.dart`) checked against an independent re-computation: purchase / detour / total cost identities, EV charging losses, unreachable + closed caveats, eligible-first ordering per strategy, exact savings vs the nearest station, cheapest badge on a minimum-total eligible station, no cost for unpriced or other-currency offers, with counters proving each branch is exercised. (Live prices still unverified: that is the Places key, not the maths.)
 - [-] Price reports submit/retrieve; aggregation verified in Emulator Suite (backend + client mapping; client submit widget-tested only)
 - [ ] EV discovery works with supported data
 - [x] Garage + expenses work (widget/unit-tested; on-device: DB + tabs render on iOS simulator)
