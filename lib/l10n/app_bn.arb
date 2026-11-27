@@ -498,5 +498,8 @@
   "chargerVoteBroken": "কাজ করছে না",
   "chargerVotesSummary": "গত ৩০ দিনে চালকেরা: {working} জন কাজ করছে, {broken} জন কাজ করছে না",
   "chargerVotesNone": "এখনো কোনো চালকের রিপোর্ট নেই।",
-  "chargerVotesNote": "আপনার উত্তর গোপন থাকে; শুধু সংখ্যা দেখানো হয়।"
+  "chargerVotesNote": "আপনার উত্তর গোপন থাকে; শুধু সংখ্যা দেখানো হয়।",
+  "chargerPricesTitle": "চালকদের জানানো প্রতি kWh দাম",
+  "chargerNoPrices": "এখনো কোনো চালক দাম জানাননি।",
+  "chargerReportPrice": "প্রতি kWh দাম জানান"
 }

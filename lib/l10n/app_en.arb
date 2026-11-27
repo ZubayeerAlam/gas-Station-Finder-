@@ -640,5 +640,8 @@
   "chargerVotesSummary": "Drivers in the last 30 days: {working} working, {broken} not working",
   "@chargerVotesSummary": {"placeholders": {"working": {"type": "int"}, "broken": {"type": "int"}}},
   "chargerVotesNone": "No driver reports yet.",
-  "chargerVotesNote": "Your answer stays private; only the counts are shown."
+  "chargerVotesNote": "Your answer stays private; only the counts are shown.",
+  "chargerPricesTitle": "Price per kWh from drivers",
+  "chargerNoPrices": "No driver-reported price yet.",
+  "chargerReportPrice": "Report price per kWh"
 }

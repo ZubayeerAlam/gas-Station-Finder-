@@ -705,3 +705,41 @@ Plan: document-expiry and service reminders per vehicle (BRTA tax token, fitness
   - unpriced and other-currency offers never get a cost; currencies are never mixed.
   Counters assert the branches really occur (> 90 % of scenarios ranked, > 50 with closed, unreachable and other-currency stations), so the test cannot pass vacuously. It passed on the first run: no engine change was needed.
 - PLAN.md Phase 1 acceptance "Cost ranking mathematically verified" is now checked.
+
+## Final pre-approval review (2026‑11‑27)
+A systematic pass of PLAN.md against the repository before any deploy or key request.
+
+**Implemented in this batch**
+- **Charger prices (closes the last key-free gap in 1.8 "Charging cost estimate").**
+  - The charger sheet shows community price per kWh for the charger (`EV_KWH` under its `ocm:<id>`), with the "looks wrong" flag, or "No community price yet".
+  - "Report price" opens the existing report screen in charger mode: the unit is fixed to kWh, there is no fuel dropdown, and there is no Google Places lookup (`isChargerId`).
+  - No backend change: rules and the aggregation trigger already accept any station id. New tests prove it: a rules test for `ocm:` ids and an emulator test where two reports aggregate to the kWh price.
+- **Data deletion now covers charger data.** The `deleteMyData` emulator test also creates an `EV_KWH` report and a charger vote, and checks both are deleted (summary `priceReports: 2, votes: 2`).
+- **Migration chain test** (`test/core/database_migration_test.dart`): a database built at each old schema (v1–v5) upgrades to v6. The vehicle and active-vehicle setting survive, all 6 tables exist, the new columns are added, and `wipeAll` then empties every table.
+- **Keyboard focus order** (`test/a11y/focus_order_test.dart`): Tab on the vehicle form goes name → consumption → capacity → Save, in reading order.
+
+**Verified**
+- Secret scan: no key patterns in tracked files or in this diff; every key file (`config/dev*.json`, `ios/Flutter/Secrets.xcconfig`, `functions/.secret.local`, `google-services.json`, `GoogleService-Info.plist`) is gitignored and untracked.
+- `npm audit --omit=dev` in `functions/`: 0 vulnerabilities.
+- Logging: `redactUri` strips the key query parameter; headers are never logged.
+- `deleteMyData` covers every user-writable path in `firestore.rules`: priceReports, votes, flags, alert rules and log, messaging token, assistant sessions and quota, and `users/{uid}`.
+- Error handling: global handlers plus `Result`/`FailureCode` on every repository; no new raw exceptions in this batch.
+- Results: `flutter analyze` clean; **363** Flutter tests pass; domain coverage **96.5 %** (790/819 lines, 28 files); backend unit 26, rules 10, assistant 8, integration 9 all pass in the Emulator Suite.
+
+**PLAN.md honesty pass**
+- New legend: `[x]` only when verified for real (local logic, or a live service answered); `[-]` when only mocks, fixtures or emulators were used.
+- 31 items moved from `[x]` to `[-]` with a note saying why. These cover:
+  - Places parsing and corridor search (no Google key)
+  - map display (no key)
+  - Firestore backend and alerts (emulator only, not deployed)
+  - FCM push (never delivered)
+  - OCM chargers (fixture-only)
+  - Gemini assistant (no key)
+  - community data deletion (callable not deployed)
+- Stale facts corrected:
+  - test and key counts, coverage, backend counts
+  - the model-ID line now notes the switch to Gemini
+  - the feature-first structure and the persistent cache are done
+  - charger community reports are wired
+
+**Still not verified (needs you):** live Google Maps/Places, live OCM, live Gemini, any deployed function or rule, push delivery, and every physical-device check.

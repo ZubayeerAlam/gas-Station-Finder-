@@ -3101,6 +3101,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Your answer stays private; only the counts are shown.'**
   String get chargerVotesNote;
+
+  /// No description provided for @chargerPricesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Price per kWh from drivers'**
+  String get chargerPricesTitle;
+
+  /// No description provided for @chargerNoPrices.
+  ///
+  /// In en, this message translates to:
+  /// **'No driver-reported price yet.'**
+  String get chargerNoPrices;
+
+  /// No description provided for @chargerReportPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Report price per kWh'**
+  String get chargerReportPrice;
 }
 
 class _AppLocalizationsDelegate

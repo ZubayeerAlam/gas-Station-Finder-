@@ -85,6 +85,18 @@ test('verification votes update station reliability', async () => {
   assert.equal(s.outOfStockVotes, 1);
 });
 
+test('EV charger price per kWh is aggregated under the ocm: id', async () => {
+  const ev = { stationId: 'ocm:777', stationName: 'Charger', fuelType: 'EV_KWH', currency: 'BDT' };
+  assert.equal((await report('ev-a', 'e1', 25, ev)).status, 'accepted');
+  assert.equal((await report('ev-b', 'e2', 25.5, ev)).status, 'accepted');
+  const agg = await waitFor(async () => {
+    const d = (await db.doc('stations/ocm:777/prices/EV_KWH').get()).data();
+    return d && d.reportCount === 2 ? d : undefined;
+  });
+  assert.equal(agg.currency, 'BDT');
+  assert.ok(agg.price >= 25 && agg.price <= 25.5);
+});
+
 test('EV charger working / not working votes are counted with no station document', async () => {
   const at = Timestamp.now();
   await db.doc('stations/ocm:4242/verifications/w1').set({ open: true, at });
@@ -181,6 +193,13 @@ test('deleteMyData callable: removes only the caller\'s data and account', async
     const voted = (await db.doc(`users/${me}`).get()).get('votedStations') as string[] | undefined;
     return voted?.includes('stDel') ? true : undefined;
   });
+  // Mine on an EV charger too: a price per kWh and a "working" vote under its ocm: id.
+  await report('del-ev', me, 25, { stationId: 'ocm:del', fuelType: 'EV_KWH', currency: 'BDT' });
+  await db.doc(`stations/ocm:del/verifications/${me}`).set({ open: true, at: Timestamp.now() });
+  await waitFor(async () => {
+    const voted = (await db.doc(`users/${me}`).get()).get('votedStations') as string[] | undefined;
+    return voted?.includes('ocm:del') ? true : undefined;
+  });
   await db.doc(`stations/stDel/priceFlags/DIESEL_${me}`).set({ uid: me, fuelType: 'DIESEL', at: Timestamp.now() });
   await db.doc(`stations/stDel/priceFlags/DIESEL_${other}`).set({ uid: other, fuelType: 'DIESEL', at: Timestamp.now() });
   await waitFor(async () => {
@@ -198,13 +217,14 @@ test('deleteMyData callable: removes only the caller\'s data and account', async
   await db.doc(`alertLog/${me}_r1_stDel`).set({ uid: me, ruleId: 'r1' });
 
   const res = await call(idToken);
-  assert.deepEqual(res.result, { priceReports: 1, votes: 1, priceFlags: 1, alertRules: 1, assistantSessions: 1 });
+  assert.deepEqual(res.result, { priceReports: 2, votes: 2, priceFlags: 1, alertRules: 1, assistantSessions: 1 });
 
   const gone = await Promise.all([
     db.doc('priceReports/del-mine').get(), db.doc(`stations/stDel/verifications/${me}`).get(),
     db.doc(`users/${me}`).get(), db.doc(`users/${me}/alertRules/r1`).get(), db.doc(`users/${me}/private/messaging`).get(),
     db.doc('assistantSessions/s-mine').get(), db.doc(`assistantQuota/${me}`).get(), db.doc(`alertLog/${me}_r1_stDel`).get(),
     db.doc(`stations/stDel/priceFlags/DIESEL_${me}`).get(),
+    db.doc('priceReports/del-ev').get(), db.doc(`stations/ocm:del/verifications/${me}`).get(),
   ]);
   assert.deepEqual(gone.map((d) => d.exists), gone.map(() => false));
 

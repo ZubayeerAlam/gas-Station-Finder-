@@ -18,6 +18,9 @@ import 'community_providers.dart';
 final _currencyPattern = RegExp(r'^[A-Z]{3}$');
 
 /// Default fuel to report: the active vehicle's (EV → per-kWh price).
+/// Open Charge Map chargers use `ocm:<id>` as their community id.
+bool isChargerId(String id) => id.startsWith('ocm:');
+
 String defaultReportFuel(VehicleProfile? v) {
   if (v == null) return 'REGULAR_UNLEADED';
   if (v.isElectric) return 'EV_KWH';
@@ -47,7 +50,11 @@ class _ReportPriceScreenState extends ConsumerState<ReportPriceScreen> {
   /// Null until the user picks one; until then it follows the active vehicle
   /// (which may still be loading when the screen opens).
   String? _pickedFuel;
-  String get _fuel => _pickedFuel ?? defaultReportFuel(ref.read(activeVehicleProvider).value);
+  String get _fuel => _isCharger ? 'EV_KWH' : _pickedFuel ?? defaultReportFuel(ref.read(activeVehicleProvider).value);
+
+  /// An Open Charge Map charger (`ocm:<id>`): only a price per kWh makes sense,
+  /// and there is no Google place to look up.
+  bool get _isCharger => isChargerId(widget.station.id);
   bool _sending = false;
   String? _reportId;
 
@@ -61,13 +68,13 @@ class _ReportPriceScreenState extends ConsumerState<ReportPriceScreen> {
     void fill(_, _) {
       if (_currency.text.isNotEmpty) return;
       final c = defaultReportCurrency(
-        ref.read(stationDetailsProvider(id)).value,
+        _isCharger ? null : ref.read(stationDetailsProvider(id)).value,
         ref.read(communityPricesProvider(id)).value,
       );
       if (c.isNotEmpty) _currency.text = c;
     }
 
-    ref.listenManual(stationDetailsProvider(id), fill, fireImmediately: true);
+    if (!_isCharger) ref.listenManual(stationDetailsProvider(id), fill, fireImmediately: true);
     ref.listenManual(communityPricesProvider(id), fill, fireImmediately: true);
   }
 
@@ -121,24 +128,25 @@ class _ReportPriceScreenState extends ConsumerState<ReportPriceScreen> {
                 children: [
                   ListTile(
                     contentPadding: EdgeInsets.zero,
-                    leading: const Icon(Icons.local_gas_station_rounded),
+                    leading: Icon(_isCharger ? Icons.ev_station_rounded : Icons.local_gas_station_rounded),
                     title: Text(widget.station.name),
                     subtitle: widget.station.address == null ? null : Text(widget.station.address!),
                   ),
-                  DropdownButtonFormField<String>(
-                    isExpanded: true, // long labels at large text sizes ellipsize instead of overflowing
-                    key: ValueKey('fuel-$_fuel'),
-                    initialValue: _fuel,
-                    decoration: InputDecoration(labelText: l.fuel),
-                    items: [
-                      for (final f in kCommunityFuelTypes)
-                        DropdownMenuItem(
-                          value: f,
-                          child: Text(localizedFuelType(f, l), overflow: TextOverflow.ellipsis),
-                        ),
-                    ],
-                    onChanged: (f) => setState(() => _pickedFuel = f),
-                  ),
+                  if (!_isCharger)
+                    DropdownButtonFormField<String>(
+                      isExpanded: true, // long labels at large text sizes ellipsize instead of overflowing
+                      key: ValueKey('fuel-$_fuel'),
+                      initialValue: _fuel,
+                      decoration: InputDecoration(labelText: l.fuel),
+                      items: [
+                        for (final f in kCommunityFuelTypes)
+                          DropdownMenuItem(
+                            value: f,
+                            child: Text(localizedFuelType(f, l), overflow: TextOverflow.ellipsis),
+                          ),
+                      ],
+                      onChanged: (f) => setState(() => _pickedFuel = f),
+                    ),
                   const SizedBox(height: AppSpacing.md),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,

@@ -1883,4 +1883,13 @@ class AppLocalizationsBn extends AppLocalizations {
   @override
   String get chargerVotesNote =>
       'আপনার উত্তর গোপন থাকে; শুধু সংখ্যা দেখানো হয়।';
+
+  @override
+  String get chargerPricesTitle => 'চালকদের জানানো প্রতি kWh দাম';
+
+  @override
+  String get chargerNoPrices => 'এখনো কোনো চালক দাম জানাননি।';
+
+  @override
+  String get chargerReportPrice => 'প্রতি kWh দাম জানান';
 }

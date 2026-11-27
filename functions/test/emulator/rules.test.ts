@@ -76,6 +76,13 @@ test('verification votes: one per user, own doc, booleans, server time', async (
   await assertFails(getDoc(doc(bob(), 'stations/s1/verifications/alice')));
 });
 
+test('EV charger price reports: ocm: id, price per kWh', async () => {
+  await assertSucceeds(setDoc(doc(alice(), 'priceReports/ev1'),
+    { ...report(), stationId: 'ocm:42', stationName: 'Gulshan DC', fuelType: 'EV_KWH', price: 25, currency: 'BDT' }));
+  await assertSucceeds(getDoc(doc(alice(), 'stations/ocm:42/prices/EV_KWH')));
+  await assertFails(setDoc(doc(alice(), 'stations/ocm:42/prices/EV_KWH'), { price: 1 }));
+});
+
 test('EV charger votes reuse verifications under the ocm: id', async () => {
   await assertSucceeds(setDoc(doc(alice(), 'stations/ocm:42/verifications/alice'), { open: false, at: serverTimestamp() }));
   await assertSucceeds(getDoc(doc(alice(), 'stations/ocm:42/verifications/alice')));

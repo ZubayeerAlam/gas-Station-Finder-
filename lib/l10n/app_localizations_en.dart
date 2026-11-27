@@ -1909,4 +1909,13 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get chargerVotesNote =>
       'Your answer stays private; only the counts are shown.';
+
+  @override
+  String get chargerPricesTitle => 'Price per kWh from drivers';
+
+  @override
+  String get chargerNoPrices => 'No driver-reported price yet.';
+
+  @override
+  String get chargerReportPrice => 'Report price per kWh';
 }

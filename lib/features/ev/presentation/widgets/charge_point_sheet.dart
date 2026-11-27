@@ -130,7 +130,7 @@ class ChargePointSheet extends StatelessWidget {
             style: muted,
           ),
         const SizedBox(height: AppSpacing.md),
-        ChargerCommunityStatus(chargerId: p.id),
+        ChargerCommunityStatus(point: p),
         FilledButton.icon(
           onPressed: onDirections,
           icon: const Icon(Icons.directions_rounded),
