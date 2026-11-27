@@ -6,6 +6,7 @@ import '../../../../core/utils/formatters.dart';
 import '../../../../l10n/failure_text.dart';
 import '../../../../l10n/l10n.dart';
 import '../../domain/charge_point.dart';
+import 'charger_community_status.dart';
 
 const kOcmAttribution = 'Charging data © Open Charge Map contributors (CC BY-SA 4.0)';
 
@@ -129,6 +130,7 @@ class ChargePointSheet extends StatelessWidget {
             style: muted,
           ),
         const SizedBox(height: AppSpacing.md),
+        ChargerCommunityStatus(chargerId: p.id),
         FilledButton.icon(
           onPressed: onDirections,
           icon: const Icon(Icons.directions_rounded),

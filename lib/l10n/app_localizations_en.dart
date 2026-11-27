@@ -1888,4 +1888,25 @@ class AppLocalizationsEn extends AppLocalizations {
   String tripShortfall(String range, String short) {
     return 'Range at this level is about $range, about $short short of the destination: stop on the way.';
   }
+
+  @override
+  String get chargerWorkingQuestion => 'Is this charger working?';
+
+  @override
+  String get chargerVoteWorking => 'Working';
+
+  @override
+  String get chargerVoteBroken => 'Not working';
+
+  @override
+  String chargerVotesSummary(int working, int broken) {
+    return 'Drivers in the last 30 days: $working working, $broken not working';
+  }
+
+  @override
+  String get chargerVotesNone => 'No driver reports yet.';
+
+  @override
+  String get chargerVotesNote =>
+      'Your answer stays private; only the counts are shown.';
 }

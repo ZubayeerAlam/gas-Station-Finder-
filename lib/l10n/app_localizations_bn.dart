@@ -1862,4 +1862,25 @@ class AppLocalizationsBn extends AppLocalizations {
   String tripShortfall(String range, String short) {
     return 'এই লেভেলে রেঞ্জ প্রায় $range, গন্তব্যের প্রায় $short আগে শেষ হবে: পথে থামুন।';
   }
+
+  @override
+  String get chargerWorkingQuestion => 'এই চার্জারটি কি কাজ করছে?';
+
+  @override
+  String get chargerVoteWorking => 'কাজ করছে';
+
+  @override
+  String get chargerVoteBroken => 'কাজ করছে না';
+
+  @override
+  String chargerVotesSummary(int working, int broken) {
+    return 'গত ৩০ দিনে চালকেরা: $working জন কাজ করছে, $broken জন কাজ করছে না';
+  }
+
+  @override
+  String get chargerVotesNone => 'এখনো কোনো চালকের রিপোর্ট নেই।';
+
+  @override
+  String get chargerVotesNote =>
+      'আপনার উত্তর গোপন থাকে; শুধু সংখ্যা দেখানো হয়।';
 }

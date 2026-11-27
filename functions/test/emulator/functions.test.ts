@@ -85,6 +85,23 @@ test('verification votes update station reliability', async () => {
   assert.equal(s.outOfStockVotes, 1);
 });
 
+test('EV charger working / not working votes are counted with no station document', async () => {
+  const at = Timestamp.now();
+  await db.doc('stations/ocm:4242/verifications/w1').set({ open: true, at });
+  await db.doc('stations/ocm:4242/verifications/b1').set({ open: false, at });
+  await db.doc('stations/ocm:4242/verifications/b2').set({ open: false, at });
+  const s = await waitFor(async () => {
+    const d = (await db.doc('stations/ocm:4242').get()).data();
+    return d?.openVotes === 1 && d.closedVotes === 2 ? d : undefined;
+  });
+  assert.equal(s.outOfStockVotes, 0);
+  const user = await waitFor(async () => {
+    const d = (await db.doc('users/b2').get()).data();
+    return d?.votedStations?.includes('ocm:4242') ? d : undefined;
+  });
+  assert.ok(user);
+});
+
 test('price alert fires once per cooldown and respects threshold', async () => {
   await db.doc('users/fan/private/messaging').set({ token: 'emulator-token', updatedAt: Timestamp.now() });
   await db.doc('users/fan/alertRules/cheap').set({

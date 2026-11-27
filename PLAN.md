@@ -167,7 +167,7 @@ Implementation history and evidence live in [BUILD.md](BUILD.md). Rule: work one
 - [x] Locally tested — app-created rule matched a report in the Functions emulator, cooldown claim written (no push: no FCM token)
 
 ### 1.12 Community Station Verification
-- [-] Open/closed + out-of-fuel votes (one private vote per user, 30-day window) — widget-tested; closures / EV connector status / facilities not done
+- [-] Open/closed + out-of-fuel votes (one private vote per user, 30-day window) — widget-tested; EV charger "working / not working" votes on the charger sheet (same private vote + 30-day counts, keyed `ocm:<id>`, no new backend code; rules + emulator-tested, covered by delete-my-data) — **not deployed**; long-term closures and facilities not done
 - [x] Trust scoring, expiry, moderation — reporter trust + 72 h TTL (Phase 2) and community moderation via disputed prices (above); no human moderator queue (by design: no personal data to review)
 
 ### Phase 1 Acceptance

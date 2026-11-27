@@ -180,13 +180,16 @@ void main() {
 
     testWidgets('charge point sheet shows connectors, cost caveat and attribution', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          theme: AppTheme.light(),
-          home: Scaffold(
-            body: ChargePointSheet(point: fixture().first, onDirections: () {}, now: DateTime.utc(2026, 11, 25, 9)),
+        ProviderScope(
+          child: MaterialApp(
+            theme: AppTheme.light(),
+            home: Scaffold(
+              body: ChargePointSheet(point: fixture().first, onDirections: () {}, now: DateTime.utc(2026, 11, 25, 9)),
+            ),
           ),
         ),
       );
+      expect(find.byKey(const Key('chargerCommunity')), findsNothing); // community backend off
       expect(find.text('Operational'), findsOneWidget);
       expect(find.text('Up to 150 kW · fast'), findsOneWidget);
       expect(find.text('150 kW · DC · ×2'), findsOneWidget);
@@ -199,9 +202,11 @@ void main() {
 
     testWidgets('unknown status and missing cost are said plainly', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: ChargePointSheet(point: fixture()[2], onDirections: () {}),
+        ProviderScope(
+          child: MaterialApp(
+            home: Scaffold(
+              body: ChargePointSheet(point: fixture()[2], onDirections: () {}),
+            ),
           ),
         ),
       );

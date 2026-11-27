@@ -686,3 +686,12 @@ Plan: document-expiry and service reminders per vehicle (BRTA tax token, fitness
 - **Rules:** range uses driving consumption only (EV charging losses change what you buy, not how far you get). The existing "unreachable" caveat on individual stations is unchanged.
 - **Code:** `tripReach` / `TripReach` in `route/domain/route_energy.dart`; `RouteSummaryCard.estimateText` is now shared.
 - **Tests:** 3 unit tests (arrival level, shortfall, clamping and EV losses) and 1 widget test (litres, arrival %, empty-tank shortfall). The along-route test harnesses now fake the fill-up repository. 349 tests pass, analyze clean, domain coverage 96.3 %.
+
+## Phase 1.12 follow-up — Community reports for EV chargers (2026‑11‑27)
+*(implemented; Flutter widget-tested, backend rules + emulator-tested; not deployed, so not live)*
+- **What:** the charger sheet asks "Is this charger working?" with **Working / Not working**. It shows "Drivers in the last 30 days: 1 working, 3 not working" (in the error colour when "not working" leads) or "No driver reports yet.", and says the answer stays private. Hidden when the community backend is not configured.
+- **Design:** no new backend code or collection. The vote is the existing private station verification (`stations/{id}/verifications/{uid}`, one per user, server time) with the charger id `ocm:<id>`: working = open, not working = closed. `onVerificationWritten` already counts votes over 30 days (it creates the aggregate document if there is none) and records the id in `users/{uid}.votedStations`, so "delete my data" removes charger votes too. The privacy policy now names charger votes.
+- **Tests:**
+  - backend: a rules test (own vote on `ocm:42` allowed, other users can't read it, the aggregate can't be written) and an integration test (1 working + 2 not working → counts on `stations/ocm:4242`, user's `votedStations` updated). Unit 26, rules **9**, assistant 8, integration **8**: all pass.
+  - Flutter: `charger_community_test.dart` (vote, change vote, shared counts, Bengali 200 % with accessibility guidelines); the older charger sheet tests now run inside a `ProviderScope` and confirm the section is hidden with the backend off.
+- **Pending:** deploying rules + functions (needs your approval); a real vote against a deployed backend on the device.

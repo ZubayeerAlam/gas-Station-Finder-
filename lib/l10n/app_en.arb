@@ -633,5 +633,12 @@
   "tripReaches": "Reaches the destination with about {percent}% left.",
   "@tripReaches": {"placeholders": {"percent": {"type": "int"}}},
   "tripShortfall": "Range at this level is about {range}, about {short} short of the destination: stop on the way.",
-  "@tripShortfall": {"placeholders": {"range": {"type": "String"}, "short": {"type": "String"}}}
+  "@tripShortfall": {"placeholders": {"range": {"type": "String"}, "short": {"type": "String"}}},
+  "chargerWorkingQuestion": "Is this charger working?",
+  "chargerVoteWorking": "Working",
+  "chargerVoteBroken": "Not working",
+  "chargerVotesSummary": "Drivers in the last 30 days: {working} working, {broken} not working",
+  "@chargerVotesSummary": {"placeholders": {"working": {"type": "int"}, "broken": {"type": "int"}}},
+  "chargerVotesNone": "No driver reports yet.",
+  "chargerVotesNote": "Your answer stays private; only the counts are shown."
 }

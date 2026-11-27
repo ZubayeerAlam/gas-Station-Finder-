@@ -76,6 +76,13 @@ test('verification votes: one per user, own doc, booleans, server time', async (
   await assertFails(getDoc(doc(bob(), 'stations/s1/verifications/alice')));
 });
 
+test('EV charger votes reuse verifications under the ocm: id', async () => {
+  await assertSucceeds(setDoc(doc(alice(), 'stations/ocm:42/verifications/alice'), { open: false, at: serverTimestamp() }));
+  await assertSucceeds(getDoc(doc(alice(), 'stations/ocm:42/verifications/alice')));
+  await assertFails(getDoc(doc(bob(), 'stations/ocm:42/verifications/alice')));
+  await assertFails(setDoc(doc(alice(), 'stations/ocm:42'), { openVotes: 99 }));
+});
+
 test('alert rules: owner only, validated', async () => {
   const rule = { uid: 'alice', fuelType: 'DIESEL', currency: 'EUR', maxPrice: 1.7, lat: 52.5, lng: 13.4, radiusKm: 5, enabled: true };
   await assertSucceeds(setDoc(doc(alice(), 'users/alice/alertRules/r1'), rule));

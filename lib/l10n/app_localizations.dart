@@ -3065,6 +3065,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Range at this level is about {range}, about {short} short of the destination: stop on the way.'**
   String tripShortfall(String range, String short);
+
+  /// No description provided for @chargerWorkingQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Is this charger working?'**
+  String get chargerWorkingQuestion;
+
+  /// No description provided for @chargerVoteWorking.
+  ///
+  /// In en, this message translates to:
+  /// **'Working'**
+  String get chargerVoteWorking;
+
+  /// No description provided for @chargerVoteBroken.
+  ///
+  /// In en, this message translates to:
+  /// **'Not working'**
+  String get chargerVoteBroken;
+
+  /// No description provided for @chargerVotesSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Drivers in the last 30 days: {working} working, {broken} not working'**
+  String chargerVotesSummary(int working, int broken);
+
+  /// No description provided for @chargerVotesNone.
+  ///
+  /// In en, this message translates to:
+  /// **'No driver reports yet.'**
+  String get chargerVotesNone;
+
+  /// No description provided for @chargerVotesNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Your answer stays private; only the counts are shown.'**
+  String get chargerVotesNote;
 }
 
 class _AppLocalizationsDelegate

@@ -492,5 +492,11 @@
   "reportExport": "দৈনিক CSV এক্সপোর্ট",
   "reportExportSubject": "FuelWise দৈনিক রিপোর্ট: {vehicle}",
   "tripReaches": "প্রায় {percent}% বাকি রেখে গন্তব্যে পৌঁছাবে।",
-  "tripShortfall": "এই লেভেলে রেঞ্জ প্রায় {range}, গন্তব্যের প্রায় {short} আগে শেষ হবে: পথে থামুন।"
+  "tripShortfall": "এই লেভেলে রেঞ্জ প্রায় {range}, গন্তব্যের প্রায় {short} আগে শেষ হবে: পথে থামুন।",
+  "chargerWorkingQuestion": "এই চার্জারটি কি কাজ করছে?",
+  "chargerVoteWorking": "কাজ করছে",
+  "chargerVoteBroken": "কাজ করছে না",
+  "chargerVotesSummary": "গত ৩০ দিনে চালকেরা: {working} জন কাজ করছে, {broken} জন কাজ করছে না",
+  "chargerVotesNone": "এখনো কোনো চালকের রিপোর্ট নেই।",
+  "chargerVotesNote": "আপনার উত্তর গোপন থাকে; শুধু সংখ্যা দেখানো হয়।"
 }

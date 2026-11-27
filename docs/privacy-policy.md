@@ -21,7 +21,7 @@ This data is not uploaded. It is removed when you uninstall the app.
 | OSRM routing (`router.project-osrm.org`, public demo server) | Start, destination and station coordinates | Calculate routes and detours |
 | Open Charge Map (EV mode) | The map area being searched | Find chargers |
 | Firebase (Google) – Authentication | An anonymous user ID created on first use | Protect community features from abuse |
-| Firebase – Cloud Firestore | Price reports (station, fuel type, price, currency, time), station votes (open / closed / out of fuel), "this price looks wrong" flags (station, fuel type, time), price alert rules (fuel, price limit, a location and radius) | Community prices and alerts |
+| Firebase – Cloud Firestore | Price reports (station, fuel type, price, currency, time), station votes (open / closed / out of fuel) and EV charger votes (working / not working, keyed by the Open Charge Map charger id), "this price looks wrong" flags (station, fuel type, time), price alert rules (fuel, price limit, a location and radius) | Community prices and alerts |
 | FuelWise trip assistant (Cloud Functions + Google Gemini API) | Your chat messages and the results of on-device calculations (for example station names, prices, detours, and the trip's start and destination) | Answer trip-planning questions. While FuelWise uses the Gemini API free tier, Google may use this content to improve its products, so do not type personal details into the chat. |
 
 Your anonymous user ID is linked to your reports, votes, price flags, alert rules and assistant conversations. The ID is not linked to your name, email or phone number.
